@@ -1,0 +1,51 @@
+{
+    "stage": "testing",
+    "application": "DBViewer",
+
+    "postgreSQL":
+    {
+        "internal":
+        {
+            "host": "localhost",
+            "port": 5432,
+            "database": "dbviewer",
+            "user": "postgres",
+            "password": "F3gH3!0jEq"
+        },
+        "target":
+        {
+            "host": "localhost",
+            "port": 5432,
+            "database": "dolix",
+            "user": "postgres",
+            "password": "F3gH3!0jEq"
+        }
+    },
+    "redis":
+    {
+        "port": 6379,
+        "host": "localhost",
+        "database": 0,
+        "password": "F3gH3!0jEq"
+    },
+
+
+    "website":
+    {
+        "host": "localhost.xyz",
+
+        "ssl_key": "common/ssl/privkey.pem",
+        "ssl_cert": "common/ssl/fullchain.pem",
+
+        "http_port": 80,
+        "https_port": 443,
+        
+        "secret": "230odiXKUiExkHAQ3UMTqRzDnGxN2loy",
+        "authentication_expiration": 900000,
+        "authorization_expiration": 3600000
+    },
+    
+    "graph_records": 100,
+    "group_size": 30,
+    "update_interval": 10000
+}

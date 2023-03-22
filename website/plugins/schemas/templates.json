@@ -1,0 +1,16 @@
+{
+    "authentication": { "type": "string", "minLength": 32, "maxLength": 32 },
+
+    "url": { "type": "string", "format": "uri" },
+    "color": { "type": "integer", "minimum": 0, "maximum": 16777215 },
+    "interval": { "type": "string", "maxLength": 15, "pattern": "^([0123456789]+y)?([0123456789]+w)?([0123456789]+d)?([0123456789]+h)?([0123456789]+m)?([0123456789]+s)?$" },
+    "font": { "type": "string", "maxLength": 64 },
+
+    "integer": { "type": "integer" },
+    "smallint": { "type": "integer", "minimum": -32767, "maximum": 32767 },
+    "smallint_positive": { "type": "integer", "minimum": 1, "maximum": 32767 },
+    "uinteger": { "type": "integer", "minimum": 0 },
+    "uinteger_wth_invalid": { "oneOf": [ { "type": "integer", "minimum": 0 }, { "type": "string", "enum": [ "" ] } ] },
+
+    "date": { "type": "string", "format": "date-time" }
+}
