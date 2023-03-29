@@ -7,9 +7,9 @@ const Connection = new ioredis({
     host: config.redis.host,
     password: config.redis.password,
     db: config.redis.database,
-    keyPrefix: config.application.name + '-',
+    keyPrefix: config.application + '-',
 
-    connectionName: config.application.name,
+    connectionName: config.application,
     //retryStrategy:
     //commandTimeout:
     autoResubscribe: true,

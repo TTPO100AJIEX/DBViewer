@@ -25,14 +25,14 @@ function register_response_plugins(app, options, done)
         acceptRanges: true,
         cacheControl: true,
         dotfiles: 'ignore',
-        etag: false, // true
+        etag: true,
         extensions: false,
         immutable: false,
-        lastModified: false, // true
-        maxAge: 0, // config.stage == "testing" ? 0 : 604800000,
+        lastModified: true,
+        maxAge: config.stage == "testing" ? 0 : 604800000,
 
         preCompressed: true,
-        wildcard: true,
+        wildcard: false,
         index: false,
         allowedPath: (pathname, root) =>
         {

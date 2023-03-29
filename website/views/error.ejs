@@ -6,11 +6,14 @@
         <title><%=error%> <%=title%> - DBViewer</title>
         <meta name="description" content="">
 
+        <style nonce="<%=res.cspNonce.style%>">
+            body { display: flex; align-items: center; justify-content: center; text-align: center; }
+        </style>
         <%- include("./general/head.ejs", locals) %>
     </head>
     <body>
         <main>
-            <h1><%=error%> <%=title%></h1>
+            <h1 class="text_size_huge"><%=error%> <%=title%></h1>
             <p>
                 <% if (Array.isArray(description))
                 {
@@ -21,7 +24,7 @@
                     <%=description%>
                 <% } %>
             </p>
-            <a href="/">На главную</a>
+            <a href="/" class="button_full padding_regular_wide margin_vertical_huge">На главную</a>
         </main>
     </body>
 </html>

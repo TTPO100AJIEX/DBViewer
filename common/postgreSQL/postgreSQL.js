@@ -13,7 +13,7 @@ const Connection = new pg.Pool({
     "password": config.postgreSQL.password,
 
     "parseInputDatesAsUTC": true,
-    "application_name": config.application.name
+    "application_name": config.application
 });
 
 export default class PostgreSQL
@@ -22,7 +22,7 @@ export default class PostgreSQL
 
 
     #Connection;
-    constructor(options) { this.#Connection = new pg.Pool({ ...options, parseInputDatesAsUTC: true, application_name: config.application.name }); }
+    constructor(options) { this.#Connection = new pg.Pool({ ...options, parseInputDatesAsUTC: true, application_name: config.application }); }
     end() { this.#Connection.end(); }
 
     async query(query, params, parse = false, one_response = false)
