@@ -2,6 +2,8 @@ import fastify_plugin from 'fastify-plugin';
 
 import SCHEMAS from "./schemas/schemas.js";
 
+import { get_main } from '../routes/main.js';
+
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 function register_routes(app, options, done)
@@ -10,6 +12,8 @@ function register_routes(app, options, done)
     app.get('/apple-touch-icon.png', { schema: SCHEMAS.EMPTY_GET }, (req, res) => res.sendFile("apple-touch-icon.png", dirname(dirname(fileURLToPath(import.meta.url))) + '/static/images/favicon'));
     app.get('/robots.txt', { schema: SCHEMAS.EMPTY_GET }, (req, res) => res.sendFile("robots.txt", dirname(dirname(fileURLToPath(import.meta.url)))));
     app.get('/sitemap.xml', { schema: SCHEMAS.EMPTY_GET }, (req, res) => res.sendFile("sitemap.xml", dirname(dirname(fileURLToPath(import.meta.url)))));
+
+    app.get("/", { schema: SCHEMAS.EMPTY_GET, config: { access: "public" } }, get_main);
     
     done();
 }

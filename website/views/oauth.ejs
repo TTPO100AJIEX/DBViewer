@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang='ru'>
+    <head>
+        <title>Авторизация</title>
+        <meta name="description" content="Авторизация">
+        <style nonce="<%=res.cspNonce.style%>">
+            body { display: flex; align-items: center; justify-content: center; }
+            input { min-width: 30vw; }
+        </style>
+        <%- include("./general/head.ejs", locals) %>
+    </head>
+    <body>
+        <main class="surface">
+            <h1>Авторизация</h1>
+            <form action="/oauth" method="post">
+                <label for="login">Логин</label>
+                <input type="text" placeholder="Введите логин..." name="login" id="login" minlength="1" maxlength="100" required>
+                
+                <label for="password">Пароль</label>
+                <input type="password" placeholder="Введите пароль..." name="password" id="password" minlength="1" maxlength="100" required>
+
+                <button>Авторизоваться</button>
+            </form>
+        </main>
+    </body>
+</html>

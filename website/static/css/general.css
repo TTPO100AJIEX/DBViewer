@@ -69,8 +69,11 @@
         --margin-vertical-huge:    calc(var(--font-size-huge) / 3.00);
         
         
+        --interactive-min-height: calc(1.66 * var(--font-size-regular) + 2 * var(--font-size-big) / 3.00 + 2px);
+
+        
         --border-radius-small: 5px;
-        --border-radius-medium: 10px;
+        --border-radius-regular: 10px;
     }
 
     :focus-visible { outline: 2px solid var(--brand-color) !important; outline-offset: 1px !important; }
@@ -118,6 +121,11 @@
     main { padding: var(--padding-regular); }
 }
 
+@layer surface
+{
+    .surface { display: block; padding: var(--padding-large); background-color: var(--surface-color); border: thin solid var(--border-color); border-radius: var(--border-radius-regular); }
+}
+
 @layer headings
 {
     :is(h1, h2, h3) { color: var(--brand-color); text-align: center; }
@@ -131,11 +139,43 @@
     button, .button_empty, .button_full
     {
         display: inline-block; background: transparent; border: thin solid transparent; text-decoration: none; font-size: var(--font-size-small);
-        padding: var(--padding-regular); border-radius: var(--border-radius-medium); text-align: center; cursor: pointer;
+        padding: var(--padding-regular); border-radius: var(--border-radius-regular); text-align: center; cursor: pointer; min-height: var(--interactive-min-height);
     }
 
-    .button_empty:not(:hover), .button_full:hover { background-color: transparent; border-color: var(--brand-color); }
-    .button_empty:hover, .button_full:not(:hover) { background-color: var(--brand-color); border-color: transparent; }
+    .button_empty:not(:hover), :is(button:not(.button_empty), .button_full):hover { background-color: transparent; border-color: var(--brand-color); }
+    .button_empty:hover, :is(button:not(.button_empty), .button_full):not(:hover) { background-color: var(--brand-color); border-color: transparent; }
+    
+    :is(.button_empty:hover, :is(button:not(.button_empty), .button_full):not(:hover))::selection { background-color: var(--text-major-color); color: var(--brand-color); fill: var(--brand-color); }
+}
+
+@layer forms
+{
+    input, textarea, select
+    {
+        font-size: var(--font-size-regular);
+        display: block; border-radius: var(--border-radius-regular);
+        padding: var(--padding-regular); width: 100%; min-width: 175px;
+        border: thin solid var(--border-color);
+        min-height: var(--interactive-min-height);
+
+        background-color: var(--background-color); margin: 4px 0; resize: vertical;
+    }
+    ::placeholder { color: var(--text-placeholder-color); opacity: 1; }
+    /*input:not([type='checkbox']), select, textarea
+    {
+        display: block; border-radius: 10px; padding: calc(var(--font-size-1-25) / 2) var(--font-size-1-0); min-height: calc(1.66 * var(--font-size-1-0) + var(--font-size-1-25)); width: 100%; min-width: 175px;
+        background-color: var(--background-color); border: thin solid var(--text-3-color); margin: 4px 0; resize: vertical; flex-grow: 2; font-size: var(--font-size-0-9);
+    }
+    ::placeholder { color: var(--text-3-color); opacity: 1; }
+    :is(input, select, textarea):disabled { text-align: center; color: var(--brand-color); border: thin solid var(--brand-color); opacity: 1; }
+    :is(input, select, textarea):invalid { border: thin solid var(--color-red); }
+
+    input[type='checkbox'] { aspect-ratio: 1/1; width: auto; height: auto; clip-path: circle(calc(48% - 3px)); height: 80%; position: relative; top: 10%; vertical-align: middle; }
+    *:has(> input[type='checkbox']):focus-within { outline: 2px solid var(--brand-color) !important; outline-offset: 1px !important; }
+    @-moz-document url-prefix()
+    {
+        select { padding-top: calc(calc(var(--font-size-1-25) / 2) + 0.33em); }
+    }*/
 }
 
 
@@ -211,6 +251,6 @@
 /*----------------------BORDER RADIUS----------------------*/
 @layer border_radius
 {
-    .border_radius_small { border-radius: var(--border-radius-medium); }
-    .border_radius_medium { border-radius: var(--border-radius-medium); }
+    .border_radius_small { border-radius: var(--border-radius-small); }
+    .border_radius_regular { border-radius: var(--border-radius-regular); }
 }
