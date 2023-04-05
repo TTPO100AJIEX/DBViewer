@@ -5,7 +5,7 @@
         <meta name="description" content="Авторизация">
         <style nonce="<%=res.cspNonce.style%>">
             body { display: flex; align-items: center; justify-content: center; }
-            input { min-width: 30vw; }
+            input { min-width: 20vw; }
         </style>
         <%- include("./general/head.ejs", locals) %>
     </head>
@@ -13,13 +13,17 @@
         <main class="surface">
             <h1>Авторизация</h1>
             <form action="/oauth" method="post">
-                <label for="login">Логин</label>
-                <input type="text" placeholder="Введите логин..." name="login" id="login" minlength="1" maxlength="100" required>
+                <label for="login">
+                    Логин
+                    <input type="text" placeholder="Введите логин..." name="login" id="login">
+                </label>
                 
-                <label for="password">Пароль</label>
-                <input type="password" placeholder="Введите пароль..." name="password" id="password" minlength="1" maxlength="100" required>
+                <label for="password">
+                    Пароль
+                    <input type="password" placeholder="Введите пароль..." name="password" id="password">
+                </label>
 
-                <button>Авторизоваться</button>
+                <button class="block_maxwidth">Авторизоваться</button>
             </form>
         </main>
     </body>

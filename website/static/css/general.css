@@ -18,7 +18,8 @@
         --brand-color: hsl(214, 95%, 50%);
         --background-color: hsl(214, 8%, 8%);
         --surface-color: hsl(214, 11%, 11%);
-        --border-color: hsl(214, 15%, 30%);
+        --border-color: hsl(214, 3%, 55%);
+        --shadow-color: hsl(214, 15%, 30%);
 
         --text-brand-color: hsl(214, 95%, 50%);
         --text-major-color: hsl(214, 0%, 100%);
@@ -36,29 +37,30 @@
 
         
         /* [ 400; 1900; 3400 ] */
-        --font-size-small:   clamp(16rem / 16, (236rem + 16vw) / 240, 18rem / 16); /* [ 16, 17, 18 ] */
-        --font-size-regular: clamp(16rem / 16, (232rem + 32vw) / 240, 20rem / 16); /* [ 16, 18, 20 ] */
-        --font-size-medium:  clamp(18rem / 16, (258rem + 48vw) / 240, 24rem / 16); /* [ 18, 21, 24 ] */
-        --font-size-big:     clamp(21rem / 16, (299rem + 64vw) / 240, 29rem / 16); /* [ 21, 25, 29 ] */
-        --font-size-large:   clamp(25rem / 16, (355rem + 80vw) / 240, 35rem / 16); /* [ 25, 30, 35 ] */
-        --font-size-huge:    clamp(30rem / 16, (426rem + 96vw) / 240, 42rem / 16); /* [ 30, 36, 42 ] */
+        --font-size-small:    clamp(16rem / 16, (236rem + 16vw) / 240, 18rem / 16); /* [ 16, 17, 18 ] */
+        --font-size-regular:  clamp(16rem / 16, (232rem + 32vw) / 240, 20rem / 16); /* [ 16, 18, 20 ] */
+        --font-size-medium:   clamp(18rem / 16, (258rem + 48vw) / 240, 24rem / 16); /* [ 18, 21, 24 ] */
+        --font-size-big:      clamp(21rem / 16, (299rem + 64vw) / 240, 29rem / 16); /* [ 21, 25, 29 ] */
+        --font-size-large:    clamp(25rem / 16, (355rem + 80vw) / 240, 35rem / 16); /* [ 25, 30, 35 ] */
+        --font-size-huge:     clamp(30rem / 16, (426rem + 96vw) / 240, 42rem / 16); /* [ 30, 36, 42 ] */
+        --font-size-enormous: clamp(36rem / 16, (512rem + 112vw) / 240, 50rem / 16); /* [ 36, 43, 50 ] */
 
 
         --padding-tiny:    calc(var(--font-size-regular) / 3.00) calc(var(--font-size-medium) / 2.00);
-        --padding-small:    calc(var(--font-size-medium) / 3.00) calc(var(--font-size-big) / 2.00);
-        --padding-regular:    calc(var(--font-size-big) / 3.00) calc(var(--font-size-large) / 2.00);
-        --padding-medium:    calc(var(--font-size-large) / 3.00) calc(var(--font-size-huge) / 2.00);
-        --padding-big:    calc(var(--font-size-large) / 2.00) calc(var(--font-size-huge) / 1.50);
-        --padding-large:    calc(var(--font-size-large) / 1.50) calc(var(--font-size-huge) / 1.25);
-        --padding-huge:    calc(var(--font-size-large) / 1.25) calc(var(--font-size-huge) / 1.00);
+        --padding-small:   calc(var(--font-size-medium) / 3.00)  calc(var(--font-size-big) / 2.00);
+        --padding-regular: calc(var(--font-size-big) / 3.00)     calc(var(--font-size-large) / 2.00);
+        --padding-medium:  calc(var(--font-size-large) / 3.00)   calc(var(--font-size-huge) / 2.00);
+        --padding-big:     calc(var(--font-size-large) / 2.00)   calc(var(--font-size-huge) / 1.50);
+        --padding-large:   calc(var(--font-size-large) / 1.50)   calc(var(--font-size-huge) / 1.25);
+        --padding-huge:    calc(var(--font-size-large) / 1.25)   calc(var(--font-size-huge) / 1.00);
         
         --padding-tiny-wide:    calc(var(--font-size-regular) / 3.00) calc(2.5 * var(--font-size-medium) / 2.00);
-        --padding-small-wide:    calc(var(--font-size-medium) / 3.00) calc(2.5 * var(--font-size-big) / 2.00);
-        --padding-regular-wide:    calc(var(--font-size-big) / 3.00) calc(2.5 * var(--font-size-large) / 2.00);
-        --padding-medium-wide:    calc(var(--font-size-large) / 3.00) calc(2.5 * var(--font-size-huge) / 2.00);
-        --padding-big-wide:    calc(var(--font-size-large) / 2.00) calc(2.5 * var(--font-size-huge) / 1.50);
-        --padding-large-wide:    calc(var(--font-size-large) / 1.50) calc(2.5 * var(--font-size-huge) / 1.25);
-        --padding-huge-wide:    calc(var(--font-size-large) / 1.25) calc(2.5 * var(--font-size-huge) / 1.00);
+        --padding-small-wide:   calc(var(--font-size-medium) / 3.00)  calc(2.5 * var(--font-size-big) / 2.00);
+        --padding-regular-wide: calc(var(--font-size-big) / 3.00)     calc(2.5 * var(--font-size-large) / 2.00);
+        --padding-medium-wide:  calc(var(--font-size-large) / 3.00)   calc(2.5 * var(--font-size-huge) / 2.00);
+        --padding-big-wide:     calc(var(--font-size-large) / 2.00)   calc(2.5 * var(--font-size-huge) / 1.50);
+        --padding-large-wide:   calc(var(--font-size-large) / 1.50)   calc(2.5 * var(--font-size-huge) / 1.25);
+        --padding-huge-wide:    calc(var(--font-size-large) / 1.25)   calc(2.5 * var(--font-size-huge) / 1.00);
 
         
         --margin-vertical-small:   calc(var(--font-size-small) / 3.00);
@@ -123,12 +125,12 @@
 
 @layer surface
 {
-    .surface { display: block; padding: var(--padding-large); background-color: var(--surface-color); border: thin solid var(--border-color); border-radius: var(--border-radius-regular); }
+    .surface { display: block; padding: var(--padding-large); background-color: var(--surface-color); box-shadow: 0px 0px 0px 1px var(--shadow-color); border-radius: var(--border-radius-regular); }
 }
 
 @layer headings
 {
-    :is(h1, h2, h3) { color: var(--brand-color); text-align: center; }
+    :is(h1, h2, h3) { color: var(--text-major-color); text-align: center; }
     h1 { font-size: var(--font-size-large); font-weight: 800; }
     h2 { font-size: var(--font-size-big); font-weight: 700; }
     h3 { font-size: var(--font-size-medium); font-weight: 600; }
@@ -150,32 +152,21 @@
 
 @layer forms
 {
-    input, textarea, select
+    @layer elements
     {
-        font-size: var(--font-size-regular);
-        display: block; border-radius: var(--border-radius-regular);
-        padding: var(--padding-regular); width: 100%; min-width: 175px;
-        border: thin solid var(--border-color);
-        min-height: var(--interactive-min-height);
-
-        background-color: var(--background-color); margin: 4px 0; resize: vertical;
+        input, textarea, select
+        {
+            display: block; width: 100%; min-width: 175px; padding: var(--padding-regular); margin: 4px 0; resize: vertical; min-height: var(--interactive-min-height);
+            font-size: var(--font-size-small); background-color: var(--background-color); border: thin solid var(--border-color); border-radius: var(--border-radius-regular);
+        }
+        ::placeholder { color: var(--text-placeholder-color); opacity: 1; }
+        :is(input, select, textarea):disabled { text-align: center; border: thin solid var(--brand-color); opacity: 1; }
+        :is(input, select, textarea):invalid { border: thin solid var(--color-red); }
     }
-    ::placeholder { color: var(--text-placeholder-color); opacity: 1; }
-    /*input:not([type='checkbox']), select, textarea
+    @layer default
     {
-        display: block; border-radius: 10px; padding: calc(var(--font-size-1-25) / 2) var(--font-size-1-0); min-height: calc(1.66 * var(--font-size-1-0) + var(--font-size-1-25)); width: 100%; min-width: 175px;
-        background-color: var(--background-color); border: thin solid var(--text-3-color); margin: 4px 0; resize: vertical; flex-grow: 2; font-size: var(--font-size-0-9);
+        form { display: flex; flex-direction: column; justify-content: stretch; gap: calc(var(--font-size-large) / 3.00); }
     }
-    ::placeholder { color: var(--text-3-color); opacity: 1; }
-    :is(input, select, textarea):disabled { text-align: center; color: var(--brand-color); border: thin solid var(--brand-color); opacity: 1; }
-    :is(input, select, textarea):invalid { border: thin solid var(--color-red); }
-
-    input[type='checkbox'] { aspect-ratio: 1/1; width: auto; height: auto; clip-path: circle(calc(48% - 3px)); height: 80%; position: relative; top: 10%; vertical-align: middle; }
-    *:has(> input[type='checkbox']):focus-within { outline: 2px solid var(--brand-color) !important; outline-offset: 1px !important; }
-    @-moz-document url-prefix()
-    {
-        select { padding-top: calc(calc(var(--font-size-1-25) / 2) + 0.33em); }
-    }*/
 }
 
 
@@ -202,6 +193,7 @@
         .text_size_big     { font-size: var(--font-size-big);     }
         .text_size_large   { font-size: var(--font-size-large);   }
         .text_size_huge    { font-size: var(--font-size-huge);    }
+        .text_size_enormous    { font-size: var(--font-size-enormous);    }
     }
     @layer alignment
     {
@@ -215,6 +207,16 @@
         .text_nowrap { text-overflow: ellipsis; overflow-x: hidden; white-space: nowrap; }
         .text_nohover { text-decoration: none; cursor: revert; }
     }
+}
+
+/*----------------------BLOCKS----------------------*/
+@layer blocks
+{
+    .block_minsize { display: block; width: min-content; }
+    .block_maxwidth { display: block; width: 100%; }
+    .block_maxheight { display: block; height: 100%; }
+
+    .block_centered { display: block; margin-left: auto; margin-right: auto; }
 }
 
 /*----------------------PADDING/SIZING----------------------*/
