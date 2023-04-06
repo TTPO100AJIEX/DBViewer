@@ -5,17 +5,6 @@ import format from 'pg-format';
 
 import parse_response from "./parse_response.js";
 
-const Connection = new pg.Pool({
-    "host": config.postgreSQL.host,
-    "port": config.postgreSQL.port,
-    "database": config.postgreSQL.database,
-    "user": config.postgreSQL.user,
-    "password": config.postgreSQL.password,
-
-    "parseInputDatesAsUTC": true,
-    "application_name": config.application
-});
-
 export default class PostgreSQL
 {
     static format(template, ...params) { return format(template, ...params); }
@@ -27,7 +16,7 @@ export default class PostgreSQL
 
     async query(query, params, parse = false, one_response = false)
     {
-        let data = await Connection.query(query, params);
+        let data = await this.#Connection.query(query, params);
         if (parse) data.rows = parse_response(data.rows);
         if (one_response) data.rows = data.rows[0];
         return(data.rows);
@@ -43,7 +32,7 @@ export default class PostgreSQL
             final_query += `${info.query}${info.query.endsWith(";") ? "" : ";"}`;
         }
         if (plan.length == 0) return;
-        let data = await Connection.query(final_query);
+        let data = await this.#Connection.query(final_query);
         if (!Array.isArray(data)) data = [ data ];
         let result = Array.isArray(queries) ? [ ] : { };
         for (let i = 0; i < data.length; i++)

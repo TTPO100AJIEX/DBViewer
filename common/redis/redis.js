@@ -39,7 +39,7 @@ class Redis
 
     static set(key, value) { return Connection.set(key, value); }
     static set_expire(key, value, expiration) { return Connection.setex(key, expiration / 1000, value); }
-    static set_noexpire(key, value) { return Connection.set(key, value, "KEEPTTL"); }
+    static set_keepttl(key, value) { return Connection.set(key, value, "KEEPTTL"); }
     
     static get(key) { return Connection.get(key); }
     static get_delete(key) { return Connection.getdel(key); }

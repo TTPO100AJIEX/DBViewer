@@ -10,7 +10,7 @@
         <%- include("./general/head.ejs", locals) %>
     </head>
     <body>
-        <main class="surface">
+        <main class="surface" tabindex="-1">
             <h1>Авторизация</h1>
             <form action="/oauth" method="post">
                 <label for="login">
@@ -23,7 +23,8 @@
                     <input type="password" placeholder="Введите пароль..." name="password" id="password">
                 </label>
 
-                <button class="block_maxwidth">Авторизоваться</button>
+                <button class="control_filled">Авторизоваться</button>
+                <input type="hidden" name="authentication" value="<%=req.authentication%>">
             </form>
         </main>
     </body>

@@ -12,7 +12,7 @@
         <%- include("./general/head.ejs", locals) %>
     </head>
     <body>
-        <main>
+        <main tabindex="-1">
             <h1 class="text_size_enormous"><%=error%> <%=title%></h1>
             <p>
                 <% if (Array.isArray(description))
@@ -24,7 +24,7 @@
                     <%=description%>
                 <% } %>
             </p>
-            <a href="/" class="button_full padding_regular_wide margin_vertical_huge">На главную</a>
+            <a href="/" class="control_filled padding_regular_wide margin_vertical_huge">На главную</a>
         </main>
     </body>
 </html>

@@ -21,7 +21,7 @@
         --border-color: hsl(214, 3%, 55%);
         --shadow-color: hsl(214, 15%, 30%);
 
-        --text-brand-color: hsl(214, 95%, 50%);
+        --text-brand-color: hsl(214, 95%, 60%);
         --text-major-color: hsl(214, 0%, 100%);
         --text-minor-color: hsl(214, 5%, 80%);
         --text-placeholder-color: hsl(214, 10%, 60%);
@@ -98,7 +98,7 @@
     {
         padding: 0; margin: 0; box-sizing: border-box; min-width: 0;
         scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--scrollbar-color) var(--background-color);
-        transition-duration: 0.25s; transition-timing-function: ease-out; transition-property: background-color, color, border-color, text-decoration-color;
+        transition-duration: 0.25s; transition-timing-function: ease-out; transition-property: var(--transitioned), background-color, color, border-color, text-decoration-color; --transitioned: color;
     }
     * { font: inherit; color: inherit; }
     *::before, *::after { display: inline-block; }
@@ -111,21 +111,18 @@
     button { appearance: button; }
 
     strong { font-weight: 700; }
+
+    [hidden] { display: none; content-visibility: hidden; }
 }
 
-@layer body
-{
-    body { background-color: var(--background-color); min-height: 100vh; }
-}
 
-@layer main
-{
-    main { padding: var(--padding-regular); }
-}
+
+
 
 @layer surface
 {
     .surface { display: block; padding: var(--padding-large); background-color: var(--surface-color); box-shadow: 0px 0px 0px 1px var(--shadow-color); border-radius: var(--border-radius-regular); }
+    .surface_no_border { display: block; padding: var(--padding-large); background-color: var(--surface-color); box-shadow: 0px 0px 0px 1px var(--shadow-color); }
 }
 
 @layer headings
@@ -136,18 +133,40 @@
     h3 { font-size: var(--font-size-medium); font-weight: 600; }
 }
 
-@layer buttons
+@layer lists
 {
-    button, .button_empty, .button_full
+    ol, ul, menu { list-style-position: inside; }
+    li > :is(ol, ul, menu) { padding-left: var(--font-size-1-5); }
+    
+    .no_bullets { list-style-type: none; }
+    .no_bullets > * { margin-top: calc(4px + var(--font-size-regular) / 3.00); margin-bottom: calc(4px + var(--font-size-regular) / 3.00); }
+}
+
+@layer controls
+{
+    a, button, .control_inline, .control_block, .control_filled, .control_empty
     {
-        display: inline-block; background: transparent; border: thin solid transparent; text-decoration: none; font-size: var(--font-size-small);
-        padding: var(--padding-regular); border-radius: var(--border-radius-regular); text-align: center; cursor: pointer; min-height: var(--interactive-min-height);
+        display: inline-block; text-decoration: underline; text-decoration-color: transparent; text-align: left; cursor: pointer;
+        background: transparent; border: thin solid transparent; border-radius: var(--border-radius-small);
     }
 
-    .button_empty:not(:hover), :is(button:not(.button_empty), .button_full):hover { background-color: transparent; border-color: var(--brand-color); }
-    .button_empty:hover, :is(button:not(.button_empty), .button_full):not(:hover) { background-color: var(--brand-color); border-color: transparent; }
-    
-    :is(.button_empty:hover, :is(button:not(.button_empty), .button_full):not(:hover))::selection { background-color: var(--text-major-color); color: var(--brand-color); fill: var(--brand-color); }
+
+    a:not(.control_block, .control_filled, .control_empty), .control_inline { text-decoration: underline; }
+    :is(a:not(.control_block, .control_filled, .control_empty), .control_inline):is(:hover, :visited) { color: var(--text-brand-color); }
+
+
+    button:not(.control_inline), .control_block, .control_filled, .control_empty
+    {
+        font-size: var(--font-size-small); padding: var(--padding-regular); border-radius: var(--border-radius-regular); min-height: var(--interactive-min-height);
+    }
+
+    :is(a, button):is(.control_filled, .control_empty) { display: inline-flex; align-items: center; justify-content: center; text-align: center; }
+    :is(a, button):not(.control_filled, .control_empty):hover { text-decoration-color: currentColor; }
+
+    .control_filled, :is(a, button).control_empty:hover { background-color: var(--brand-color); border-color: transparent; }
+    :is(.control_filled, :is(a, button).control_empty:hover)::selection { background-color: var(--text-major-color); color: var(--brand-color); fill: var(--brand-color); }
+
+    .control_empty, :is(a, button).control_filled:hover { background-color: transparent; border-color: var(--brand-color); }
 }
 
 @layer forms
@@ -172,11 +191,12 @@
 
 
 
+
 @layer text
 {
     @layer color
     {
-        .text_brand { color: var(--brand-color); }
+        .text_brand { color: var(--text-brand-color); }
         .text_major { color: var(--text-major-color); }
         .text_minor { color: var(--text-minor-color); }
         .text_placeholder { color: var(--text-placeholder-color); }
@@ -217,6 +237,8 @@
     .block_maxheight { display: block; height: 100%; }
 
     .block_centered { display: block; margin-left: auto; margin-right: auto; }
+    
+    .flex_fill { flex-grow: 2; }
 }
 
 /*----------------------PADDING/SIZING----------------------*/
@@ -255,4 +277,31 @@
 {
     .border_radius_small { border-radius: var(--border-radius-small); }
     .border_radius_regular { border-radius: var(--border-radius-regular); }
+}
+
+
+
+
+
+@layer body
+{
+    body { background-color: var(--background-color); min-height: 100vh; }
+}
+
+@layer header
+{
+    header { position: sticky; top: 0; z-index: 3; }
+
+    @layer top_level_header
+    {
+        header.top_level_header { display: flex; align-items: center; gap: var(--font-size-small); }
+    
+        header.top_level_header > div { line-height: normal; }
+        header.top_level_header > div > div:nth-child(1) { font-size: var(--font-size-medium); }
+        header.top_level_header > div > div:nth-child(2) { font-size: var(--font-size-small); }
+        header.top_level_header > div > div:nth-child(2) > span:nth-child(1) { color: var(--text-minor-color); }
+        header.top_level_header > div > div:nth-child(2) > span:nth-child(2) { color: var(--text-brand-color); }
+        
+        header.top_level_header > :is(a, button) { width: calc(15ch + var(--font-size-large) / 2.00); align-self: stretch; }
+    }
 }

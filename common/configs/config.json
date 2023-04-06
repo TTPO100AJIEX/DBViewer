@@ -42,7 +42,13 @@
         
         "secret": "230odiXKUiExkHAQ3UMTqRzDnGxN2loy",
         "authentication_expiration": 900000,
-        "authorization_expiration": 3600000
+        "authorization_expiration": 3600000,
+        "user_data_expiration": 300000
+    },
+
+    "bcrypt":
+    {
+        "saltRounds": 11
     },
     
     "graph_records": 100,

@@ -1,7 +1,13 @@
 <link rel="preconnect" hsvref="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" nonce="<%=res.cspNonce.style%>">
+
 <link rel="stylesheet" href="/static/css/general.css" nonce="<%=res.cspNonce.style%>">
+<% if (locals.has_nav)
+{ %>
+    <link rel="stylesheet" href="/static/css/navigation.css" nonce="<%=res.cspNonce.style%>">
+    <script src="/static/js/navigation.js" type="module" nonce="<%=res.cspNonce.script%>"></script>
+<% } %>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">

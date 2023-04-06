@@ -2,7 +2,8 @@ import fastify_plugin from 'fastify-plugin';
 
 import SCHEMAS from "./schemas/schemas.js";
 
-import { get_main } from '../routes/main.js';
+import { get_main, post_oauth, get_logout } from '../routes/main.js';
+import { get_database } from '../routes/database.js';
 
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -13,7 +14,11 @@ function register_routes(app, options, done)
     app.get('/robots.txt', { schema: SCHEMAS.EMPTY_GET }, (req, res) => res.sendFile("robots.txt", dirname(dirname(fileURLToPath(import.meta.url)))));
     app.get('/sitemap.xml', { schema: SCHEMAS.EMPTY_GET }, (req, res) => res.sendFile("sitemap.xml", dirname(dirname(fileURLToPath(import.meta.url)))));
 
+    app.post("/oauth", { schema: SCHEMAS.EMPTY_GET, config: { access: "public" } }, post_oauth);
+    app.get("/logout", { schema: SCHEMAS.EMPTY_GET, config: { access: "public" } }, get_logout);
     app.get("/", { schema: SCHEMAS.EMPTY_GET, config: { access: "public" } }, get_main);
+    
+    app.get("/database", { schema: SCHEMAS.EMPTY_GET, config: { access: "authorization" } }, get_database);
     
     done();
 }
