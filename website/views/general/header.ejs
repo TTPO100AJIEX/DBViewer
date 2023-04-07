@@ -1,18 +1,22 @@
-<header class="surface_no_border top_level_header">
-    
-    <% if (locals.has_nav)
-    { %>
-        <button class="navigation_opener" aria-label="Развернуть меню навигации">
-            <div></div><div></div><div></div>
-        </button>
-    <% } %>
+<header class="surface_no_border">
 
-    <div class="userinfo">
-        <div>TTPO100AJIEX</div>
-        <div> <span>Доступ:</span> <span>RIUDA</span> </div>
+    <div class="siteinfo block_flex">
+        <% if (locals.has_nav)
+        { %>
+            <button class="navigation_opener desktop_hidden" aria-label="Развернуть меню навигации">
+                <div></div><div></div><div></div>
+            </button>
+        <% } %>
+        <div class="userinfo text_nowrap">
+            <div class="text_size_medium">TTPO100AJIEX</div>
+            <div class="text_size_small"> <span class="text_minor">Доступ:</span> <span class="text_brand">RIUDA</span> </div>
+        </div>
     </div>
     
-    <div class="flex_fill" role="presentation"></div>
-    <button class="control_empty">Сохранить</button>
-    <a href="/logout" class="control_empty">Выйти</a>
+    <div class="navigation"></div>
+
+    <div class="controls">
+        <button class="control_empty padding_regular_wide">Сохранить</button>
+        <a href="/logout" class="control_empty padding_regular_wide">Выйти</a>
+    </div>
 </header>
