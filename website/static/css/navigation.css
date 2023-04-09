@@ -6,16 +6,7 @@
 
 /*----------------------NAVIGATION OPENER----------------------*/
 @layer navigation_opener
-{
-    .navigation_opener
-    {
-        background: transparent; border: none; padding: 0;
-        display: flex; flex-direction: column; justify-content: space-evenly; align-items: center;
-        height: 40px; width: 40px; border-radius: var(--border-radius-small);
-    }
-    .navigation_opener > div { background: var(--text-major-color); border-radius: var(--border-radius-small); width: 80%; height: 4px; }
-    .navigation_opener:hover > div { background: var(--brand-color); }
-    
+{    
     #navigation_backdrop { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; z-index: 10; background: var(--background-color); opacity: 0.5; --transitioned: opacity, z-index; }
     @media (max-width: 1000px)
     {
