@@ -8,8 +8,8 @@
             </button>
         <% } %>
         <div class="userinfo text_nowrap">
-            <div class="text_size_medium">TTPO100AJIEX</div>
-            <div class="text_size_small"> <span class="text_minor">Доступ:</span> <span class="text_brand">RIUDA</span> </div>
+            <div class="text_size_medium"><%=req.authorization.login%></div>
+            <div class="text_size_small"> <span class="text_minor">Доступ:</span> <span class="text_brand"><%=req.authorization.permissions%></span> </div>
         </div>
     </div>
     

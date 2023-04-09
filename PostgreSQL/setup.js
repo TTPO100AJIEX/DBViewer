@@ -12,7 +12,14 @@ await InternalDatabase.query_multiple([
         insert BOOL NOT NULL DEFAULT FALSE,
         update BOOL NOT NULL DEFAULT FALSE,
         delete BOOL NOT NULL DEFAULT FALSE,
-        admin BOOL NOT NULL DEFAULT FALSE
+        admin BOOL NOT NULL DEFAULT FALSE,
+        permissions CHAR(5) GENERATED ALWAYS AS (
+            (CASE WHEN (read OR admin) THEN 'R' ELSE '-' END) ||
+            (CASE WHEN (insert OR admin) THEN 'I' ELSE '-' END) ||
+            (CASE WHEN (update OR admin) THEN 'U' ELSE '-' END) ||
+            (CASE WHEN (delete OR admin) THEN 'D' ELSE '-' END) ||
+            (CASE WHEN admin THEN 'A' ELSE '-' END)
+        ) STORED
     )
   `
 ]);
@@ -25,10 +32,10 @@ InternalDatabase.end();
 
 /*
 CREATE TABLE table_name ( [
-    column_name data_type [ column_constraint [ ... ] ]
-  ] )
-  [ WITH ( storage_parameter [= value] [, ... ] ) | WITHOUT OIDS ]
-  [ TABLESPACE tablespace_name ]
+      column_name data_type [ column_constraint [ ... ] ]
+    ] )
+    [ WITH ( storage_parameter [= value] [, ... ] ) | WITHOUT OIDS ]
+    [ TABLESPACE tablespace_name ]
 
 where column_constraint is:
 NOT NULL

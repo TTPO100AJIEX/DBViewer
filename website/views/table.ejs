@@ -2,8 +2,8 @@
 <!DOCTYPE html>
 <html lang='ru'>
     <head>
-        <title><%=databaseName%></title>
-        <meta name="description" content="База данных <%=databaseName%>">
+        <title><%=req.params.schemaname%>.<%=req.params.tablename%></title>
+        <meta name="description" content="Таблица <%=req.params.schemaname%>.<%=req.params.tablename%>">
         <%- include("./general/head.ejs", locals) %>
     </head>
     <body>

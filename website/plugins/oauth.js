@@ -1,4 +1,4 @@
-import { config, Utils, TargetDatabase, InternalDatabase, Redis } from "common/index.js";
+import { config, InternalDatabase, Redis } from "common/index.js";
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import fastify_plugin from 'fastify-plugin';
@@ -64,9 +64,9 @@ function register_oauth(app, options, done)
         if (!authorization) return this.response.logout();
         authorization = JSON.parse(authorization);
 
-        if (true || !authorization.expiration || new Date(authorization.expiration) <= new Date())
+        if (!authorization.expiration || new Date(authorization.expiration) <= new Date())
         {
-            authorization = await InternalDatabase.query(`SELECT id AS user_id, login FROM users WHERE id = $1`, [ authorization.user_id ], false, true);
+            authorization = await InternalDatabase.query(`SELECT id AS user_id, login, permissions FROM users WHERE id = $1`, [ authorization.user_id ], false, true);
             if (!authorization) { await Redis.delete(`session_id-${this.session_id}`); return this.response.logout(); }
             authorization = { ...authorization, expiration: Date.now() + config.website.user_data_expiration };
             await Redis.set_keepttl(`session_id-${this.session_id}`, JSON.stringify(authorization));
@@ -102,13 +102,13 @@ function register_oauth(app, options, done)
         if (!login || !password) return res.error(400);
         req.authentication_data = await req.check_authentication(req.body.authentication);
         
-        const users = await InternalDatabase.query(`SELECT id, login, password FROM users WHERE login = $1`, [ login ], true);
+        const users = await InternalDatabase.query(`SELECT id, login, password, permissions FROM users WHERE login = $1`, [ login ], true);
         if (users.length == 0) return res.error(401, [ "Ошибка авторизации!", "Такого пользователя нет!" ]);
         for (const user of users)
         {
             if (!(await bcrypt.compare(password, user.password))) continue;
             req.session_id = crypto.randomBytes(32).toString('base64');
-            await Redis.set_expire(`session_id-${req.session_id}`, JSON.stringify({ user_id: user.id, login: user.login, expiration: Date.now() + config.website.user_data_expiration }), config.website.authorization_expiration);
+            await Redis.set_expire(`session_id-${req.session_id}`, JSON.stringify({ user_id: user.id, login: user.login, permissions: user.permissions, expiration: Date.now() + config.website.user_data_expiration }), config.website.authorization_expiration);
             res.setCookie('__Secure-authorization', req.session_id, { domain: config.website.host, path: '/', secure: true, httpOnly: true, sameSite: 'Lax', signed: true });
             return res.redirect("/database");
         }

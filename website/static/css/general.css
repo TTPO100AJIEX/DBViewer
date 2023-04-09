@@ -31,9 +31,11 @@
         --color-red: hsl(353, 90%, 50%);
         --color-yellow: hsl(47, 90%, 50%);
         --color-purple: hsl(302, 90%, 50%);
-
         
         accent-color: var(--brand-color); color-scheme: light dark;
+
+
+        --line-height: 1.66;
 
         
         /* [ 400; 1900; 3400 ] */
@@ -129,7 +131,7 @@
         --margin-enormous: var(--margin-vertical-enormous) var(--margin-horizontal-enormous);
         
         
-        --interactive-min-height: calc(1.66 * var(--font-size-regular) + 2 * var(--vertical-sizing-regular));
+        --interactive-min-height: calc(var(--line-height) * var(--font-size-regular) + 2 * var(--vertical-sizing-regular));
 
         
         --border-radius-small: 5px;
@@ -158,9 +160,9 @@
         scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--scrollbar-color) var(--background-color);
         transition-duration: 0.25s; transition-timing-function: ease-out; transition-property: var(--transitioned), background-color, color, border-color, text-decoration-color; --transitioned: color;
     }
-    * { font: inherit; color: inherit; }
-    *::before, *::after { display: inline-block; }
-    body { color: var(--text-major-color); font-size: var(--font-size-regular); font-weight: 500; font-family: 'Inter', sans-serif, system-ui; line-height: 1.66; text-align: left; text-size-adjust: 100%; }
+    * { font: inherit; color: var(--text-major-color); }
+    *::before, *::after { display: inline-block; color: inherit; }
+    body { font-size: var(--font-size-regular); font-weight: 500; font-family: 'Inter', sans-serif, system-ui; line-height: var(--line-height); text-align: left; text-size-adjust: 100%; }
     main { display: block; }
     
     img, picture { flex-shrink: 0; max-inline-size: 100%; display: block; overflow: hidden; }
@@ -204,6 +206,8 @@
     
     .no_bullets { list-style-type: none; }
     .no_bullets > * { margin-top: calc(var(--vertical-sizing-regular)); margin-bottom: calc(var(--vertical-sizing-regular)); }
+    .no_bullets > li { line-height: 0; }
+    .no_bullets > li > * { line-height: var(--line-height); }
 }
 
 @layer controls
@@ -217,14 +221,17 @@
 
     a:not(.control_block, .control_filled, .control_empty), .control_inline { text-decoration: underline; }
     :is(a:not(.control_block, .control_filled, .control_empty), .control_inline):is(:hover, :visited) { color: var(--text-brand-color); }
+    :is(a:not(.control_block, .control_filled, .control_empty), .control_inline):is(:hover, :visited)::before { color: var(--text-brand-color); }
+    :is(a:not(.control_block, .control_filled, .control_empty), .control_inline):is(:hover, :visited)::after { color: var(--text-brand-color); }
 
 
     button:not(.control_inline), .control_block, .control_filled, .control_empty
     {
         font-size: var(--font-size-small); padding: var(--padding-regular); border-radius: var(--border-radius-regular); min-height: var(--interactive-min-height);
+        text-overflow: ellipsis; overflow-x: hidden; white-space: nowrap;
     }
 
-    .control_block:hover { color: var(--text-brand-color); }
+    .control_block:hover, .control_block:hover::before, .control_block:hover::after { color: var(--text-brand-color); }
 
     :is(a, button):is(.control_filled, .control_empty) { display: inline-flex; align-items: center; justify-content: center; text-align: center; }
     :is(a, button):not(.control_filled, .control_empty):hover { text-decoration-color: currentColor; }
@@ -455,11 +462,11 @@
         .main_body > header .navigation { justify-content: center; }
         .main_body > header .controls { display: grid; grid-template-columns: 1fr 1fr; gap: var(--horizontal-sizing-regular); }
 
-        /*@container (max-width: 700px)
+        @container (max-width: 700px)
         {
             .main_body > header { grid-template-columns: auto 1fr; }
             .main_body > header > .navigation { order: -1; grid-column: 1 / -1; }
-        }*/
+        }
         @container (max-width: 600px)
         {
             .main_body > header { grid-template-columns: auto; }
