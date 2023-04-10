@@ -2,9 +2,18 @@
 <!DOCTYPE html>
 <html lang='ru'>
     <head>
-        <title><%=databaseName%></title>
-        <meta name="description" content="База данных <%=databaseName%>">
+        <% if (req.routerPath == "/database")
+        { %>
+            <title><%=databaseName%></title>
+            <meta name="description" content="База данных <%=databaseName%>">
+        <% }
+        else
+        { %>
+            <title><%=req.params.schemaname%>.<%=req.params.tablename%></title>
+            <meta name="description" content="Таблица <%=req.params.schemaname%>.<%=req.params.tablename%>">
+        <% } %>
         <%- include("./general/head.ejs", locals) %>
+        <script src="/static/js/data.js" type="module" nonce="<%=res.cspNonce.script%>"></script>
     </head>
     <body>
         <%- include("./general/nav.ejs", locals) %>

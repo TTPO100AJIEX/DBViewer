@@ -12,16 +12,9 @@ async function get_database(req, res)
     return res.render("database.ejs", { databaseName, tables });
 }
 
-async function get_table(req, res)
+async function websocket_data(connection, req)
 {
-    if (!req.authorization.permissions.includes("R")) return res.error(403);
-
-    const [ { current_database: databaseName }, tables ] = await TargetDatabase.query_multiple([
-        { query: `SELECT current_database()`, one_response: true },
-        `SELECT schemaname, tablename FROM pg_tables WHERE schemaname != 'information_schema' AND NOT starts_with(schemaname, 'pg_')`
-    ]);
-    
-    return res.render("database.ejs", { databaseName, tables });
+    console.log('!');
 }
 
-export { get_database, get_table };
+export { get_database, websocket_data };
