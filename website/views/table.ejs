@@ -1,0 +1,30 @@
+<% locals.has_nav = true; %>
+<!DOCTYPE html>
+<html lang='ru'>
+    <head>
+        <script src="https://www.gstatic.com/charts/loader.js" nonce="<%=res.cspNonce.script%>" defer></script>
+        <% if (req.routerPath == "/database")
+        { %>
+            <title><%=databaseName%></title>
+            <meta name="description" content="База данных <%=databaseName%>">
+            <script src="/static/js/database_data.js" type="module" nonce="<%=res.cspNonce.script%>"></script>
+        <% }
+        else
+        { %>
+            <title><%=req.params.schemaname%>.<%=req.params.tablename%></title>
+            <meta name="description" content="Таблица <%=req.params.schemaname%>.<%=req.params.tablename%>">
+            <script src="/static/js/table_data.js" type="module" nonce="<%=res.cspNonce.script%>"></script>
+        <% } %>
+        <%- include("./general/head.ejs", locals) %>
+    </head>
+    <body>
+        <%- include("./general/nav.ejs", locals) %>
+        
+        <div class="main_body">
+            <%- include("./general/header.ejs", locals) %>
+            <main tabindex="-1">
+    
+            </main>
+        </div>
+    </body>
+</html>

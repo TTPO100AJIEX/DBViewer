@@ -27,8 +27,8 @@ function register_security_plugins(app, options, done)
                 //"media-src": [ "'self'" ],
                 //"object-src": [ "'self'" ],
                 //"prefetch-src": [ "'self'" ],
-                "script-src": [ "'strict-dynamic'", "'self'", "'report-sample'" ],
-                "style-src": [ "'self'", "https://fonts.googleapis.com", "'report-sample'" ],
+                "script-src": [ "'strict-dynamic'", "https://www.gstatic.com", "'self'", "'report-sample'" ],
+                "style-src": [ "'self'", "https://fonts.googleapis.com", "https://www.gstatic.com", "'report-sample'" ],
                 //"worker-src": [ "'self'" ],
     
                 "base-uri": [ "'none'" ],
