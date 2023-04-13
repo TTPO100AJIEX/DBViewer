@@ -462,9 +462,10 @@
 
 @layer body
 {
-    body { background-color: var(--background-color); min-height: 100vh; display: flex; gap: 1px; container-type: inline-size; container-name: body; }
-
-    .main_body { flex-grow: 2; container-type: inline-size; container-name: main_body; }
+    body { background-color: var(--background-color); height: 100vh; display: flex; gap: 1px; container-type: inline-size; container-name: body; }
+    .main_body { flex-grow: 2; container-type: inline-size; container-name: main_body; display: flex; flex-direction: column; }
+    main { overflow: auto; max-width: 100%; }
+    main > *:not(table) { position: sticky; left: 0; }
 }
 
 @layer header
@@ -496,4 +497,11 @@
 {
     .graphs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(600px, 100%), 1fr)); column-gap: var(--margin-horizontal-regular); row-gap: var(--margin-vertical-large); }
     .graphs > div { aspect-ratio: 5/3; min-height: 0; padding: var(--padding-vertical-small) 0; }
+}
+
+table
+{
+    background: darkblue;
+    width: 2000px;
+    height: 1000px;
 }
