@@ -197,8 +197,8 @@
 
 @layer surface
 {
-    .surface { display: block; padding: var(--padding-huge); background-color: var(--surface-color); box-shadow: 0px 0px 0px 1px var(--shadow-color); border-radius: var(--border-radius-regular); }
-    .surface_no_border { display: block; padding: var(--padding-huge); background-color: var(--surface-color); box-shadow: 0px 0px 0px 1px var(--shadow-color); }
+    .surface, .surface_rounded { display: block; padding: var(--padding-huge); background-color: var(--surface-color); box-shadow: 0px 0px 0px 1px var(--shadow-color); }
+    .surface_rounded { border-radius: var(--border-radius-regular); }
 }
 
 @layer headings
@@ -282,13 +282,13 @@
         .dropdown_arrow, .dropdown_arrow_horizontal { display: flex; align-items: center; gap: var(--horizontal-sizing-regular); }
         :is(.dropdown_arrow, .dropdown_arrow_horizontal)::after
         {
-            content: ''; margin-left: auto; scale: 1; --transitioned: scale; flex-shrink: 0;
+            content: ''; margin-left: auto; rotate:01; --transitioned: rotate; flex-shrink: 0;
             height: 0.75em; width: 0.75em; border-width: 3px; border-style: solid; border-color: transparent currentColor currentColor transparent;
         }
         .dropdown_arrow::after { transform: translateY(-35%) rotate(45deg); }
         .dropdown_arrow_horizontal::after { transform: translateX(-35%) rotate(-45deg); }
 
-        .dropdown_opened::after { scale: -1; }
+        .dropdown_opened::after { rotate: 180deg; }
     }
     @layer window
     {
@@ -378,6 +378,8 @@
 /*----------------------PADDING/SIZING----------------------*/
 @layer padding
 {
+    .padding_none { padding: 0; }
+
     .padding_vertical_small    { padding-top: var(--padding-vertical-small);    padding-bottom: var(--padding-vertical-small);    }
     .padding_vertical_regular  { padding-top: var(--padding-vertical-regular);  padding-bottom: var(--padding-vertical-regular);  }
     .padding_vertical_medium   { padding-top: var(--padding-vertical-medium);   padding-bottom: var(--padding-vertical-medium);   }
@@ -469,7 +471,7 @@
 {
     header { position: sticky; top: 0; z-index: 3; }
 
-    @layer top_level_header
+    @layer main_body_header
     {
         .main_body > header { display: grid; grid-template-columns: auto 1fr auto; column-gap: var(--horizontal-sizing-huge); row-gap: var(--vertical-sizing-regular); }
         .main_body > header .userinfo { line-height: normal; }
@@ -492,6 +494,6 @@
 
 @layer graphs
 {
-    .graphs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(600px, 100%), 1fr)); column-gap: var(--margin-horizontal-regular); row-gap: var(--margin-vertical-regular); }
-    .graphs > div { aspect-ratio: 5/3; min-height: 0; }
+    .graphs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(600px, 100%), 1fr)); column-gap: var(--margin-horizontal-regular); row-gap: var(--margin-vertical-large); }
+    .graphs > div { aspect-ratio: 5/3; min-height: 0; padding: var(--padding-vertical-small) 0; }
 }

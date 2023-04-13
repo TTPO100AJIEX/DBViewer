@@ -1,4 +1,4 @@
-<nav class="surface_no_border closed" id="navigation">
+<nav class="surface closed" id="navigation">
     <h2 class="block_minheight">Навигация</h2>
     <menu class="no_bullets margin_vertical_enormous">
         <li class="desktop_hidden"><button class="control_empty maxwidth text_align_left navigation_closer" href="#">Закрыть меню</div></li>
@@ -12,9 +12,8 @@
             <menu id="nav_tables_dropdown" class="no_bullets dropdown_inplace" tabindex="-1">
                 <% for (const table of tables)
                 {
-                    const name = table.schemaname == "public" ? table.tablename : table.schemaname + table.tablename;
-                    if (req.params.schemaname == table.schemaname && req.params.tablename == table.tablename) { %> <li><div class="control_empty maxwidth"><%=name%></div></li> <% }
-                    else { %> <li><a class="control_block maxwidth" href="/table/<%=table.schemaname%>/<%=table.tablename%>"><%=name%></a></li> <% }
+                    if (req.query.id == table.id) { %> <li><div class="control_empty maxwidth"><%=table.name%></div></li> <% }
+                    else { %> <li><a class="control_block maxwidth" href="/table?id=<%=table.id%>"><%=table.name%></a></li> <% }
                 } %>
             </menu>
         </li>

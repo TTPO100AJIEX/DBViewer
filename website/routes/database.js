@@ -6,7 +6,9 @@ async function get_database(req, res)
 
     const [ { current_database: databaseName }, tables ] = await TargetDatabase.query_multiple([
         { query: `SELECT current_database()`, one_response: true },
-        `SELECT schemaname, tablename FROM pg_tables WHERE schemaname != 'information_schema' AND NOT starts_with(schemaname, 'pg_')`
+        `SELECT pg_class.oid AS id, (CASE WHEN pg_namespace.nspname = 'public' THEN '' ELSE pg_namespace.nspname || '.' END) || pg_class.relname AS name
+        FROM pg_class INNER JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace
+        WHERE (pg_class.relkind = 'r' OR pg_class.relkind = 'v' OR pg_class.relkind = 'm') AND pg_namespace.nspname != 'information_schema' AND NOT starts_with(pg_namespace.nspname, 'pg_')`
     ]);
     
     if (req.routerPath == "/database") return res.render("database.ejs", { databaseName, tables });
@@ -15,6 +17,7 @@ async function get_database(req, res)
 
 
 import get_database_data from "./data/database_data.js";
+import get_table_data from "./data/table_data.js";
 
 async function websocket_data(connection, req)
 {
@@ -22,6 +25,10 @@ async function websocket_data(connection, req)
         database_data:
         {
             get: get_database_data
+        },
+        table_data:
+        {
+            get: get_table_data
         }
     };
 

@@ -38,7 +38,7 @@ socket.addEventListener("message", message =>
                                     config.update_interval,
                                     "Изменения записей",
                                     "Количество записей",
-                                    { inserted: "Добавленных", updated: "Обновлённых", deleted: "Удалённых"}),
+                                    { inserted: "Добавленных", updated: "Обновлённых", deleted: "Удалённых" }),
                 blocks: new Chart(  "blocks_graph",
                                     config.graph_records,
                                     config.update_interval,

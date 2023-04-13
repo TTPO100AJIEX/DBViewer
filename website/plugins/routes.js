@@ -19,7 +19,7 @@ function register_routes(app, options, done)
     app.get("/", { schema: SCHEMAS.EMPTY_GET, config: { access: "public" } }, get_main);
     
     app.get("/database", { schema: SCHEMAS.EMPTY_GET, config: { access: "authorization" } }, get_database);
-    app.get("/table/:schemaname/:tablename", { schema: SCHEMAS.TABLE_GET, config: { access: "authorization" } }, get_database);
+    app.get("/table", { schema: SCHEMAS.TABLE_GET, config: { access: "authorization" } }, get_database);
     app.get("/data", { websocket: true, config: { access: "authorization" } }, websocket_data);
     
     done();

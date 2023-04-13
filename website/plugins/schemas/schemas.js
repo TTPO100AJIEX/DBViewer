@@ -7,15 +7,14 @@ export default {
     },
     TABLE_GET:
     {
-        params:
+        query:
         {
             type: "object",
-            required: [ "schemaname", "tablename" ],
+            required: [ "id" ],
             additionalProperties: false,
             properties:
             {
-                "schemaname": { type: "string" },
-                "tablename": { type: "string" }
+                "id": { type: "integer" }
             }
         }
     }

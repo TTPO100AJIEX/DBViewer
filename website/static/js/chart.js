@@ -33,6 +33,7 @@ export default class Chart
             purple: styles.getPropertyValue("--chart-purple").replaceAll(" ", "")
         };
         this.#options = {
+            chartArea: { top: '15%', height: '65%' },
             backgroundColor: 'transparent', fontSize: 16, focusTarget: "category",
             colors: [ colors.red, colors.yellow, colors.purple ],
             hAxis:
