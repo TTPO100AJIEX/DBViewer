@@ -32,7 +32,7 @@
                     <div class="surface_rounded" id="updates_graph"></div>
                     <div class="surface_rounded" id="live_graph"></div>
                 </div>
-                <table>
+                <table class="data_table">
                     <thead>
                         <tr>
                             <% for (const column of columns)
@@ -40,12 +40,11 @@
                                 <th>
                                     <button>
                                         <span><%=column.name%></span><br>
-                                        <span class="text_size_small">
+                                        <span>
                                             <%=Object.entries(column.flags).filter(flag => flag[1]).map(flag => `[${flag[0].toUpperCase()}]`).join(' ')%>
                                             <%=column.type.name%>
                                         </span>
                                     </button>
-
                                     <!--  {
                                                 name: 'subscription_duration',
                                                 enumlabels: null,
@@ -72,16 +71,16 @@
                             <% } %>
                         </tr>
                     </thead>
-                    <tbody>
-                        <% for (let i = 0; i < 1000; i++)
-                        { %>
+                    <tbody data-type="insert"></tbody>
+                    <tbody data-type="display"></tbody>
+                    <template data-type="row">
                         <tr>
-                            <td>1</td>
-                            <td>2</td>
-                            <td>3</td>
+                            <% for (const column of columns)
+                            { %>
+                                <td> <%- include("./general/input.ejs", { ...locals, column, identityType: 'body' }) %> </td>
+                            <% } %>
                         </tr>
-                        <% } %>
-                    </tbody>
+                    </template>
                 </table>
             </main>
         </div>

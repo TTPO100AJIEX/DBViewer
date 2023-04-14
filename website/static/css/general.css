@@ -185,39 +185,18 @@
     hr { margin: var(--margin-vertical-small) 0; border: none; background-color: var(--text-major-color); height: 1px; }
 
 
-    table { min-width: 100%; background: var(--surface-color); box-shadow: 0px 0px 0px 1px var(--shadow-color); table-layout: fixed; border-collapse: collapse; }
-    table thead { position: sticky; top: calc(-1 * var(--padding-vertical-large)); background: var(--color-red); z-index: 1; }
+    table { min-width: 100%; box-shadow: 0px 0px 0px 1px var(--shadow-color); table-layout: fixed; border-collapse: collapse; }
+    table thead { position: sticky; top: calc(-1 * var(--padding-vertical-large)); background: var(--surface-color); z-index: 2; }
     table :is(th, td) { position: relative; }
+
+    /*table th:first-child { border-top-left-radius: var(--border-radius-regular); }
+    table th:last-child { border-top-right-radius: var(--border-radius-regular); }*/
 
     table tr > * { border: thin solid var(--border-color); }
     table > :first-child > :first-child > * { border-top: none; }
     table tr > :first-child { border-left: none; }
     table tr > :last-child { border-right: none; }
 
-    /*table th:first-child { border-top-left-radius: var(--border-radius-regular); }
-    table th:last-child { border-top-right-radius: var(--border-radius-regular); }*/
-
-    /*table { min-width: calc(100% - 2 * var(--font-size-1-0)); table-layout: fixed; border-collapse: collapse; font-size: var(--font-size-0-9); margin: var(--font-size-1-0); }
-    table * { text-align: center; vertical-align: middle; }
-    table :is(th, td) { position: relative; border: thin solid var(--border-color); height: 40px; min-width: 150px; }
-    table :is(th, td) > * { width: calc(100% - 6px); }
-    table :is(th, td) > *:not(button), table th > button { background: transparent; color: var(--text-1-color); }
-    table :is(th, td) > *:not(button, select), table th > button { border: none; }
-    table td > button { height: unset; min-height: unset; margin: calc(var(--font-size-1-0) / 2) var(--font-size-1-0); width: calc(100% - 2 * var(--font-size-1-0)); white-space: nowrap; }
-
-
-    table td { background: var(--surface-color); }
-    table td > *, table th > button { height: calc(100% - 6px); }
-
-    table :is(th, td):first-of-type { width: 150px; min-width: 150px; }
-    table td:first-of-type > button
-    {
-        width: min-content; min-width: unset; position: absolute; top: 0; left: 0; margin: calc(var(--font-size-1-0) / 2);
-        background: unset; font-size: var(--font-size-1-5); line-height: 0; padding: calc(var(--font-size-1-0) / 2.00);
-    }
-
-    table select { border-right: var(--font-size-0-9) solid transparent; }
-    table td > select > option { color: var(--text-1-color); }*/
 
     [hidden], input[type=hidden] { display: none !important; content-visibility: hidden !important; }
     @media (min-width: 1000px)
@@ -297,12 +276,17 @@
     {
         input, textarea, select
         {
-            display: block; width: 100%; min-width: 175px; padding: var(--padding-regular); margin: 4px 0; resize: vertical; min-height: var(--interactive-min-height);
+            display: block; width: 100%; min-width: 175px; padding: var(--padding-regular); margin: 4px 0; min-height: var(--interactive-min-height);
             font-size: var(--font-size-small); background-color: var(--background-color); border: thin solid var(--border-color); border-radius: var(--border-radius-regular);
         }
         ::placeholder { color: var(--text-placeholder-color); opacity: 1; }
         :is(input, select, textarea):disabled { text-align: center; border: thin solid var(--brand-color); opacity: 1; }
         :is(input, select, textarea):invalid { border: thin solid var(--color-red); }
+        select { border: none; border-right: 1ch solid transparent !important; box-shadow: 0 0 0 1px var(--border-color); }
+        @-moz-document url-prefix()
+        {
+            select { padding-top: calc(var(--padding-vertical-regular) + 0.33em); }
+        }
     }
     @layer default
     {
@@ -532,4 +516,23 @@
 {
     .graphs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(500px, 100%), 1fr)); column-gap: var(--margin-horizontal-regular); row-gap: var(--margin-vertical-large); }
     .graphs > div { aspect-ratio: 5/3; min-height: 0; padding: var(--padding-vertical-small) 0; }
+}
+@layer data_table
+{
+    .data_table :is(th, td) > *
+    {
+        border-radius: 0;
+        margin: 4px;
+        border: none;
+        box-shadow: none;
+        height: 100%;
+        width: calc(100% - 8px);
+    }
+
+    /*table :is(th, td):first-of-type { width: 150px; min-width: 150px; }
+    table td:first-of-type > button
+    {
+        width: min-content; min-width: unset; position: absolute; top: 0; left: 0; margin: calc(var(--font-size-1-0) / 2);
+        background: unset; font-size: var(--font-size-1-5); line-height: 0; padding: calc(var(--font-size-1-0) / 2.00);
+    }*/
 }

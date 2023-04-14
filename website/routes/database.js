@@ -27,7 +27,7 @@ async function get_table(req, res)
         {
             query: PostgreSQL.format(`WITH enums (enumtypid, enumlabels) AS ( SELECT enumtypid, array_agg(enumlabel::text) AS enumlabels FROM pg_enum GROUP BY enumtypid ) SELECT
                     pg_attribute.attname AS name, pg_attribute.atttypid AS type_id, pg_attribute.atttypmod AS type_mod, format_type(pg_attribute.atttypid, pg_attribute.atttypmod) AS type_name,
-                    pg_attribute.attidentity = 'a' AS flags_IA, pg_attribute.attidentity = 'a' AS flags_ID,
+                    pg_attribute.attidentity = 'a' AS flags_IA, pg_attribute.attidentity = 'd' AS flags_ID,
                     pg_attribute.attnotnull AS flags_NN, pg_attribute.atthasdef AS flags_D, (pg_attribute.attgenerated = 's') AS flags_G,
                     EXISTS( SELECT * FROM pg_constraint WHERE conrelid = pg_class.oid AND pg_attribute.attnum = ANY(pg_constraint.conkey) AND contype = 'u' ) AS flags_U,
                     EXISTS( SELECT * FROM pg_constraint WHERE conrelid = pg_class.oid AND pg_attribute.attnum = ANY(pg_constraint.conkey) AND contype = 'p' ) AS flags_PK,
