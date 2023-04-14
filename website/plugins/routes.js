@@ -3,7 +3,7 @@ import fastify_plugin from 'fastify-plugin';
 import SCHEMAS from "./schemas/schemas.js";
 
 import { get_main, post_oauth, get_logout } from '../routes/main.js';
-import { get_database, websocket_data } from '../routes/database.js';
+import { get_database, get_table, websocket_data } from '../routes/database.js';
 
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -19,7 +19,7 @@ function register_routes(app, options, done)
     app.get("/", { schema: SCHEMAS.EMPTY_GET, config: { access: "public" } }, get_main);
     
     app.get("/database", { schema: SCHEMAS.EMPTY_GET, config: { access: "authorization" } }, get_database);
-    app.get("/table", { schema: SCHEMAS.TABLE_GET, config: { access: "authorization" } }, get_database);
+    app.get("/table", { schema: SCHEMAS.TABLE_GET, config: { access: "authorization" } }, get_table);
     app.get("/data", { websocket: true, config: { access: "authorization" } }, websocket_data);
     
     done();

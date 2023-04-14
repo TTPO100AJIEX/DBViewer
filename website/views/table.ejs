@@ -35,17 +35,52 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>1</th>
-                            <th>2</th>
-                            <th>3</th>
+                            <% for (const column of columns)
+                            { %>
+                                <th>
+                                    <button>
+                                        <span><%=column.name%></span><br>
+                                        <span class="text_size_small">
+                                            <%=Object.entries(column.flags).filter(flag => flag[1]).map(flag => `[${flag[0].toUpperCase()}]`).join(' ')%>
+                                            <%=column.type.name%>
+                                        </span>
+                                    </button>
+
+                                    <!--  {
+                                                name: 'subscription_duration',
+                                                enumlabels: null,
+                                                type: { id: 1186, mod: -1, name: 'interval' },
+                                                flag: {
+                                                ia: false,
+                                                id: false,
+                                                nn: false,
+                                                d: false,
+                                                g: false,
+                                                u: false,
+                                                pk: false
+                                                }
+                                            }
+                                            <div class="column_settings hidden" tabindex="-1">
+                                        include("./general/renderInput.ejs", { ...locals, column, identityType: 'head' })
+                                        <select class="sortOrder" data-column="<%=column.attname%>">
+                                            <option value="asc">По возрастанию</option>
+                                            <option value="desc">По убыванию</option>
+                                            <option value="no" selected>Без сортировки</option>
+                                        </select>
+                                    </div>-->
+                                </th>
+                            <% } %>
                         </tr>
                     </thead>
                     <tbody>
+                        <% for (let i = 0; i < 1000; i++)
+                        { %>
                         <tr>
                             <td>1</td>
                             <td>2</td>
                             <td>3</td>
                         </tr>
+                        <% } %>
                     </tbody>
                 </table>
             </main>

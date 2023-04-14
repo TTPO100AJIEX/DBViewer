@@ -28,19 +28,19 @@
         
         --scrollbar-color: hsla(214, 95%, 50%, 0.85);
 
-        --color-red: hsl(353, 90%, 50%);
-        --color-yellow: hsl(47, 90%, 50%);
-        --color-purple: hsl(302, 90%, 50%);
+        --color-red: hsl(353, 90%, 60%);
+        --color-yellow: hsl(47, 90%, 60%);
+        --color-purple: hsl(302, 90%, 60%);
 
         --chart-brand: #0d70f2;
-        --chart-border: hsl(214, 3%, 55%);
-        --chart-shadow: hsl(214, 15%, 30%);
+        --chart-border: #898c90;
+        --chart-shadow: #414b58;
         --chart-text-brand: #86b8f9;
         --chart-text-major: #ffffff;
         --chart-text-minor: #bcbfc2;
-        --chart-red: #f20d28;
-        --chart-yellow: #f2c10d;
-        --chart-purple: #f20deb;
+        --chart-red: #f53d53;
+        --chart-yellow: #f5cd3d;
+        --chart-purple: #f53def; 
         
         accent-color: var(--brand-color); color-scheme: light dark;
 
@@ -183,6 +183,41 @@
     strong { font-weight: 700; }
 
     hr { margin: var(--margin-vertical-small) 0; border: none; background-color: var(--text-major-color); height: 1px; }
+
+
+    table { min-width: 100%; background: var(--surface-color); box-shadow: 0px 0px 0px 1px var(--shadow-color); table-layout: fixed; border-collapse: collapse; }
+    table thead { position: sticky; top: calc(-1 * var(--padding-vertical-large)); background: var(--color-red); z-index: 1; }
+    table :is(th, td) { position: relative; }
+
+    table tr > * { border: thin solid var(--border-color); }
+    table > :first-child > :first-child > * { border-top: none; }
+    table tr > :first-child { border-left: none; }
+    table tr > :last-child { border-right: none; }
+
+    /*table th:first-child { border-top-left-radius: var(--border-radius-regular); }
+    table th:last-child { border-top-right-radius: var(--border-radius-regular); }*/
+
+    /*table { min-width: calc(100% - 2 * var(--font-size-1-0)); table-layout: fixed; border-collapse: collapse; font-size: var(--font-size-0-9); margin: var(--font-size-1-0); }
+    table * { text-align: center; vertical-align: middle; }
+    table :is(th, td) { position: relative; border: thin solid var(--border-color); height: 40px; min-width: 150px; }
+    table :is(th, td) > * { width: calc(100% - 6px); }
+    table :is(th, td) > *:not(button), table th > button { background: transparent; color: var(--text-1-color); }
+    table :is(th, td) > *:not(button, select), table th > button { border: none; }
+    table td > button { height: unset; min-height: unset; margin: calc(var(--font-size-1-0) / 2) var(--font-size-1-0); width: calc(100% - 2 * var(--font-size-1-0)); white-space: nowrap; }
+
+
+    table td { background: var(--surface-color); }
+    table td > *, table th > button { height: calc(100% - 6px); }
+
+    table :is(th, td):first-of-type { width: 150px; min-width: 150px; }
+    table td:first-of-type > button
+    {
+        width: min-content; min-width: unset; position: absolute; top: 0; left: 0; margin: calc(var(--font-size-1-0) / 2);
+        background: unset; font-size: var(--font-size-1-5); line-height: 0; padding: calc(var(--font-size-1-0) / 2.00);
+    }
+
+    table select { border-right: var(--font-size-0-9) solid transparent; }
+    table td > select > option { color: var(--text-1-color); }*/
 
     [hidden], input[type=hidden] { display: none !important; content-visibility: hidden !important; }
     @media (min-width: 1000px)
@@ -495,13 +530,6 @@
 
 @layer graphs
 {
-    .graphs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(600px, 100%), 1fr)); column-gap: var(--margin-horizontal-regular); row-gap: var(--margin-vertical-large); }
+    .graphs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(500px, 100%), 1fr)); column-gap: var(--margin-horizontal-regular); row-gap: var(--margin-vertical-large); }
     .graphs > div { aspect-ratio: 5/3; min-height: 0; padding: var(--padding-vertical-small) 0; }
-}
-
-table
-{
-    background: darkblue;
-    width: 2000px;
-    height: 1000px;
 }

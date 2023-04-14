@@ -37,6 +37,7 @@ export default class Chart
             title: title, titleTextStyle: { fontSize: 21, color: colors.text_major },
             vAxis:
             {
+                format: "short",
                 textStyle: { color: colors.text_minor }, title: vAxisTitle, titleTextStyle: { fontSize: 18, color: colors.text_brand },
                 gridlines: { color: colors.border }, minorGridlines: { color: colors.shadow }
             }

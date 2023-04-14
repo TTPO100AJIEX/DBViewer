@@ -18,7 +18,7 @@ socket.addEventListener("message", message =>
                 connections: new Chart( "connections_graph",
                                         config.graph_records,
                                         config.update_interval,
-                                        "Активные и бездействующие соединения",
+                                        "Соединения",
                                         "Количество соединений",
                                         { active: "Активные", idle: "Бездействующие" }),
                 queries: new Chart( "queries_graph",
