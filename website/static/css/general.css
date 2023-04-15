@@ -185,17 +185,17 @@
     hr { margin: var(--margin-vertical-small) 0; border: none; background-color: var(--text-major-color); height: 1px; }
 
 
-    table { min-width: 100%; box-shadow: 0px 0px 0px 1px var(--shadow-color); table-layout: fixed; border-collapse: collapse; }
-    table thead { position: sticky; top: calc(-1 * var(--padding-vertical-large)); background: var(--surface-color); z-index: 2; }
+    table { min-width: 100%; border-spacing: 0; }
+    table thead { position: sticky; z-index: 2; top: calc(-1 * var(--padding-vertical-large)); background: var(--surface-color); filter: drop-shadow(0 -10px 0px var(--background-color)); }
     table :is(th, td) { position: relative; }
 
-    /*table th:first-child { border-top-left-radius: var(--border-radius-regular); }
-    table th:last-child { border-top-right-radius: var(--border-radius-regular); }*/
+    table th:first-child { border-top-left-radius: var(--border-radius-regular); }
+    table th:last-child { border-top-right-radius: var(--border-radius-regular); }
 
-    table tr > * { border: thin solid var(--border-color); }
-    table > :first-child > :first-child > * { border-top: none; }
-    table tr > :first-child { border-left: none; }
-    table tr > :last-child { border-right: none; }
+    table tr > * { border-bottom: thin solid var(--border-color); border-right: thin solid var(--border-color); }
+    table > :first-child > :first-child > * { border-top: thin solid var(--shadow-color); }
+    table tr > :last-child { border-right: thin solid var(--shadow-color); }
+    table tr > :first-child { border-left: thin solid var(--shadow-color); }
 
 
     [hidden], input[type=hidden] { display: none !important; content-visibility: hidden !important; }
@@ -272,6 +272,10 @@
 
 @layer forms
 {
+    @layer labels
+    {
+        label { display: block; }
+    }
     @layer elements
     {
         input, textarea, select
@@ -288,7 +292,7 @@
             select { padding-top: calc(var(--padding-vertical-regular) + 0.33em); }
         }
     }
-    @layer default
+    @layer forms
     {
         form { display: flex; flex-direction: column; justify-content: stretch; gap: var(--vertical-sizing-regular); }
     }
@@ -301,7 +305,7 @@
         .dropdown_arrow, .dropdown_arrow_horizontal { display: flex; align-items: center; gap: var(--horizontal-sizing-regular); }
         :is(.dropdown_arrow, .dropdown_arrow_horizontal)::after
         {
-            content: ''; margin-left: auto; rotate:01; --transitioned: rotate; flex-shrink: 0;
+            content: ''; margin-left: auto; rotate: 0deg; --transitioned: rotate; flex-shrink: 0;
             height: 0.75em; width: 0.75em; border-width: 3px; border-style: solid; border-color: transparent currentColor currentColor transparent;
         }
         .dropdown_arrow::after { transform: translateY(-35%) rotate(45deg); }
@@ -312,9 +316,13 @@
     @layer window
     {
         .dropdown_inplace { border-radius: var(--border-radius-regular); }
-        
-        .dropdown_nobg, .dropdown_bg { position: absolute; z-index: 5; filter: drop-shadow(0 0 10px var(--background-color)); border-radius: var(--border-radius-regular); min-width: 150px; width: max-content; max-width: min(100%, 96vw, 250px);  }
-        .dropdown_bg { background-color: var(--surface-color); border: thin solid var(--brand-color); padding: var(--padding-medium); }
+    
+        .dropdown_nobg, .dropdown_bg
+        {
+            position: absolute; z-index: 5; display: block; min-width: 175px; width: max-content; max-width: min(100%, 96vw, 250px);
+            padding: var(--padding-medium); filter: drop-shadow(0 0 10px var(--background-color)); border-radius: var(--border-radius-regular); 
+        }
+        .dropdown_bg { background-color: var(--surface-color); box-shadow: 0px 0px 0px 1px var(--shadow-color); }
         .dropdown_nobg { max-height: min(calc(100vh - 100px), max(300px, calc(50vh - 66px))); overflow-y: auto; }
     }
     @layer custom
@@ -322,13 +330,13 @@
         /*----------------------MENU OPENER----------------------*/
         @layer menu
         {
-            .menu_button
+            .striped_button
             {
                 background: transparent; border: none; padding: 0; height: 40px; width: 40px;
-                display: flex; flex-direction: column; justify-content: space-evenly; align-items: center;
+                display: inline-flex; flex-direction: column; justify-content: space-evenly; align-items: center;
             }
-            .menu_button > div { background: var(--text-major-color); border-radius: var(--border-radius-small); width: 80%; height: 4px; }
-            .menu_button:hover > div { background: var(--brand-color); }
+            .striped_button > span { background: var(--text-major-color); border-radius: var(--border-radius-small); width: 80%; height: 4px; }
+            .striped_button:hover > span { background: var(--brand-color); }
         }
     }
 }
@@ -390,7 +398,8 @@
 
     .centered { margin-left: auto; margin-right: auto; }
 
-    .flex { display: flex; gap: var(--horizontal-sizing-regular); align-items: center; }
+    .flex_horizontal { display: flex; gap: var(--horizontal-sizing-regular); align-items: center; }
+    .flex_vertical { display: flex; flex-direction: column; gap: var(--vertical-sizing-regular); }
     .flex_fill { flex-grow: 2; }
 }
 
@@ -519,20 +528,21 @@
 }
 @layer data_table
 {
-    .data_table :is(th, td) > *
-    {
-        border-radius: 0;
-        margin: 4px;
-        border: none;
-        box-shadow: none;
-        height: 100%;
-        width: calc(100% - 8px);
-    }
+    .data_table :is(th, td) > *:is(input, button, textarea, select) { border: none; border-radius: 0; box-shadow: none; margin: 4px; height: 100%; width: calc(100% - 8px); }
 
-    /*table :is(th, td):first-of-type { width: 150px; min-width: 150px; }
-    table td:first-of-type > button
-    {
-        width: min-content; min-width: unset; position: absolute; top: 0; left: 0; margin: calc(var(--font-size-1-0) / 2);
-        background: unset; font-size: var(--font-size-1-5); line-height: 0; padding: calc(var(--font-size-1-0) / 2.00);
-    }*/
+
+    .data_table thead .dropdown_opener * { text-decoration: underline; text-decoration-color: transparent; }
+    .data_table thead .dropdown_opener:hover { text-decoration-color: transparent; }
+    .data_table thead .dropdown_opener:hover * { text-decoration-color: currentColor; }
+    
+    .data_table thead .dropdown_arrow { display: grid; grid-template-columns: minmax(max-content, 1fr) auto; grid-template-rows: 1fr 1fr; row-gap: 0; }
+    .data_table thead .dropdown_arrow::after { grid-row: 1 / -1; grid-column: 2; margin-left: auto; }
+
+    .data_table thead .dropdown_inplace { border-radius: 0; padding: var(--padding-medium); }
+    .data_table thead .dropdown_inplace :is(input, textarea, select) { min-width: calc(175px - 2 * var(--padding-horizontal-medium)); }
+
+
+    .data_table [data-identity] { position: sticky; left: calc(-1 * var(--padding-horizontal-large)); z-index: 1; background: var(--surface-color); filter: drop-shadow(-10px 0px 0px var(--background-color)); }
+    .data_table tbody [data-identity] > div { display: flex; align-items: center; justify-content: end; gap: var(--padding-horizontal-regular); padding: 0 var(--padding-horizontal-regular); }
+    .data_table tbody [data-identity] button { min-height: unset; height: 40px; width: unset; aspect-ratio: 1/1; }
 }

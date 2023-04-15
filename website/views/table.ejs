@@ -32,42 +32,40 @@
                     <div class="surface_rounded" id="updates_graph"></div>
                     <div class="surface_rounded" id="live_graph"></div>
                 </div>
-                <table class="data_table">
+                <table id="data_table" class="data_table" data-tableid="<%=req.query.id%>">
                     <thead>
                         <tr>
+                            <th class="text_align_center" data-identity>№</th>
                             <% for (const column of columns)
                             { %>
                                 <th>
-                                    <button>
-                                        <span><%=column.name%></span><br>
-                                        <span>
+                                    <button class="text_size_regular dropdown_opener dropdown_arrow" data-dropdown="data_table_head_<%=column.name%>">
+                                        <span><%=column.name%></span>
+                                        <span class="text_minor text_size_small">
                                             <%=Object.entries(column.flags).filter(flag => flag[1]).map(flag => `[${flag[0].toUpperCase()}]`).join(' ')%>
                                             <%=column.type.name%>
                                         </span>
                                     </button>
-                                    <!--  {
-                                                name: 'subscription_duration',
-                                                enumlabels: null,
-                                                type: { id: 1186, mod: -1, name: 'interval' },
-                                                flag: {
-                                                ia: false,
-                                                id: false,
-                                                nn: false,
-                                                d: false,
-                                                g: false,
-                                                u: false,
-                                                pk: false
-                                                }
-                                            }
-                                            <div class="column_settings hidden" tabindex="-1">
-                                        include("./general/renderInput.ejs", { ...locals, column, identityType: 'head' })
-                                        <select class="sortOrder" data-column="<%=column.attname%>">
-                                            <option value="asc">По возрастанию</option>
-                                            <option value="desc">По убыванию</option>
-                                            <option value="no" selected>Без сортировки</option>
-                                        </select>
-                                    </div>-->
                                 </th>
+                            <% } %>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <% for (const column of columns)
+                            { %>
+                                <td>
+                                    <div id="data_table_head_<%=column.name%>" class="dropdown_inplace flex_vertical" tabindex="-1" hidden>
+                                        <label> Поиск: <%- include("./general/input.ejs", { ...locals, column, identityType: 'head' }) %> </label>
+                                        <label>
+                                            Сортировка:
+                                            <select class="sortOrder" data-column="<%=column.attname%>">
+                                                <option value="asc">По возрастанию</option>
+                                                <option value="desc">По убыванию</option>
+                                                <option value="no" selected>Без сортировки</option>
+                                            </select>
+                                        </label>
+                                    </div>
+                                </td>
                             <% } %>
                         </tr>
                     </thead>
@@ -75,10 +73,21 @@
                     <tbody data-type="display"></tbody>
                     <template data-type="row">
                         <tr>
-                            <% for (const column of columns)
-                            { %>
-                                <td> <%- include("./general/input.ejs", { ...locals, column, identityType: 'body' }) %> </td>
-                            <% } %>
+                            <td>
+                                <template data-type="insert">
+                                    <div>
+                                        <button class="striped_button" title="Удалить строку" hidden><span></span></button>
+                                        <span>Новый</span>
+                                    </div>
+                                </template>
+                                <template data-type="display">
+                                    <div>
+                                        <button class="striped_button" title="Удалить строку"><span></span></button>
+                                        <span>1</span>
+                                    </div>
+                                </template>
+                            </td>
+                            <% for (const column of columns) { %> <td> <%- include("./general/input.ejs", { ...locals, column, identityType: 'body' }) %> </td> <% } %>
                         </tr>
                     </template>
                 </table>

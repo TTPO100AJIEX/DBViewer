@@ -1,10 +1,10 @@
 <header class="surface">
 
-    <div class="siteinfo flex">
+    <div class="siteinfo flex_horizontal">
         <% if (locals.has_nav)
         { %>
-            <button class="menu_button navigation_opener desktop_hidden" aria-label="Развернуть меню навигации">
-                <div></div><div></div><div></div>
+            <button class="striped_button navigation_opener desktop_hidden" title="Развернуть меню навигации">
+                <span></span><span></span><span></span>
             </button>
         <% } %>
         <div class="userinfo text_nowrap">
@@ -16,7 +16,7 @@
     <div class="navigation"></div>
 
     <div class="controls">
-        <button class="control_empty padding_regular_wide" hidden>Сохранить</button>
+        <button id="save_changes" class="control_empty padding_regular_wide" hidden>Сохранить</button>
         <a href="/logout" class="control_empty padding_regular_wide">Выйти</a>
     </div>
 </header>

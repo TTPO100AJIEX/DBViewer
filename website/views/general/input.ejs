@@ -1,48 +1,42 @@
-<% function parseDisplayType(column)
+<%
+let attributes = `name="${column.name}" data-column="${column.name}"`;
+
+if (column.type.id == 16 || column.enumlabels) attributes += `data-comparison="exact"`;
+else attributes += `data-comparison="substring"`;
+
+if (column.flags.ia || column.flags.id) attributes += "disabled";
+
+switch (column.type.id)
 {
-    if (column.flags.ia || column.flags.id) return 'identity';
-    if (column.enumlabels) return 'enum';
-    return column.type.id;
-}
-switch (parseDisplayType(column))
-{
-    case 'identity':
+    case 16: { %> <input type="checkbox" <%=attributes%>> <% break; }
+    
+    case 20: { %> <input type="number" placeholder="Введите число" step="1" min="-9223372036854775807" max="9223372036854775807" <%=attributes%>> <% break; }
+    case 21: { %> <input type="number" placeholder="Введите число" step="1" min="-32767 " max="32767 " <%=attributes%>> <% break; }
+    case 23: { %> <input type="number" placeholder="Введите число" step="1" min="-2147483648" max="2147483648" <%=attributes%>> <% break; }
+    case 700: case 701: case 1700: { %> <input type="number" placeholder="Введите число" <%=attributes%>> <% break; }
+    
+
+    case 1114: case 1184: { %> <input type="datetime-local" placeholder="Введите дату и время" <%=attributes%>> <% break; }
+    case 1082: { %> <input type="date" placeholder="Введите дату" <%=attributes%>> <% break; }
+    case 1083: case 1266: { %> <input type="time" placeholder="Введите время" <%=attributes%>> <% break; }
+
+
+    case 18: case 1043: { %> <input type="text" placeholder="Введите данные" maxlength="<%=column.type.mod - 4%>" <%=attributes%>> <% break; }
+    default:
     {
-        switch (identityType)
-        {
-            case "head": { %> <input type="number" placeholder="Поиск" data-column="<%=column.name%>" data-comparison="exact"> <% break; }
-            case "body":
-            { %>
-                <template data-type="insert"> <button class="hidden">➖</button> <span>Новый</span> </template>
-                <template data-type="display"> <button>➖</button> <span name="<%=column.name%>">1</span> </template>
-            <% break; }
-        }
-    break; }
-    case 'enum':
-    { %>
-        <select name="<%=column.name%>" data-column="<%=column.name%>" data-comparison="exact">
-            <option value="">Выбрать</option>
-            <% for (const key of column.enumlabels) { %> <option value="<%=key%>"><%=key%></option> <% } %>
-        </select>
-    <% break; }
-    case 16: { %> <input type="checkbox" name="<%=column.name%>" data-column="<%=column.name%>" data-comparison="exact"> <% break; }
-    
-    case 20: { %> <input type="number" placeholder="Введите число" step="1" min="-9223372036854775807" max="9223372036854775807" name="<%=column.name%>" data-column="<%=column.name%>" data-comparison="substring"> <% break; }
-    case 21: { %> <input type="number" placeholder="Введите число" step="1" min="-32767 " max="32767 " name="<%=column.name%>" data-column="<%=column.name%>" data-comparison="substring"> <% break; }
-    case 23: { %> <input type="number" placeholder="Введите число" step="1" min="-2147483648" max="2147483648" name="<%=column.name%>" data-column="<%=column.name%>" data-comparison="substring"> <% break; }
-    case 700: case 701: case 1700: { %> <input type="number" placeholder="Введите число" name="<%=column.name%>" data-column="<%=column.name%>" data-comparison="substring"> <% break; }
-    
-
-    case 1114: case 1184: { %> <input type="datetime-local" placeholder="Введите дату и время" name="<%=column.name%>" data-column="<%=column.name%>" data-comparison="substring"> <% break; }
-    case 1082: { %> <input type="date" placeholder="Введите дату" name="<%=column.name%>" data-column="<%=column.name%>" data-comparison="substring"> <% break; }
-    case 1083: case 1266: { %> <input type="time" placeholder="Введите время" name="<%=column.name%>" data-column="<%=column.name%>" data-comparison="substring"> <% break; }
-
-    case 1082: { %> <input type="date" placeholder="Введите дату" name="<%=column.name%>" data-column="<%=column.name%>" data-comparison="substring"> <% break; }
-    case 1082: { %> <input type="date" placeholder="Введите дату" name="<%=column.name%>" data-column="<%=column.name%>" data-comparison="substring"> <% break; }
-
-
-    case 18: case 1043: { %> <input type="text" placeholder="Введите данные" maxlength="<%=column.atttypmod - 4%>" name="<%=column.name%>" data-column="<%=column.name%>" data-comparison="substring"> <% break; }
-    default: { %> <input type="text" placeholder="Введите данные" name="<%=column.name%>" data-column="<%=column.name%>" data-comparison="substring"> <% break; }
+        if (column.enumlabels)
+        { %>
+            <select <%=attributes%>>
+                <option value="">Выбрать</option>
+                <% for (const key of column.enumlabels) { %> <option value="<%=key%>"><%=key%></option> <% } %>
+            </select>
+        <% }
+        else
+        { %>
+            <input type="text" placeholder="Введите данные" <%=attributes%>>
+        <% }
+        break;
+    }
 } %>
 
 <!-- TODO: maybe textarea for 18, 25, 1043 and default (required task change) -->

@@ -1,4 +1,4 @@
-import Chart from "/static/js/chart.js";
+import Chart from "/static/js/utils/chart.js";
 
 var config = undefined, charts = undefined;
 const socket = new WebSocket(`wss://${location.host}/data`);
