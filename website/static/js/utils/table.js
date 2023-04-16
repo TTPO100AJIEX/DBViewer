@@ -53,7 +53,7 @@ class TableDisplayRow extends TableRow
     constructor(data, template)
     {
         super(template); this.deleted = this.edited = false; this.#fillData(data);
-        // this.deleteButton.addEventListener("click", this.remove.bind(this), { "capture": false, "once": false, "passive": true });
+        this.deleteButton.addEventListener("click", this.remove.bind(this), { "capture": false, "once": false, "passive": true });
     }
 
     #fillData(data)
@@ -61,14 +61,30 @@ class TableDisplayRow extends TableRow
         for (const input of this.inputs)
         {
             const key = input.getAttribute("name");
+            data[key] ??= "";
             switch (input.tagName)
             {
                 case "INPUT":
                 {
                     if (input.type == "date")
                     {
+                        if (!data[key]) break;
                         data[key] = new Date(data[key]);
                         input.value = `${data[key].getFullYear()}-${toLength(data[key].getMonth() + 1, 2, "0")}-${toLength(data[key].getDate(), 2, "0")}`;
+                        break;
+                    }
+                    if (input.type == "time")
+                    {
+                        if (!data[key]) break;
+                        data[key] = new Date(data[key]);
+                        input.value = `${data[key].getHours()}:${data[key].getMinutes()}`;
+                        break;
+                    }
+                    if (input.type == "datetime-local")
+                    {
+                        if (!data[key]) break;
+                        data[key] = new Date(data[key]);
+                        input.value = data[key].toISOString().substring(0, data[key].toISOString().indexOf("T") + 6);
                         break;
                     }
                     if (input.type == "checkbox")
@@ -77,23 +93,35 @@ class TableDisplayRow extends TableRow
                         break;
                     }
                 }
-                default: { input.value = data[key] ?? ''; break; }
+                default: { input.value = typeof data[key] == 'object' ? JSON.stringify(data[key]) : data[key]; break; }
             }
         }
     }
 
-    /*changed()
+    changed()
     {
-        if (this.ignoreChangeEvents) return;
+        super.changed();
         this.elements.forEach(row => row.dataset.edited = true);
         this.edited = true;
     }
     remove()
     {
-        if (this.deleted) { this.elements.forEach(row => row.dataset.deleted = false); this.deleteButton.innerText = "➖"; }
-        else { this.elements.forEach(row => row.dataset.deleted = true); this.deleteButton.innerText = "➕"; }
+        if (this.deleted)
+        {
+            this.elements.forEach(row => delete row.dataset.deleted);
+            this.deleteButton.label = "Удалить строку";
+            this.deleteButton.classList.remove("cross_button");
+            this.deleteButton.classList.add("striped_button");
+        }
+        else
+        {
+            this.elements.forEach(row => row.dataset.deleted = true);
+            this.deleteButton.label = "Вернуть строку";
+            this.deleteButton.classList.add("cross_button");
+            this.deleteButton.classList.remove("striped_button");
+        }
         this.deleted = !this.deleted;
-    }*/
+    }
 };
 
 
@@ -166,25 +194,26 @@ export default class Table
     }
     #getFilters()
     {
-        let filters = [ ];
-        for (const input of this.#head.querySelectorAll(":is(input, select, textarea):not(.sortOrder)"))
-        {
-            if (!input.value) continue;
-            filters.push({ name: input.dataset.column, value: input.value, comparison: input.dataset.comparison });
-        }
-        return filters;
+        return Array.from(this.#head.querySelectorAll(":is(input, select, textarea):not(.sortOrder)"))
+                .filter(input => input.value)
+                .map(input => ({ name: input.dataset.column, value: input.value, comparison: input.dataset.comparison }));
     }
     #getSorts()
     {
-        // TODO: if not specified, sort by primary key or unique
-        /*let sorts = [ ];
-        for (const th of this.table.children[0].children[0].children)
+        let sorts = Array.from(this.#head.querySelectorAll(".sortOrder")).filter(select => select.value !== "no").map(select => ({ name: select.dataset.column, order: select.value }));
+        if (sorts.length == 0)
         {
-            if (th.children.length == 0) continue;
-            const sortElement = th.children[1].children[1];
-            if (sortElement.value != "no") sorts.push({ name: sortElement.dataset.column, order: sortElement.value });
+            sorts = Array.from(this.#head.children[0].children)
+                    .filter(th => th.children[0] && th.children[0].children[1].innerText.includes("[PK]"))
+                    .map(th => ({ name: th.children[0].children[0].innerText, order: 'asc' }));
         }
-        return sorts;*/
+        if (sorts.length == 0)
+        {
+            sorts = Array.from(this.#head.children[0].children)
+                    .filter(th => th.children[0] && th.children[0].children[1].innerText.includes("[U]"))
+                    .map(th => ({ name: th.children[0].children[0].innerText, order: 'asc' }));
+        }
+        return sorts;
     }
 
 
@@ -237,14 +266,17 @@ export default class Table
         for (const row of data)
         {
             this.#displayRows.push(new this.#displayRow(row));
+            this.#displayRows.at(-1).elements.map(e => e.querySelector("[data-identity]")).filter(e => e)[0].children[0].children[1].innerText = this.#displayRows.length;
             this.#displayBody.append(...this.#displayRows.at(-1).elements);
         }
     } 
     async #loadNextPage()
     {
         this.#displayObserver.disconnect();
-        this.#renderData((await this.#getDisplayData()).rows);
-        if (this.#displayBody.lastElementChild && data.length % 50 == 0 && data.length != 0) this.#displayObserver.observe(this.displayBody.lastElementChild);
+        const data = (await this.#getDisplayData()).rows;
+        this.#renderData(data);
+        console.log(this.#displayBody.lastElementChild, data.length)
+        if (this.#displayBody.lastElementChild && data.length % this.#group_size == 0 && data.length != 0) this.#displayObserver.observe(this.#displayBody.lastElementChild);
     }
     #setupDisplay()
     {

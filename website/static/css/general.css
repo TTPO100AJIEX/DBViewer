@@ -25,12 +25,13 @@
         --text-major-color: hsl(214, 0%, 100%);
         --text-minor-color: hsl(214, 5%, 75%);
         --text-placeholder-color: hsl(214, 10%, 60%);
+        --text-inverse-color: hsl(214, 2%, 10%);
         
         --scrollbar-color: hsla(214, 95%, 50%, 0.85);
 
-        --color-red: hsl(353, 90%, 60%);
-        --color-yellow: hsl(47, 90%, 60%);
-        --color-purple: hsl(302, 90%, 60%);
+        --color-red: hsl(353, 75%, 53%);
+        --color-yellow: hsl(47, 75%, 53%);
+        --color-purple: hsl(302, 75%, 53%);
 
         --chart-brand: #0d70f2;
         --chart-border: #898c90;
@@ -327,16 +328,33 @@
     }
     @layer custom
     {
-        /*----------------------MENU OPENER----------------------*/
-        @layer menu
+        /*----------------------STRIPED BUTTON----------------------*/
+        @layer striped_button
         {
             .striped_button
             {
                 background: transparent; border: none; padding: 0; height: 40px; width: 40px;
-                display: inline-flex; flex-direction: column; justify-content: space-evenly; align-items: center;
+                position: relative; display: inline-flex; flex-direction: column; justify-content: space-evenly; align-items: center;
             }
             .striped_button > span { background: var(--text-major-color); border-radius: var(--border-radius-small); width: 80%; height: 4px; }
             .striped_button:hover > span { background: var(--brand-color); }
+        }
+
+        /*----------------------CROSS BUTTON----------------------*/
+        @layer cross_button
+        {
+            .cross_button { position: relative; background: transparent; border: none; padding: 0; height: 40px; width: 40px; }
+            .cross_button > span
+            {
+                position: absolute; top: 50%; left: 10%; transform: translateY(-50%); width: 80%; height: 4px;
+                background: var(--text-major-color); border-radius: var(--border-radius-small);
+            }
+            .cross_button::after
+            {
+                position: absolute; left: 50%; top: 10%; transform: translateX(-50%); height: 80%; width: 4px;
+                content: ''; background: var(--text-major-color); border-radius: var(--border-radius-small); 
+            }
+            .cross_button:hover > span, .cross_button:hover::after { background: var(--brand-color); }
         }
     }
 }
@@ -528,21 +546,34 @@
 }
 @layer data_table
 {
-    .data_table :is(th, td) > *:is(input, button, textarea, select) { border: none; border-radius: 0; box-shadow: none; margin: 4px; height: 100%; width: calc(100% - 8px); }
+    @layer defaults
+    {
+        .data_table :is(th, td) > *:is(input, button, textarea, select) { border: none; border-radius: 0; box-shadow: none; margin: 4px; height: 100%; width: calc(100% - 8px); }
+    }
 
-
-    .data_table thead .dropdown_opener * { text-decoration: underline; text-decoration-color: transparent; }
-    .data_table thead .dropdown_opener:hover { text-decoration-color: transparent; }
-    .data_table thead .dropdown_opener:hover * { text-decoration-color: currentColor; }
+    @layer dropdowns
+    {
+        .data_table thead .dropdown_opener * { text-decoration: underline; text-decoration-color: transparent; }
+        .data_table thead .dropdown_opener:hover { text-decoration-color: transparent; }
+        .data_table thead .dropdown_opener:hover * { text-decoration-color: currentColor; }
+        
+        .data_table thead .dropdown_arrow { display: grid; grid-template-columns: minmax(max-content, 1fr) auto; grid-template-rows: 1fr 1fr; row-gap: 0; }
+        .data_table thead .dropdown_arrow::after { grid-row: 1 / -1; grid-column: 2; margin-left: auto; }
     
-    .data_table thead .dropdown_arrow { display: grid; grid-template-columns: minmax(max-content, 1fr) auto; grid-template-rows: 1fr 1fr; row-gap: 0; }
-    .data_table thead .dropdown_arrow::after { grid-row: 1 / -1; grid-column: 2; margin-left: auto; }
+        .data_table thead .dropdown_inplace { border-radius: 0; padding: var(--padding-medium); }
+        .data_table thead .dropdown_inplace :is(input, textarea, select) { min-width: calc(175px - 2 * var(--padding-horizontal-medium)); }
+    }
 
-    .data_table thead .dropdown_inplace { border-radius: 0; padding: var(--padding-medium); }
-    .data_table thead .dropdown_inplace :is(input, textarea, select) { min-width: calc(175px - 2 * var(--padding-horizontal-medium)); }
+    @layer identity
+    {
+        .data_table :is(th, td):first-child { position: sticky; left: calc(-1 * var(--padding-horizontal-large)); z-index: 1; background: var(--surface-color); filter: drop-shadow(-10px 0px 0px var(--background-color)); }
+        .data_table tbody [data-identity] > div { display: flex; align-items: center; justify-content: end; gap: var(--padding-horizontal-regular); padding: 0 var(--padding-horizontal-regular); }
+        .data_table tbody [data-identity] button { min-height: unset; height: 40px; width: unset; aspect-ratio: 1/1; }
+    }
 
-
-    .data_table :is(th, td):first-child { position: sticky; left: calc(-1 * var(--padding-horizontal-large)); z-index: 1; background: var(--surface-color); filter: drop-shadow(-10px 0px 0px var(--background-color)); }
-    .data_table tbody [data-identity] > div { display: flex; align-items: center; justify-content: end; gap: var(--padding-horizontal-regular); padding: 0 var(--padding-horizontal-regular); }
-    .data_table tbody [data-identity] button { min-height: unset; height: 40px; width: unset; aspect-ratio: 1/1; }
+    @layer edits
+    {
+        .data_table [data-deleted] :is(td, input, select, textarea) { background: var(--color-red); }
+        .data_table [data-edited] :is(td, input, select, textarea) { background: var(--color-yellow); color: var(--text-inverse-color); }
+    }
 }

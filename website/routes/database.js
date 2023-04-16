@@ -66,6 +66,7 @@ async function websocket_data(connection, req)
 
     connection.socket.on("message", message =>
     {
+        // TODO: ajv validation
         const msg = JSON.parse(message.toString());
         if (!handlers?.[msg.requestName]?.[msg.method]) return console.warn("Unknown message received: ", msg);
         handlers[msg.requestName][msg.method](msg.data, connection.socket);

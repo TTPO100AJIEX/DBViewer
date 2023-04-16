@@ -58,7 +58,7 @@
                                         <label> Поиск: <%- include("./general/input.ejs", { ...locals, column, identityType: 'head' }) %> </label>
                                         <label>
                                             Сортировка:
-                                            <select class="sortOrder" data-column="<%=column.attname%>">
+                                            <select class="sortOrder" data-column="<%=column.name%>">
                                                 <option value="asc">По возрастанию</option>
                                                 <option value="desc">По убыванию</option>
                                                 <option value="no" selected>Без сортировки</option>
