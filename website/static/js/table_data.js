@@ -6,7 +6,7 @@ var config = undefined, charts = undefined, table = undefined;
 const socket = new WebSocket(`wss://${location.host}/data`);
 function requestData()
 {
-    socket.send(JSON.stringify({ method: "get", requestName: "table_data", data: { id: new URLSearchParams(location.search).get("id") } }));
+    socket.send(JSON.stringify({ requestName: "table_data", data: { id: new URLSearchParams(location.search).get("id") } }));
 }
 socket.addEventListener("message", message =>
 {

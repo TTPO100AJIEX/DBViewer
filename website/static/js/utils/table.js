@@ -17,6 +17,36 @@ class TableRow
     removeChangeCallback(callback) { this.#changeCallbacks = this.#changeCallbacks.filter(cb => cb != callback); }
     changed(ev) { this.#changeCallbacks.forEach(callback => callback(ev.currentTarget)); }
     
+    getData()
+    {
+        return Object.fromEntries(this.inputs.map(input =>
+        {
+            switch (input.tagName)
+            {
+                case "INPUT":
+                {
+                    if (input.type == "checkbox") return [ input.name, input.checked ];
+                }
+                default: return [ input.name, input.value ];
+            }
+        }));
+    }
+    getIdentifier()
+    {
+        /*
+        {
+            sorts = Array.from(this.#head.children[0].children)
+                    .filter(th => th.children[0] && th.children[0].children[1].innerText.includes("[PK]"))
+                    .map(th => ({ name: th.children[0].children[0].innerText, order: 'asc' }));
+        }
+        if (sorts.length == 0)
+        {
+            sorts = Array.from(this.#head.children[0].children)
+                    .filter(th => th.children[0] && th.children[0].children[1].innerText.includes("[U]"))
+                    .map(th => ({ name: th.children[0].children[0].innerText, order: 'asc' }));
+        }
+        */
+    }
     /*getData()
     {
         return Object.fromEntries(this.inputs.map(input =>
@@ -46,6 +76,7 @@ class TableInsertRow extends TableRow
     {
         this.deleteButton.addEventListener("click", this.removed.bind(this), { "capture": false, "once": true, "passive": true });
         this.deleteButton.hidden = false;
+        Table.showSaveButton();
     }
 };
 class TableDisplayRow extends TableRow
@@ -103,6 +134,7 @@ class TableDisplayRow extends TableRow
         super.changed();
         this.elements.forEach(row => row.dataset.edited = true);
         this.edited = true;
+        Table.showSaveButton();
     }
     remove()
     {
@@ -121,6 +153,7 @@ class TableDisplayRow extends TableRow
             this.deleteButton.classList.remove("striped_button");
         }
         this.deleted = !this.deleted;
+        Table.showSaveButton();
     }
 };
 
@@ -128,16 +161,22 @@ class TableDisplayRow extends TableRow
 export default class Table
 {
     static #tables = [ ];
+    static #saveButton;
     static registerSaveButton(button)
     {
-        button.addEventListener("submit", ev =>
+        Table.#saveButton = button;
+        button.form.addEventListener("submit", ev =>
         {
             ev.preventDefault();
+            console.log('!');
+            const result = Table.#tables.reduce((acc, cur) => acc.concat(cur.getUpdateActions()), [ ]);
+            console.log(result);
             //ev.currentTarget.elements.actions.value = JSON.stringify(Table.tables.reduce((prev, cur) => prev.concat(cur.getUpdateActions()), [ ]));
             //Table.tables.forEach(table => table.saveExtraData(ev.currentTarget));
             //ev.currentTarget.submit();
         }, { "capture": false, "once": false, "passive": false });
     }
+    static showSaveButton() { this.#saveButton.hidden = false; }
 
 
     #group_size;
@@ -248,7 +287,6 @@ export default class Table
             };
             this.socket.addEventListener("message", socketListener, { "capture": false, "once": false, "passive": true });
             this.socket.send(JSON.stringify({
-                method: "get",
                 requestName: "table_rows",
                 data: {
                     id: id,
@@ -275,7 +313,6 @@ export default class Table
         this.#displayObserver.disconnect();
         const data = (await this.#getDisplayData()).rows;
         this.#renderData(data);
-        console.log(this.#displayBody.lastElementChild, data.length)
         if (this.#displayBody.lastElementChild && data.length % this.#group_size == 0 && data.length != 0) this.#displayObserver.observe(this.#displayBody.lastElementChild);
     }
     #setupDisplay()
@@ -286,13 +323,12 @@ export default class Table
     }
 
 
-    /*getUpdateActions()
+    getUpdateActions()
     {
-        let actions = [ ];
-        this.insertRows.slice(0, -1).forEach(row => actions.push({ type: "INSERT", data: row.getData() }));
-        this.displayRows.filter(row => row.deleted).forEach(row => actions.push({ type: "DELETE", id: row.getData().id }));
-        this.displayRows.filter(row => row.edited && !row.deleted).forEach(row => actions.push({ type: "UPDATE", data: row.getData() }));
-        return actions;
+        return [
+            ...this.#insertRows.slice(0, -1).map(row => ({ type: "INSERT", data: row.getData() })),
+            ...this.#displayRows.filter(row => row.deleted).map(row => ({ type: "DELETE", id: row.getIdentifier() })),
+            ...this.#displayRows.filter(row => row.edited && !row.deleted).map(row => ({ type: "UPDATE", data: row.getData(), id: row.getIdentifier() }))
+        ];
     }
-    saveExtraData(form) { }*/
 };

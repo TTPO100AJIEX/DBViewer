@@ -1,6 +1,6 @@
 import { TargetDatabase } from "common/index.js";
 
-export default async function get_database_data(msg, socket)
+export default async function database_data(msg, socket)
 {
     const [
         { database_name, postgres_version, uptime, database_size },

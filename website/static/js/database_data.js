@@ -4,7 +4,7 @@ var config = undefined, charts = undefined;
 const socket = new WebSocket(`wss://${location.host}/data`);
 function requestData()
 {
-    socket.send(JSON.stringify({ method: "get", requestName: "database_data" }));
+    socket.send(JSON.stringify({ requestName: "database_data" }));
 }
 socket.addEventListener("message", message =>
 {

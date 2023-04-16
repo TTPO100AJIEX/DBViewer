@@ -43,33 +43,25 @@ async function get_table(req, res)
 }
 
 
-import get_database_data from "./data/database_data.js";
-import get_table_data from "./data/table_data.js";
-import get_table_rows from "./data/table_rows.js";
+import database_data from "./data/database_data.js";
+import table_data from "./data/table_data.js";
+import table_rows from "./data/table_rows.js";
 
 async function websocket_data(connection, req)
 {
-    const handlers = {
-        database_data:
-        {
-            get: get_database_data
-        },
-        table_data:
-        {
-            get: get_table_data
-        },
-        table_rows:
-        {
-            get: get_table_rows
-        }
+    const handlers =
+    {
+        database_data: database_data,
+        table_data: table_data,
+        table_rows: table_rows
     };
 
     connection.socket.on("message", message =>
     {
         // TODO: ajv validation
         const msg = JSON.parse(message.toString());
-        if (!handlers?.[msg.requestName]?.[msg.method]) return console.warn("Unknown message received: ", msg);
-        handlers[msg.requestName][msg.method](msg.data, connection.socket);
+        if (!handlers?.[msg.requestName]) return console.warn("Unknown message received: ", msg);
+        handlers[msg.requestName](msg.data, connection.socket);
     });
 
     connection.socket.send(JSON.stringify({
@@ -78,4 +70,10 @@ async function websocket_data(connection, req)
     }));
 }
 
-export { get_database, get_table, websocket_data };
+async function post_data(req, res)
+{
+    // TODO: ajv validation
+    console.log(req.body);
+}
+
+export { get_database, get_table, websocket_data, post_data };

@@ -1,6 +1,6 @@
 import { TargetDatabase } from "common/index.js";
 
-export default async function get_table_data(msg, socket)
+export default async function table_data(msg, socket)
 {
     socket.send(
         JSON.stringify({

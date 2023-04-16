@@ -17,5 +17,19 @@ export default {
                 "id": { type: "integer" }
             }
         }
+    },
+    DATA_POST:
+    {
+        body:
+        {
+            type: "object",
+            required: [ "table", "actions" ],
+            additionalProperties: false,
+            properties:
+            {
+                "table": { type: "integer" },
+                "actions": { type: "string" }
+            }
+        }
     }
 };

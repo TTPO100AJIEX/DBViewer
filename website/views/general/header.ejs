@@ -16,7 +16,15 @@
     <div class="navigation"></div>
 
     <div class="controls">
-        <button id="save_changes" class="control_empty padding_regular_wide" hidden>Сохранить</button>
+        <button id="save_changes" class="control_empty padding_regular_wide" form="changes" hidden>Сохранить</button>
         <a href="/logout" class="control_empty padding_regular_wide">Выйти</a>
     </div>
 </header>
+
+<% if (req.query.id)
+{ %>
+    <form id="changes" method="POST" action="/data" hidden>
+        <input type="hidden" name="actions" value="[]">
+        <input type="hidden" name="table" value="<%=req.query.id%>">
+    </form>
+<% } %>

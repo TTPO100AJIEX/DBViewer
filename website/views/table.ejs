@@ -36,10 +36,20 @@
                     <thead>
                         <tr>
                             <th class="text_align_center" data-identity>№</th>
-                            <% for (const column of columns)
+                            <% const flag_tips = {
+                                "IA": "Генерируемый всегда идентификатор",
+                                "ID": "Стандартно генерируемый идентификатор",
+                                "NN": "Не содержит пропущенных значений",
+                                "D": "Имеет стандартное значение",
+                                "G": "Генерируемый",
+                                "U": "Уникальный",
+                                "PK": "Ключ"
+                            };
+                            for (const column of columns)
                             { %>
                                 <th>
-                                    <button class="text_size_regular dropdown_opener dropdown_arrow" data-dropdown="data_table_head_<%=column.name%>">
+                                    <% const title = Object.entries(column.flags).filter(flag => flag[1]).map(flag => flag_tips[flag[0].toUpperCase()]).join('&#10;'); %>
+                                    <button class="text_size_regular dropdown_opener dropdown_arrow" data-dropdown="data_table_head_<%=column.name%>" title="<%-title%>">
                                         <span><%=column.name%></span>
                                         <span class="text_minor text_size_small">
                                             <%=Object.entries(column.flags).filter(flag => flag[1]).map(flag => `[${flag[0].toUpperCase()}]`).join(' ')%>

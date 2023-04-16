@@ -1,6 +1,6 @@
 import { PostgreSQL, TargetDatabase } from "common/index.js";
 
-export default async function get_table_rows(msg, socket)
+export default async function table_rows(msg, socket)
 {
     const { schema, table } = await TargetDatabase.query(`SELECT pg_namespace.nspname AS schema, pg_class.relname AS table
             FROM pg_class INNER JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace WHERE pg_class.oid = $1`, [ msg.tableid ], false, true);
