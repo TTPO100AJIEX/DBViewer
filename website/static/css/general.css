@@ -542,7 +542,7 @@
     .data_table thead .dropdown_inplace :is(input, textarea, select) { min-width: calc(175px - 2 * var(--padding-horizontal-medium)); }
 
 
-    .data_table [data-identity] { position: sticky; left: calc(-1 * var(--padding-horizontal-large)); z-index: 1; background: var(--surface-color); filter: drop-shadow(-10px 0px 0px var(--background-color)); }
+    .data_table :is(th, td):first-child { position: sticky; left: calc(-1 * var(--padding-horizontal-large)); z-index: 1; background: var(--surface-color); filter: drop-shadow(-10px 0px 0px var(--background-color)); }
     .data_table tbody [data-identity] > div { display: flex; align-items: center; justify-content: end; gap: var(--padding-horizontal-regular); padding: 0 var(--padding-horizontal-regular); }
     .data_table tbody [data-identity] button { min-height: unset; height: 40px; width: unset; aspect-ratio: 1/1; }
 }

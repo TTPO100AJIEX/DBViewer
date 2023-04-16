@@ -45,6 +45,7 @@ async function get_table(req, res)
 
 import get_database_data from "./data/database_data.js";
 import get_table_data from "./data/table_data.js";
+import get_table_rows from "./data/table_rows.js";
 
 async function websocket_data(connection, req)
 {
@@ -56,12 +57,17 @@ async function websocket_data(connection, req)
         table_data:
         {
             get: get_table_data
+        },
+        table_rows:
+        {
+            get: get_table_rows
         }
     };
 
     connection.socket.on("message", message =>
     {
         const msg = JSON.parse(message.toString());
+        if (!handlers?.[msg.requestName]?.[msg.method]) return console.warn("Unknown message received: ", msg);
         handlers[msg.requestName][msg.method](msg.data, connection.socket);
     });
 

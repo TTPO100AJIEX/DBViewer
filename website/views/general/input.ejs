@@ -1,10 +1,10 @@
 <%
-let attributes = `name="${column.name}" data-column="${column.name}"`;
+let attributes = `name=${column.name} data-column=${column.name} `;
 
-if (column.type.id == 16 || column.enumlabels) attributes += `data-comparison="exact"`;
-else attributes += `data-comparison="substring"`;
+if (column.type.id == 16 || column.enumlabels) attributes += `data-comparison=exact `;
+else attributes += `data-comparison=substring `;
 
-if (column.flags.ia || column.flags.id) attributes += "disabled";
+if (column.flags.ia || column.flags.id) attributes += "disabled ";
 
 switch (column.type.id)
 {

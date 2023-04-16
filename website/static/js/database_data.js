@@ -71,4 +71,4 @@ socket.addEventListener("message", message =>
             console.warn("Websocket - unknown eventName received " + msg.eventName);
         }
     }
-});
+}, { "capture": false, "once": false, "passive": true });

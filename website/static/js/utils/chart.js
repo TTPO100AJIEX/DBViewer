@@ -43,7 +43,7 @@ export default class Chart
             }
         };
         this.#adjustFontSize();
-        window.addEventListener("resize", () => { this.#adjustFontSize(); this.#redraw(); });
+        window.addEventListener("resize", () => { this.#adjustFontSize(); this.#redraw(); }, { "capture": false, "once": false, "passive": true });
         Chart.#load.then(this.#drawChart.bind(this, elementId));
     }
     async #adjustFontSize()

@@ -42,7 +42,7 @@ socket.addEventListener("message", message =>
                                 "Количество записей",
                                 { live: "Живых", dead: "Мёртых" })
             };
-            table = new Table(document.getElementById("data_table"), config.group_size);
+            table = new Table(document.getElementById("data_table"), config.group_size, socket);
             requestData();
             break;
         }
@@ -56,9 +56,10 @@ socket.addEventListener("message", message =>
             setTimeout(requestData, config.update_interval);
             break;
         }
+        case "table_rows": { break; }
         default:
         {
             console.warn("Websocket - unknown eventName received " + msg.eventName);
         }
     }
-});
+}, { "capture": false, "once": false, "passive": true });

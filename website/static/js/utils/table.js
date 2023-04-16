@@ -50,22 +50,19 @@ class TableInsertRow extends TableRow
 };
 class TableDisplayRow extends TableRow
 {
-    /*constructor(data, clone)
+    constructor(data, template)
     {
-        super(clone); this.deleted = this.edited = false; this.fillData(data);
-        this.deleteButton.addEventListener("click", this.remove.bind(this), { "capture": false, "once": false, "passive": true });
+        super(template); this.deleted = this.edited = false; this.#fillData(data);
+        // this.deleteButton.addEventListener("click", this.remove.bind(this), { "capture": false, "once": false, "passive": true });
     }
 
-    fillData(data)
+    #fillData(data)
     {
-        for (const key in data)
+        for (const input of this.inputs)
         {
-            if (data[key] == undefined) continue;
-            let input = this.inputs.find(input => input.getAttribute("name") == key);
-            if (!input) continue;
+            const key = input.getAttribute("name");
             switch (input.tagName)
             {
-                case "SPAN": { input.innerText = data[key]; break; }
                 case "INPUT":
                 {
                     if (input.type == "date")
@@ -85,7 +82,7 @@ class TableDisplayRow extends TableRow
         }
     }
 
-    changed()
+    /*changed()
     {
         if (this.ignoreChangeEvents) return;
         this.elements.forEach(row => row.dataset.edited = true);
@@ -119,9 +116,10 @@ export default class Table
     #table; #head; #insertBody; #displayBody;
     #insertRow; #displayRow;
     #displayObserver;
-    constructor(table, group_size)
+    constructor(table, group_size, socket)
     {
         this.#group_size = group_size;
+        this.socket = socket;
         
         this.#table = table;
         this.#head = table.querySelector("thead");
@@ -151,7 +149,7 @@ export default class Table
             constructor(data) { super(data, displayTemplate); }
         };
 
-        // this.#displayObserver = new IntersectionObserver(entries => { if (entries[0].isIntersecting) this.loadNextPage() }, { "rootMargin": "0px", "threshold": 0 });
+        this.#displayObserver = new IntersectionObserver(entries => { if (entries[0].isIntersecting) this.#loadNextPage() }, { "rootMargin": "0px", "threshold": 0 });
         
         this.#setupHead(); this.#setupInsert(); this.#setupDisplay();
 
@@ -166,28 +164,28 @@ export default class Table
             input.addEventListener("change", this.#setupDisplay.bind(this), { "capture": false, "once": false, "passive": true });
         });
     }
-    /*getFilters()
+    #getFilters()
     {
         let filters = [ ];
-        for (const th of this.table.children[0].children[0].children)
+        for (const input of this.#head.querySelectorAll(":is(input, select, textarea):not(.sortOrder)"))
         {
-            if (th.children.length == 0) continue;
-            const filterElement = th.children[1].children[0];
-            if (filterElement.value) filters.push({ name: filterElement.dataset.column, value: filterElement.value, comparison: filterElement.dataset.comparison });
+            if (!input.value) continue;
+            filters.push({ name: input.dataset.column, value: input.value, comparison: input.dataset.comparison });
         }
         return filters;
     }
-    getSorts()
+    #getSorts()
     {
-        let sorts = [ ];
+        // TODO: if not specified, sort by primary key or unique
+        /*let sorts = [ ];
         for (const th of this.table.children[0].children[0].children)
         {
             if (th.children.length == 0) continue;
             const sortElement = th.children[1].children[1];
             if (sortElement.value != "no") sorts.push({ name: sortElement.dataset.column, order: sortElement.value });
         }
-        return sorts;
-    }*/
+        return sorts;*/
+    }
 
 
     #insertRows = [ ];
@@ -209,29 +207,50 @@ export default class Table
     #setupInsert() { this.#addInsertRow(); }
 
     
-    /*async getDisplayData()
+    #displayRows = [];
+    #getDisplayData()
     {
-        return await (await fetch(`/data?` + new URLSearchParams({ table: this.tablename, offset: this.displayBody.children.length, filters: JSON.stringify(this.getFilters()), sorts: JSON.stringify(this.getSorts()) }), { ...DefaultFetchOptions, method: "GET" })).json();
+        return new Promise(resolve =>
+        {
+            const id = crypto.randomUUID(), socketListener = (message) => {
+                const msg = JSON.parse(message.data);
+                if (msg.eventName == "table_rows" && msg.data.id == id) resolve(msg.data);
+                this.socket.removeEventListener("message", socketListener, { "capture": false, "once": false, "passive": true });
+            };
+            this.socket.addEventListener("message", socketListener, { "capture": false, "once": false, "passive": true });
+            this.socket.send(JSON.stringify({
+                method: "get",
+                requestName: "table_rows",
+                data: {
+                    id: id,
+                    tableid: this.#table.dataset.tableid,
+                    offset: this.#displayBody.children.length,
+                    limit: this.#group_size,
+                    filters: this.#getFilters(),
+                    sorts: this.#getSorts()
+                }
+            }));
+        });
     }
-    renderData(data)
+    #renderData(data)
     {
         for (const row of data)
         {
-            this.displayRows.push(new this.rowServer.displayRow(row));
-            this.displayBody.append(...this.displayRows.at(-1).elements);
+            this.#displayRows.push(new this.#displayRow(row));
+            this.#displayBody.append(...this.#displayRows.at(-1).elements);
         }
-    }
-    async loadNextPage()
+    } 
+    async #loadNextPage()
     {
-        this.displayObserver.disconnect();
-        const data = await this.getDisplayData();
-        this.renderData(data);
-        if (this.displayBody.lastElementChild && data.length % 50 == 0) this.displayObserver.observe(this.displayBody.lastElementChild);
-    }*/
+        this.#displayObserver.disconnect();
+        this.#renderData((await this.#getDisplayData()).rows);
+        if (this.#displayBody.lastElementChild && data.length % 50 == 0 && data.length != 0) this.#displayObserver.observe(this.displayBody.lastElementChild);
+    }
     #setupDisplay()
     {
-        /*Array.from(this.displayBody.children).forEach(row => row.remove());
-        this.displayRows = [ ]; this.loadNextPage();*/
+        Array.from(this.#displayBody.children).forEach(row => row.remove());
+        this.#displayRows = [ ];
+        this.#loadNextPage();
     }
 
 
