@@ -279,19 +279,27 @@
     }
     @layer elements
     {
-        input, textarea, select
+        input:not([type='checkbox']), textarea, select, .checkboxWrapper
         {
             display: block; width: 100%; min-width: 175px; padding: var(--padding-regular); margin: 4px 0; min-height: var(--interactive-min-height);
             font-size: var(--font-size-small); background-color: var(--background-color); border: thin solid var(--border-color); border-radius: var(--border-radius-regular);
         }
+        
         ::placeholder { color: var(--text-placeholder-color); opacity: 1; }
-        :is(input, select, textarea):disabled { text-align: center; border: thin solid var(--brand-color); opacity: 1; }
-        :is(input, select, textarea):invalid { border: thin solid var(--color-red); }
+        :is(input:not([type='checkbox']), select, textarea):disabled, .checkboxWrapper:has(input[type='checkbox']:disabled) { text-align: center; border: thin solid var(--brand-color); opacity: 1; }
+        :is(input:not([type='checkbox']), select, textarea):invalid, .checkboxWrapper:has(input[type='checkbox']:invalid) { border: thin solid var(--color-red); }
         select { border: none; border-right: 1ch solid transparent !important; box-shadow: 0 0 0 1px var(--border-color); }
         @-moz-document url-prefix()
         {
             select { padding-top: calc(var(--padding-vertical-regular) + 0.33em); }
         }
+
+        input[type='checkbox'] { height: calc(0.8 * var(--interactive-min-height)); aspect-ratio: 1/1; clip-path: circle(calc(48% - 3px)); }
+
+        .checkboxWrapper { padding-top: 0; padding-bottom: 0; display: flex; align-items: center; gap: 1ch; }
+        .checkboxWrapper:has(input[type='checkbox']):focus-within { outline: 2px solid var(--brand-color) !important; outline-offset: 1px !important; }
+        .checkboxWrapper::after { content: "Не отмечено"; }
+        .checkboxWrapper:has(input:checked)::after { content: "Отмечено"; }
     }
     @layer forms
     {
@@ -548,7 +556,7 @@
 {
     @layer defaults
     {
-        .data_table :is(th, td) > *:is(input, button, textarea, select) { border: none; border-radius: 0; box-shadow: none; margin: 4px; height: 100%; width: calc(100% - 8px); }
+        .data_table :is(th, td) > *:is(input:not([type='checkbox']), button, textarea, select, .checkboxWrapper) { border: none; border-radius: 0; box-shadow: none; margin: 4px; height: 100%; width: calc(100% - 8px); }
     }
 
     @layer dropdowns
@@ -574,7 +582,7 @@
 
     @layer edits
     {
-        .data_table [data-deleted] :is(td, input, select, textarea) { background: var(--color-red); }
-        .data_table [data-edited] :is(td, input, select, textarea) { background: var(--color-yellow); color: var(--text-inverse-color); }
+        .data_table [data-deleted] :is(td, input:not([type='checkbox']), select, textarea, .checkboxWrapper) { background: var(--color-red); }
+        .data_table [data-edited] :is(td, input:not([type='checkbox']), select, textarea, .checkboxWrapper) { background: var(--color-yellow); color: var(--text-inverse-color); }
     }
 }
