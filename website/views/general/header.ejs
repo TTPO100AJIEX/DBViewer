@@ -9,7 +9,14 @@
         <% } %>
         <div class="userinfo text_nowrap">
             <div class="text_size_medium"><%=req.authorization.login%></div>
-            <div class="text_size_small"> <span class="text_minor">Доступ:</span> <span class="text_brand"><%=req.authorization.permissions%></span> </div>
+            <%
+            const perms_title = ((req.authorization.permissions.includes("R") ? "Чтение&#10;" : "") +
+                                (req.authorization.permissions.includes("I") ? "Вставка&#10;" : "") +
+                                (req.authorization.permissions.includes("U") ? "Обновление&#10;" : "") +
+                                (req.authorization.permissions.includes("D") ? "Удаление&#10;" : "") +
+                                (req.authorization.permissions.includes("A") ? "Администрирование&#10;" : "")) || "Отсутствует";
+            %>
+            <div class="text_size_small" title="<%-perms_title%>"> <span class="text_minor">Доступ:</span> <span class="text_brand"><%=req.authorization.permissions%></span> </div>
         </div>
     </div>
     

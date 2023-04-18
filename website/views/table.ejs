@@ -79,7 +79,7 @@
                             <% } %>
                         </tr>
                     </thead>
-                    <tbody data-type="insert"></tbody>
+                    <% if (!req.authorization.permissions.includes("I")) { %> <tbody data-type="insert"></tbody> <% } %>
                     <tbody data-type="display"></tbody>
                     <template data-type="row">
                         <tr>
@@ -92,7 +92,8 @@
                                 </template>
                                 <template data-type="display">
                                     <div>
-                                        <button class="striped_button" title="Удалить строку"><span></span></button>
+                                        <% if (!req.authorization.permissions.includes("D")) { %> <button class="striped_button" title="Удалить строку" disabled><span></span></button> <% }
+                                        else { %> <button class="striped_button" title="Удалить строку" disabled><span></span></button> <% } %>
                                         <span>1</span>
                                     </div>
                                 </template>

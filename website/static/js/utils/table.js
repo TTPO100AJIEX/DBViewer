@@ -250,7 +250,7 @@ export default class Table
         this.#insertBody.append(...this.#insertRows.at(-1).elements);
     }
     #removeInsertRow(row) { row.elements.forEach(row => row.remove()); this.#insertRows = this.#insertRows.filter(r => r != row); }
-    #setupInsert() { this.#addInsertRow(); }
+    #setupInsert() { if (this.#insertBody) this.#addInsertRow(); }
 
     
     #displayRows = [];

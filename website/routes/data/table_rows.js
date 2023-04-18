@@ -1,4 +1,13 @@
-import { PostgreSQL, TargetDatabase } from "common/index.js";
+import { PostgreSQL, TargetDatabase, Utils } from "common/index.js";
+
+function transform_data(data)
+{
+    if (typeof data != 'object') return data;
+    if (data instanceof Utils.Interval) return data.toPostgres();
+    
+    for (const key in data) data[key] = transform_data(data[key]);
+    return data;
+}
 
 export default async function table_rows(msg, socket)
 {
@@ -28,14 +37,6 @@ export default async function table_rows(msg, socket)
 
     query += ` OFFSET %L LIMIT %L `; params.push(msg.offset, msg.limit);
 
-    socket.send(
-        JSON.stringify({
-            eventName: 'table_rows',
-            data:
-            {
-                id: msg.id,
-                rows: await TargetDatabase.query(PostgreSQL.format(query, ...params))
-            }
-        })
-    );
+    const rows = transform_data(await TargetDatabase.query(PostgreSQL.format(query, ...params)));
+    socket.send(JSON.stringify({ eventName: 'table_rows', data: { id: msg.id, rows } }));
 }

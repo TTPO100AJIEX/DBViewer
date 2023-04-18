@@ -96,11 +96,13 @@ async function post_data(req, res)
         {
             case "DELETE":
             {
+                if (!req.authorization.permissions.includes("D")) return res.error(403);
                 queries.push(PostgreSQL.format(`DELETE FROM %I.%I WHERE ${conditions}`, schema, table, ...params));
                 break;
             }
             case "INSERT":
             {
+                if (!req.authorization.permissions.includes("I")) return res.error(403);
                 queries.push(PostgreSQL.format(`INSERT INTO %I.%I (${new Array(Object.keys(action.data).length).fill("%I").join(', ')}) OVERRIDING USER VALUE
                     VALUES (${Object.values(action.data).map(value => Array.isArray(value) ? `ARRAY[%L]::text[]` : "%L")})`,
                     schema, table, ...Object.keys(action.data), ...Object.values(action.data)));
@@ -108,6 +110,7 @@ async function post_data(req, res)
             }
             case "UPDATE":
             {
+                if (!req.authorization.permissions.includes("U")) return res.error(403);
                 for (const key in action.id) delete action.data[key];
                 queries.push(PostgreSQL.format(`UPDATE %I.%I
                     SET ${Object.values(action.data).map(value => Array.isArray(value) ? `%I = ARRAY[%L]::text[]` : "%I = %L").join(", ")}

@@ -4,6 +4,8 @@ import set_field_at_path from "./implementations/object_manipulation_by_path/set
 import isArray from "./implementations/array/isArray.js";
 import toArray from "./implementations/array/toArray.js";
 
+import Interval from "./implementations/Interval/Interval.js";
+
 class Utils
 {
     constructor() { console.error("Utils has been instantiated!"); }
@@ -13,5 +15,7 @@ class Utils
     
     static isArray = isArray;
     static toArray = toArray;
+
+    static Interval = Interval;
 };
 export default Utils;

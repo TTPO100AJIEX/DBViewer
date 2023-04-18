@@ -4,7 +4,7 @@ let attributes = `name="${column.name}" data-column="${column.name}" autocomplet
 if (column.type.id == 16 || column.enumlabels) attributes += `data-comparison="exact" `;
 else attributes += `data-comparison="substring" `;
 
-if (identityType == 'body' && (column.flags.ia || column.flags.id)) attributes += "disabled ";
+if (!req.authorization.permissions.includes("U") || (identityType == 'body' && (column.flags.ia || column.flags.id))) attributes += "disabled ";
 
 switch (column.type.id)
 {

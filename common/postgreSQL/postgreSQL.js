@@ -1,8 +1,8 @@
-import { config } from "common/index.js";
+import { Utils, config } from "common/index.js";
 
 import pg from 'pg';
 import format from 'pg-format';
-pg.types.setTypeParser(pg.types.builtins.INTERVAL, (value) => value);
+pg.types.setTypeParser(pg.types.builtins.INTERVAL, value => new Utils.Interval(value));
 
 import parse_response from "./parse_response.js";
 
