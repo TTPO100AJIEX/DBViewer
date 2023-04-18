@@ -31,37 +31,19 @@ class TableRow
             }
         }));
     }
-    getIdentifier()
+    getIdentifier(head)
     {
-        /*
+        let keys = Array.from(head.children[0].children).filter(th => th.children[0] && th.children[0].children[1].innerText.includes("[PK]")).map(th => th.children[0].children[0].innerText);
+        if (keys.length == 0) keys = Array.from(head.children[0].children).filter(th => th.children[0] && th.children[0].children[1].innerText.includes("[PK]")).map(th => th.children[0].children[0].innerText);
+        if (keys.length == 0) return this.getData();
+
+        let data = this.getData();
+        for (const key in data)
         {
-            sorts = Array.from(this.#head.children[0].children)
-                    .filter(th => th.children[0] && th.children[0].children[1].innerText.includes("[PK]"))
-                    .map(th => ({ name: th.children[0].children[0].innerText, order: 'asc' }));
+            if (!keys.includes(key)) delete data[key];
         }
-        if (sorts.length == 0)
-        {
-            sorts = Array.from(this.#head.children[0].children)
-                    .filter(th => th.children[0] && th.children[0].children[1].innerText.includes("[U]"))
-                    .map(th => ({ name: th.children[0].children[0].innerText, order: 'asc' }));
-        }
-        */
+        return data;
     }
-    /*getData()
-    {
-        return Object.fromEntries(this.inputs.map(input =>
-        {
-            switch (input.tagName)
-            {
-                case "SPAN": return [ input.getAttribute("name"), input.innerText ];
-                case "INPUT":
-                {
-                    if (input.type == "checkbox") return [ input.name, input.checked ];
-                }
-                default: return [ input.name, input.value ];
-            }
-        }));
-    }*/
 };
 class TableInsertRow extends TableRow
 {
@@ -168,12 +150,8 @@ export default class Table
         button.form.addEventListener("submit", ev =>
         {
             ev.preventDefault();
-            console.log('!');
-            const result = Table.#tables.reduce((acc, cur) => acc.concat(cur.getUpdateActions()), [ ]);
-            console.log(result);
-            //ev.currentTarget.elements.actions.value = JSON.stringify(Table.tables.reduce((prev, cur) => prev.concat(cur.getUpdateActions()), [ ]));
-            //Table.tables.forEach(table => table.saveExtraData(ev.currentTarget));
-            //ev.currentTarget.submit();
+            ev.currentTarget.elements.actions.value = JSON.stringify(Table.#tables.reduce((acc, cur) => acc.concat(cur.getUpdateActions()), [ ]));
+            ev.currentTarget.submit();
         }, { "capture": false, "once": false, "passive": false });
     }
     static showSaveButton() { this.#saveButton.hidden = false; }
@@ -327,8 +305,8 @@ export default class Table
     {
         return [
             ...this.#insertRows.slice(0, -1).map(row => ({ type: "INSERT", data: row.getData() })),
-            ...this.#displayRows.filter(row => row.deleted).map(row => ({ type: "DELETE", id: row.getIdentifier() })),
-            ...this.#displayRows.filter(row => row.edited && !row.deleted).map(row => ({ type: "UPDATE", data: row.getData(), id: row.getIdentifier() }))
+            ...this.#displayRows.filter(row => row.deleted).map(row => ({ type: "DELETE", id: row.getIdentifier(this.#head) })),
+            ...this.#displayRows.filter(row => row.edited && !row.deleted).map(row => ({ type: "UPDATE", data: row.getData(), id: row.getIdentifier(this.#head) }))
         ];
     }
 };

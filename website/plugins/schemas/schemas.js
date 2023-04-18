@@ -23,10 +23,11 @@ export default {
         body:
         {
             type: "object",
-            required: [ "table", "actions" ],
+            required: [ "authentication", "table", "actions" ],
             additionalProperties: false,
             properties:
             {
+                "authentication": templates.authentication,
                 "table": { type: "integer" },
                 "actions": { type: "string" }
             }

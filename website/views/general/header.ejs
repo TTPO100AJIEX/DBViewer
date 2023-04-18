@@ -26,5 +26,6 @@
     <form id="changes" method="POST" action="/data" hidden>
         <input type="hidden" name="actions" value="[]">
         <input type="hidden" name="table" value="<%=req.query.id%>">
+        <input type="hidden" name="authentication" value="<%=req.authentication%>">
     </form>
 <% } %>

@@ -1,8 +1,8 @@
 <%
-let attributes = `name=${column.name} data-column=${column.name} `;
+let attributes = `name="${column.name}" data-column="${column.name}" autocomplete="off" `;
 
-if (column.type.id == 16 || column.enumlabels) attributes += `data-comparison=exact `;
-else attributes += `data-comparison=substring `;
+if (column.type.id == 16 || column.enumlabels) attributes += `data-comparison="exact" `;
+else attributes += `data-comparison="substring" `;
 
 if (identityType == 'body' && (column.flags.ia || column.flags.id)) attributes += "disabled ";
 
@@ -12,7 +12,7 @@ switch (column.type.id)
     {
         if (identityType == 'head')
         { %>
-            <select <%=attributes%>>
+            <select <%-attributes%>>
                 <option value="">Не выбрано</option>
                 <option value="false">Не отмечено</option>
                 <option value="true">Отмечено</option>
@@ -20,35 +20,35 @@ switch (column.type.id)
         <% }
         else
         { %>
-            <label class="checkboxWrapper"> <input type="checkbox" <%=attributes%>> </label>
+            <label class="checkboxWrapper"> <input type="checkbox" <%-attributes%>> </label>
         <% }
         break;
     }
     
-    case 20: { %> <input type="number" placeholder="Введите число" step="1" min="-9223372036854775807" max="9223372036854775807" <%=attributes%>> <% break; }
-    case 21: { %> <input type="number" placeholder="Введите число" step="1" min="-32767 " max="32767 " <%=attributes%>> <% break; }
-    case 23: { %> <input type="number" placeholder="Введите число" step="1" min="-2147483648" max="2147483648" <%=attributes%>> <% break; }
-    case 700: case 701: case 1700: { %> <input type="number" placeholder="Введите число" <%=attributes%>> <% break; }
+    case 20: { %> <input type="number" placeholder="Введите число" step="1" min="-9223372036854775807" max="9223372036854775807" <%-attributes%>> <% break; }
+    case 21: { %> <input type="number" placeholder="Введите число" step="1" min="-32767 " max="32767 " <%-attributes%>> <% break; }
+    case 23: { %> <input type="number" placeholder="Введите число" step="1" min="-2147483648" max="2147483648" <%-attributes%>> <% break; }
+    case 700: case 701: case 1700: { %> <input type="number" placeholder="Введите число" <%-attributes%>> <% break; }
     
 
-    case 1114: case 1184: { %> <input type="datetime-local" placeholder="Введите дату и время" <%=attributes%>> <% break; }
-    case 1082: { %> <input type="date" placeholder="Введите дату" <%=attributes%>> <% break; }
-    case 1083: case 1266: { %> <input type="time" placeholder="Введите время" <%=attributes%>> <% break; }
+    case 1114: case 1184: { %> <input type="datetime-local" placeholder="Введите дату и время" <%-attributes%>> <% break; }
+    case 1082: { %> <input type="date" placeholder="Введите дату" <%-attributes%>> <% break; }
+    case 1083: case 1266: { %> <input type="time" placeholder="Введите время" <%-attributes%>> <% break; }
 
 
-    case 18: case 1043: { %> <input type="text" placeholder="Введите данные" maxlength="<%=column.type.mod - 4%>" <%=attributes%>> <% break; }
+    case 18: case 1043: { %> <input type="text" placeholder="Введите данные" maxlength="<%=column.type.mod - 4%>" <%-attributes%>> <% break; }
     default:
     {
         if (column.enumlabels)
         { %>
-            <select <%=attributes%>>
+            <select <%-attributes%>>
                 <option value="">Не выбрано</option>
                 <% for (const key of column.enumlabels) { %> <option value="<%=key%>"><%=key%></option> <% } %>
             </select>
         <% }
         else
         { %>
-            <input type="text" placeholder="Введите данные" <%=attributes%>>
+            <input type="text" placeholder="Введите данные" <%-attributes%>>
         <% }
         break;
     }

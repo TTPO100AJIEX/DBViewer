@@ -73,7 +73,52 @@ async function websocket_data(connection, req)
 async function post_data(req, res)
 {
     // TODO: ajv validation
-    console.log(req.body);
+    const actions = JSON.parse(req.body.actions);
+    if (actions.length == 0) return res.redirect(`/table?id=${req.body.table}`);
+    
+    const { schema, table } = await TargetDatabase.query(`SELECT pg_namespace.nspname AS schema, pg_class.relname AS table
+            FROM pg_class INNER JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace WHERE pg_class.oid = $1`, [ req.body.table ], false, true);
+
+    function build_where(identifier = { })
+    {
+        return {
+            conditions: Object.values(identifier).map(value => Array.isArray(value) ? `%I = ARRAY[%L]::text[]` : "%I = %L").join(", "),
+            params: Object.entries(identifier).flat()
+        }
+    }
+
+    let queries = [ ];
+    for (const action of actions)
+    {
+        if (action.data) action.data = Object.fromEntries(Object.entries(action.data).map(entry => [ entry[0], (entry[1] === false || entry[1] === 0) ? entry[1] : (entry[1] || null) ]));
+        const { conditions, params } = build_where(action.id);
+        switch (action.type)
+        {
+            case "DELETE":
+            {
+                queries.push(PostgreSQL.format(`DELETE FROM %I.%I WHERE ${conditions}`, schema, table, ...params));
+                break;
+            }
+            case "INSERT":
+            {
+                queries.push(PostgreSQL.format(`INSERT INTO %I.%I (${new Array(Object.keys(action.data).length).fill("%I").join(', ')}) OVERRIDING USER VALUE
+                    VALUES (${Object.values(action.data).map(value => Array.isArray(value) ? `ARRAY[%L]::text[]` : "%L")})`,
+                    schema, table, ...Object.keys(action.data), ...Object.values(action.data)));
+                break;
+            }
+            case "UPDATE":
+            {
+                for (const key in action.id) delete action.data[key];
+                queries.push(PostgreSQL.format(`UPDATE %I.%I
+                    SET ${Object.values(action.data).map(value => Array.isArray(value) ? `%I = ARRAY[%L]::text[]` : "%I = %L").join(", ")}
+                    WHERE ${conditions}`,
+                    schema, table, ...(Object.entries(action.data).flat()), ...params));
+                break;
+            }
+        }
+    }
+    await TargetDatabase.query_multiple(queries);
+    return res.redirect(`/table?id=${req.body.table}`);
 }
 
 export { get_database, get_table, websocket_data, post_data };

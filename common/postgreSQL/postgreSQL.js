@@ -2,6 +2,7 @@ import { config } from "common/index.js";
 
 import pg from 'pg';
 import format from 'pg-format';
+pg.types.setTypeParser(pg.types.builtins.INTERVAL, (value) => value);
 
 import parse_response from "./parse_response.js";
 
