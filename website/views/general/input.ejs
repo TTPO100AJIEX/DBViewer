@@ -4,7 +4,7 @@ let attributes = `name="${column.name}" data-column="${column.name}" autocomplet
 if (column.type.id == 16 || column.enumlabels) attributes += `data-comparison="exact" `;
 else attributes += `data-comparison="substring" `;
 
-if (!req.authorization.permissions.includes("U") || (identityType == 'body' && (column.flags.ia || column.flags.id))) attributes += "disabled ";
+if (!req.authorization.permissions.includes("U") || (identityType == 'body' && (column.flags?.ia || column.flags?.id || req.routerPath == "/admin/logs"))) attributes += "disabled ";
 
 switch (column.type.id)
 {
@@ -48,10 +48,8 @@ switch (column.type.id)
         <% }
         else
         { %>
-            <input type="text" placeholder="Введите данные" <%-attributes%>>
+            <textarea placeholder="Введите данные" rows="1" <%-attributes%>></textarea>
         <% }
         break;
     }
 } %>
-
-<!-- TODO: maybe textarea for 18, 25, 1043 and default (required task change) -->

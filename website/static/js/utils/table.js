@@ -33,8 +33,8 @@ class TableRow
     }
     getIdentifier(head)
     {
-        let keys = Array.from(head.children[0].children).filter(th => th.children[0] && th.children[0].children[1].innerText.includes("[PK]")).map(th => th.children[0].children[0].innerText);
-        if (keys.length == 0) keys = Array.from(head.children[0].children).filter(th => th.children[0] && th.children[0].children[1].innerText.includes("[PK]")).map(th => th.children[0].children[0].innerText);
+        let keys = Array.from(head.children[0].children).filter(th => (th.children?.[0]?.children?.[1]?.innerText ?? '').includes("[PK]")).map(th => th.children[0].children[0].innerText);
+        if (keys.length == 0) keys = Array.from(head.children[0].children).filter(th => (th.children?.[0]?.children?.[1]?.innerText ?? '').includes("[U]")).map(th => th.children[0].children[0].innerText);
         if (keys.length == 0) return this.getData();
 
         let data = this.getData();
@@ -56,6 +56,7 @@ class TableInsertRow extends TableRow
     
     showDeleteButton()
     {
+        if (!this.deleteButton) return;
         this.deleteButton.addEventListener("click", this.removed.bind(this), { "capture": false, "once": true, "passive": true });
         this.deleteButton.hidden = false;
         Table.showSaveButton();
@@ -66,7 +67,7 @@ class TableDisplayRow extends TableRow
     constructor(data, template)
     {
         super(template); this.deleted = this.edited = false; this.#fillData(data);
-        this.deleteButton.addEventListener("click", this.remove.bind(this), { "capture": false, "once": false, "passive": true });
+        if (this.deleteButton) this.deleteButton.addEventListener("click", this.remove.bind(this), { "capture": false, "once": false, "passive": true });
     }
 
     #fillData(data)
@@ -161,10 +162,11 @@ export default class Table
     #table; #head; #insertBody; #displayBody;
     #insertRow; #displayRow;
     #displayObserver;
-    constructor(table, group_size, socket)
+    constructor(table, group_size, socket, socketEventName = "table_rows")
     {
         this.#group_size = group_size;
         this.socket = socket;
+        this.socketEventName = socketEventName;
         
         this.#table = table;
         this.#head = table.querySelector("thead");
@@ -174,16 +176,15 @@ export default class Table
         let rowTemplate = table.querySelector("[data-type=row]"); rowTemplate.remove();
 
         let insertIdentityColumn = rowTemplate.content.querySelector("[data-type=insert]");
-        insertIdentityColumn.parentElement.dataset.identity = true
-        insertIdentityColumn.remove();
+        if (insertIdentityColumn) { insertIdentityColumn.parentElement.dataset.identity = true; insertIdentityColumn.remove(); }
 
         let displayIdentityColumn = rowTemplate.content.querySelector("template[data-type=display]");
-        displayIdentityColumn.parentElement.dataset.identity = true
-        displayIdentityColumn.remove();
+        if (displayIdentityColumn) { displayIdentityColumn.parentElement.dataset.identity = true; displayIdentityColumn.remove(); }
 
         let insertTemplate = rowTemplate.cloneNode(true), displayTemplate = rowTemplate.cloneNode(true);
-        insertTemplate.content.querySelector("[data-identity]").append(insertIdentityColumn.content.cloneNode(true));
-        displayTemplate.content.querySelector("[data-identity]").append(displayIdentityColumn.content.cloneNode(true));
+        if (insertIdentityColumn) insertTemplate.content.querySelector("[data-identity]").append(insertIdentityColumn.content.cloneNode(true));
+        if (displayIdentityColumn) displayTemplate.content.querySelector("[data-identity]").append(displayIdentityColumn.content.cloneNode(true));
+
 
         this.#insertRow = class InsertRow extends TableInsertRow
         {
@@ -221,13 +222,13 @@ export default class Table
         if (sorts.length == 0)
         {
             sorts = Array.from(this.#head.children[0].children)
-                    .filter(th => th.children[0] && th.children[0].children[1].innerText.includes("[PK]"))
+                    .filter(th => (th.children?.[0]?.children?.[1]?.innerText ?? '').includes("[PK]"))
                     .map(th => ({ name: th.children[0].children[0].innerText, order: 'asc' }));
         }
         if (sorts.length == 0)
         {
             sorts = Array.from(this.#head.children[0].children)
-                    .filter(th => th.children[0] && th.children[0].children[1].innerText.includes("[U]"))
+                    .filter(th => (th.children?.[0]?.children?.[1]?.innerText ?? '').includes("[U]"))
                     .map(th => ({ name: th.children[0].children[0].innerText, order: 'asc' }));
         }
         return sorts;
@@ -260,12 +261,12 @@ export default class Table
         {
             const id = crypto.randomUUID(), socketListener = (message) => {
                 const msg = JSON.parse(message.data);
-                if (msg.eventName == "table_rows" && msg.data.id == id) resolve(msg.data);
+                if (msg.eventName == this.socketEventName && msg.data.id == id) resolve(msg.data);
                 this.socket.removeEventListener("message", socketListener, { "capture": false, "once": false, "passive": true });
             };
             this.socket.addEventListener("message", socketListener, { "capture": false, "once": false, "passive": true });
             this.socket.send(JSON.stringify({
-                requestName: "table_rows",
+                requestName: this.socketEventName,
                 data: {
                     id: id,
                     tableid: this.#table.dataset.tableid,
@@ -282,7 +283,8 @@ export default class Table
         for (const row of data)
         {
             this.#displayRows.push(new this.#displayRow(row));
-            this.#displayRows.at(-1).elements.map(e => e.querySelector("[data-identity]")).filter(e => e)[0].children[0].children[1].innerText = this.#displayRows.length;
+            const identityCell = this.#displayRows.at(-1).elements.map(e => e.querySelector("[data-identity]")).filter(e => e)[0];
+            if (identityCell) identityCell.children[0].children[1].innerText = this.#displayRows.length;
             this.#displayBody.append(...this.#displayRows.at(-1).elements);
         }
     } 

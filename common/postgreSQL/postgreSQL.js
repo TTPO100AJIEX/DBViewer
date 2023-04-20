@@ -27,8 +27,7 @@ export default class PostgreSQL
         let final_query = "", plan = [ ];
         for (const key in queries)
         {
-            if (typeof queries[key] !== "object") queries[key] = { "query": queries[key] };
-            const info = queries[key];
+            const info = (typeof queries[key] !== "object") ? { "query": queries[key] } : queries[key];
             plan.push({ "name": key, "parse": info.parse ?? false, "one_response": info.one_response ?? false });
             final_query += `${info.query}${info.query.endsWith(";") ? "" : ";"}`;
         }

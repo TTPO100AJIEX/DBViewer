@@ -21,7 +21,19 @@ await InternalDatabase.query_multiple([
             (CASE WHEN admin THEN 'A' ELSE '-' END)
         ) STORED
     )
-  `
+    `,
+    `CREATE TYPE REQUEST_TYPE AS ENUM ('SELECT', 'INSERT', 'UPDATE', 'DELETE')`,
+    `
+    CREATE TABLE logs
+    (
+        id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+        date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        type REQUEST_TYPE NOT NULL,
+        data TEXT NOT NULL,
+        userid SMALLINT REFERENCES users(id) MATCH FULL ON DELETE SET NULL ON UPDATE CASCADE,
+        query TEXT NOT NULL,
+        query_params TEXT NOT NULL DEFAULT '[ ]'
+    )`
 ]);
 
 console.log(`Created tables`);

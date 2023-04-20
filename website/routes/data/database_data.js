@@ -1,12 +1,8 @@
 import { TargetDatabase } from "common/index.js";
 
-export default async function database_data(msg, socket)
+export default async function database_data(msg, socket, req)
 {
-    const [
-        { database_name, postgres_version, uptime, database_size },
-        connections_stats,
-        stats
-    ] = await TargetDatabase.query_multiple([
+    const [ { database_name, postgres_version, uptime, database_size }, connections_stats, stats ] = await TargetDatabase.query_multiple([
         {
             query: `SELECT current_database() AS database_name, version() AS postgres_version,
                             NOW() - pg_postmaster_start_time() AS uptime, pg_size_pretty(pg_database_size(current_database())) AS database_size`,

@@ -1,0 +1,54 @@
+<% locals.has_nav = true; %>
+<!DOCTYPE html>
+<html lang='ru'>
+    <head>
+        <title>История изменений</title>
+        <meta name="description" content="История изменений">
+        <script src="/static/js/admin/logs.js" type="module" nonce="<%=res.cspNonce.script%>"></script>
+        <%- include("../general/head.ejs", locals) %>
+    </head>
+    <body>
+        <%- include("../general/nav.ejs", locals) %>
+        
+        <div class="main_body">
+            <%- include("../general/header.ejs", locals) %>
+            <main tabindex="-1">
+                <h1>История изменений</h1>
+                <table id="logs_table" class="data_table" data-tableid="<%=req.query.id%>">
+                    <thead>
+                        <tr>
+                            <%  for (const column of columns)
+                            { %>
+                                <th> <button class="control_block text_size_regular dropdown_opener dropdown_arrow" data-dropdown="data_table_head_<%=column.name%>"><span><%=column.label || column.name%></span></button> </th>
+                            <% } %>
+                        </tr>
+                        <tr>
+                            <% for (const column of columns)
+                            { %>
+                                <td>
+                                    <div id="data_table_head_<%=column.name%>" class="dropdown_inplace flex_vertical" tabindex="-1" hidden>
+                                        <label> Поиск: <%- include("../general/input.ejs", { ...locals, column, identityType: 'head' }) %> </label>
+                                        <label>
+                                            Сортировка:
+                                            <select class="sortOrder" data-column="<%=column.name%>">
+                                                <option value="asc">По возрастанию</option>
+                                                <option value="desc">По убыванию</option>
+                                                <option value="no" selected>Без сортировки</option>
+                                            </select>
+                                        </label>
+                                    </div>
+                                </td>
+                            <% } %>
+                        </tr>
+                    </thead>
+                    <tbody data-type="display"></tbody>
+                    <template data-type="row">
+                        <tr>
+                            <% for (const column of columns) { %> <td> <%- include("../general/input.ejs", { ...locals, column, identityType: 'body' }) %> </td> <% } %>
+                        </tr>
+                    </template>
+                </table>
+            </main>
+        </div>
+    </body>
+</html>
