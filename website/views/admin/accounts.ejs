@@ -1,0 +1,109 @@
+<% locals.has_nav = true; %>
+<!DOCTYPE html>
+<html lang='ru'>
+    <head>
+        <title>Страница управления аккаунтами</title>
+        <meta name="description" content="Страница управления аккаунтами">
+        <%- include("../general/head.ejs", locals) %>
+    </head>
+    <body>
+        <%- include("../general/nav.ejs", locals) %>
+        
+        <div class="main_body">
+            <%- include("../general/header.ejs", locals) %>
+            <main tabindex="-1">
+                <h1>Страница управления аккаунтами</h1>
+                <!-- TODO: Load in parts like on other pages -->
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Имя аккаунта</th>
+                            <th>Уровень доступа</th>
+                            <th>Управление</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for (const account of accounts)
+                        { %>
+                            <tr>
+                                <td><%=account.login%></td>
+                                <%
+                                const perms_title = ((account.permissions.includes("R") ? "Чтение&#10;" : "") +
+                                                    (account.permissions.includes("I") ? "Вставка&#10;" : "") +
+                                                    (account.permissions.includes("U") ? "Обновление&#10;" : "") +
+                                                    (account.permissions.includes("D") ? "Удаление&#10;" : "") +
+                                                    (account.permissions.includes("A") ? "Администрирование&#10;" : "")) || "Отсутствует";
+                                %>
+                                <td title="<%-perms_title%>"><%=account.permissions%></td>
+                                <td>
+                                    <div class="grid_1x2">
+                                        <button data-dialog="edit_account_<%=account.id%>">Редактировать</button>
+                                        <form method="POST" action="/admin/accounts/delete">
+                                            <input type="hidden" name="authentication" value="<%=req.authentication%>">
+                                            <input type="hidden" name="id" value="<%=account.id%>">
+                                            <button>Удалить</button>
+                                        </form>
+                                    </div>
+                                    <dialog id="edit_account_<%=account.id%>" tabindex="-1">
+                                        <form method="POST" action="/admin/accounts/edit" class="grid grid_columns2">
+                                            <h2>Редактирование аккаунта</h2>
+                                            <label>
+                                                Имя аккаунта:
+                                                <input type="text" name="login" value="<%=account.login%>" placeholder="Введите не более 100 символов" maxlength="100" required>
+                                            </label>
+                                            <label>
+                                                Пароль:
+                                                <input type="password" name="password" placeholder="Пароль" maxlength="100">
+                                            </label>
+                                            <label class="grid_fill_row">
+                                                Уровень доступа:
+                                                <select multiple name="permissions" required>
+                                                    <option value="R" <%=account.permissions.includes("R") ? 'selected' : ''%>>Чтение</option>
+                                                    <option value="I" <%=account.permissions.includes("I") ? 'selected' : ''%>>Вставка</option>
+                                                    <option value="U" <%=account.permissions.includes("U") ? 'selected' : ''%>>Обновление</option>
+                                                    <option value="D" <%=account.permissions.includes("D") ? 'selected' : ''%>>Удаление</option>
+                                                    <option value="A" <%=account.permissions.includes("A") ? 'selected' : ''%>>Администрирование</option>
+                                                </select>
+                                            </label>
+                                            <button type="button" data-dialog="edit_account_<%=account.id%>">Отменить</button>
+                                            <button>Сохранить</button>
+                                            <input type="hidden" name="authentication" value="<%=req.authentication%>">
+                                            <input type="hidden" name="id" value="<%=account.id%>">
+                                        </form>
+                                    </dialog>
+                                </td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </main>
+        </div>
+
+        <dialog id="create_account" tabindex="-1">
+            <form method="POST" action="/admin/accounts/create" class="grid grid_columns2">
+                <h2>Создание аккаунта</h2>
+                <label>
+                    Имя аккаунта:
+                    <input type="text" name="login" placeholder="Введите не более 100 символов" maxlength="100" required>
+                </label>
+                <label>
+                    Пароль:
+                    <input type="password" name="password" placeholder="Пароль" required>
+                </label>
+                <label class="grid_fill_row">
+                    Уровень доступа:
+                    <select multiple name="permissions" required>
+                        <option value="R">Чтение</option>
+                        <option value="I">Вставка</option>
+                        <option value="U">Обновление</option>
+                        <option value="D">Удаление</option>
+                        <option value="A">Администрирование</option>
+                    </select>
+                </label>
+                <button type="button" data-dialog="create_account">Отменить</button>
+                <button>Сохранить</button>
+                <input type="hidden" name="authentication" value="<%=req.authentication%>">
+            </form>
+        </dialog>
+    </body>
+</html>

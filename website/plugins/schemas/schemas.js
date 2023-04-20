@@ -32,5 +32,53 @@ export default {
                 "actions": { type: "string" }
             }
         }
+    },
+
+    ACCOUNTS_DELETE:
+    {
+        body:
+        {
+            type: "object",
+            required: [ "authentication", "id" ],
+            additionalProperties: false,
+            properties:
+            {
+                "authentication": templates.authentication,
+                "id": templates.uinteger
+            }
+        }
+    },
+    ACCOUNTS_CREATE:
+    {
+        body:
+        {
+            type: "object",
+            required: [ "authentication", "login", "password" ],
+            additionalProperties: false,
+            properties:
+            {
+                "authentication": templates.authentication,
+                "login": { type: "string", minLength: 1, maxLength: 100 },
+                "password": { type: "string", minLength: 1 },
+                "permissions": { type: "array", maxItems: 5, uniqueItems: true, items: { type: "string", minLength: 1, maxLength: 1, enum: [ "R", "I", "U", "D", "A" ] } },
+            }
+        }
+    },
+    ACCOUNTS_EDIT:
+    {
+        body:
+        {
+            type: "object",
+            required: [ "authentication", "id", "login" ],
+            additionalProperties: false,
+            properties:
+            {
+                "authentication": templates.authentication,
+                "id": templates.uinteger,
+                "login": { type: "string", minLength: 1, maxLength: 100 },
+                "password": { type: "string" },
+                "permissions": { type: "array", maxItems: 5, uniqueItems: true, items: { type: "string", minLength: 1, maxLength: 1, enum: [ "R", "I", "U", "D", "A" ] } },
+            }
+        }
     }
 };

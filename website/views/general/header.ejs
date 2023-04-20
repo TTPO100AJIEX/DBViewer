@@ -22,13 +22,14 @@
     
     <div class="navigation"></div>
 
-    <div class="controls">
-        <button id="save_changes" class="control_empty padding_regular_wide" form="changes" hidden>Сохранить</button>
-        <a href="/logout" class="control_empty padding_regular_wide">Выйти</a>
+    <div class="grid_1x2">
+        <% if (req.routerPath == "/admin/accounts") { %> <button class="padding_regular_wide" data-dialog="create_account">Создать</button> <% }
+        else { %> <button id="save_changes" class="padding_regular_wide" form="changes" hidden>Сохранить</button> <% } %>
+        <a href="/logout" class="control_primary padding_regular_wide">Выйти</a>
     </div>
 </header>
 
-<% if (req.query.id)
+<% if (req.routerPath.startsWith("/table"))
 { %>
     <form id="changes" method="POST" action="/data" hidden>
         <input type="hidden" name="actions" value="[]">

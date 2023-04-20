@@ -15,7 +15,7 @@
             <%- include("./general/header.ejs", locals) %>
             <main tabindex="-1">
                 <h1>База данных <span id="database_name">dolix</span></h1>
-                <dl>
+                <dl class="margin_vertical_regular">
                     <dt>Версия PostgreSQL</dt>
                     <dd id="postgres_version">&nbsp;</dd>
 
@@ -28,8 +28,8 @@
                     <dt>Последний сброс статистики</dt>
                     <dd id="stats_reset">&nbsp;</dd>
                 </dl>
-                <p>Ниже представлена статистика нагрузки на сервер базы данных, которая может быть полезна при диагностике ошибок БД администратором:</p>
-                <div class="graphs margin_vertical_medium">
+                <p class="margin_vertical_regular">Ниже представлена статистика нагрузки на сервер базы данных, которая может быть полезна при диагностике ошибок БД администратором:</p>
+                <div class="graphs">
                     <div class="surface_rounded" id="connections_graph"></div>
                     <div class="surface_rounded" id="queries_graph"></div>
                     <div class="surface_rounded" id="reads_graph"></div>

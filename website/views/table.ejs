@@ -15,7 +15,7 @@
             <%- include("./general/header.ejs", locals) %>
             <main tabindex="-1">
                 <h1>Таблица <span id="table_name"><%=tables.find(table => table.id == req.query.id).name%></span></h1>
-                <dl>
+                <dl class="margin_vertical_regular">
                     <dt>Тип</dt>
                     <dd id="table_type">&nbsp;</dd>
 
@@ -25,8 +25,8 @@
                     <dt>Количество записей в таблице</dt>
                     <dd id="table_rows">&nbsp;</dd>
                 </dl>
-                <p>Ниже представлена статистика нагрузки на сервер базы данных, которая может быть полезна при диагностике ошибок БД администратором:</p>
-                <div class="graphs margin_vertical_medium">
+                <p class="margin_vertical_regular">Ниже представлена статистика нагрузки на сервер базы данных, которая может быть полезна при диагностике ошибок БД администратором:</p>
+                <div class="graphs">
                     <div class="surface_rounded" id="reads_graph"></div>
                     <div class="surface_rounded" id="scans_graph"></div>
                     <div class="surface_rounded" id="updates_graph"></div>
@@ -49,7 +49,7 @@
                             { %>
                                 <th>
                                     <% const title = Object.entries(column.flags).filter(flag => flag[1]).map(flag => flag_tips[flag[0].toUpperCase()]).join('&#10;'); %>
-                                    <button class="text_size_regular dropdown_opener dropdown_arrow" data-dropdown="data_table_head_<%=column.name%>" title="<%-title%>">
+                                    <button class="control_block text_size_regular dropdown_opener dropdown_arrow" data-dropdown="data_table_head_<%=column.name%>" title="<%-title%>">
                                         <span><%=column.name%></span>
                                         <span class="text_minor text_size_small">
                                             <%=Object.entries(column.flags).filter(flag => flag[1]).map(flag => `[${flag[0].toUpperCase()}]`).join(' ')%>
@@ -79,21 +79,21 @@
                             <% } %>
                         </tr>
                     </thead>
-                    <% if (!req.authorization.permissions.includes("I")) { %> <tbody data-type="insert"></tbody> <% } %>
+                    <% if (req.authorization.permissions.includes("I")) { %> <tbody data-type="insert"></tbody> <% } %>
                     <tbody data-type="display"></tbody>
                     <template data-type="row">
                         <tr>
                             <td>
                                 <template data-type="insert">
                                     <div>
-                                        <button class="striped_button" title="Удалить строку" hidden><span></span></button>
+                                        <button class="control_block striped_button" title="Удалить строку" hidden><span></span></button>
                                         <span>Новый</span>
                                     </div>
                                 </template>
                                 <template data-type="display">
                                     <div>
-                                        <% if (!req.authorization.permissions.includes("D")) { %> <button class="striped_button" title="Удалить строку" disabled><span></span></button> <% }
-                                        else { %> <button class="striped_button" title="Удалить строку" disabled><span></span></button> <% } %>
+                                        <% if (!req.authorization.permissions.includes("D")) { %> <button class="control_block striped_button" title="Удалить строку" disabled><span></span></button> <% }
+                                        else { %> <button class="control_block striped_button" title="Удалить строку"><span></span></button> <% } %>
                                         <span>1</span>
                                     </div>
                                 </template>

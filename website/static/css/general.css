@@ -167,12 +167,12 @@
 
     *, *::before, *::after
     {
-        padding: 0; margin: 0; box-sizing: border-box; min-width: 0;
+        padding: 0; margin: 0; box-sizing: border-box;
         scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--scrollbar-color) var(--background-color);
         transition-duration: 0.25s; transition-timing-function: ease-out; transition-property: var(--transitioned), background-color, color, border-color, text-decoration-color; --transitioned: color;
     }
     * { color: var(--text-major-color); font-family: inherit; font-stretch: inherit; font-style: inherit; font-variant: inherit; font-weight: inherit; line-height: inherit; }
-    *::before, *::after { display: inline-block; }
+    *::before, *::after { display: inline-block; color: var(--text-major-color); }
     body { font-size: var(--font-size-regular); font-weight: 500; font-family: Inter, sans-serif, system-ui; line-height: var(--line-height); text-align: left; text-size-adjust: 100%; }
     main { display: block; padding: var(--padding-large); }
     
@@ -183,20 +183,7 @@
 
     strong { font-weight: 700; }
 
-    hr { margin: var(--margin-vertical-small) 0; border: none; background-color: var(--text-major-color); height: 1px; }
-
-
-    table { min-width: 100%; border-spacing: 0; }
-    table thead { position: sticky; z-index: 2; top: calc(-1 * var(--padding-vertical-large)); background: var(--surface-color); filter: drop-shadow(0 -10px 0px var(--background-color)); }
-    table :is(th, td) { position: relative; }
-
-    table th:first-child { border-top-left-radius: var(--border-radius-regular); }
-    table th:last-child { border-top-right-radius: var(--border-radius-regular); }
-
-    table tr > * { border-bottom: thin solid var(--border-color); border-right: thin solid var(--border-color); }
-    table > :first-child > :first-child > * { border-top: thin solid var(--shadow-color); }
-    table tr > :last-child { border-right: thin solid var(--shadow-color); }
-    table tr > :first-child { border-left: thin solid var(--shadow-color); }
+    hr { margin: var(--margin-vertical-regular) 0; border: none; background-color: var(--text-major-color); height: 1px; }
 
 
     [hidden], input[type=hidden] { display: none !important; content-visibility: hidden !important; }
@@ -212,7 +199,7 @@
 
 @layer surface
 {
-    .surface, .surface_rounded { display: block; padding: var(--padding-huge); background-color: var(--surface-color); box-shadow: 0px 0px 0px 1px var(--shadow-color); }
+    .surface, .surface_rounded { display: block; padding: var(--padding-large); background-color: var(--surface-color); box-shadow: 0px 0px 0px 1px var(--shadow-color); }
     .surface_rounded { border-radius: var(--border-radius-regular); }
 }
 
@@ -227,7 +214,7 @@
 @layer lists
 {
     ol, ul, menu { list-style-position: inside; }
-    li > :is(ol, ul, menu) { padding-left: var(--horizontal-sizing-regular); padding-right: var(--horizontal-sizing-regular); }
+    li > :is(ol, ul, menu) { padding-left: var(--padding-horizontal-regular); padding-right: var(--padding-horizontal-regular); }
     
     dt { float: left; font-weight: 600; color: var(--text-minor-color); }
     dt::after { content: ':'; margin-right: 0.33ch; }
@@ -241,34 +228,58 @@
 
 @layer controls
 {
-    a, button, .control_inline, .control_block, .control_filled, .control_empty
+    @layer defaults
     {
-        display: inline-block; text-decoration: underline; text-decoration-color: transparent; text-align: left; cursor: pointer;
-        background: transparent; border: thin solid transparent;
+        a, button, .control_inline, .control_block, .control_primary, .control_secondary
+        {
+            display: inline-block; text-decoration: underline; text-decoration-color: transparent; text-align: left; cursor: pointer;
+            background: transparent; border: thin solid transparent;
+        }
     }
 
-
-    a:not(.control_block, .control_filled, .control_empty), .control_inline { text-decoration: underline; }
-    :is(a:not(.control_block, .control_filled, .control_empty), .control_inline):is(:hover, :visited) { color: var(--text-brand-color); }
-    :is(a:not(.control_block, .control_filled, .control_empty), .control_inline):is(:hover, :visited)::before { color: var(--text-brand-color); }
-    :is(a:not(.control_block, .control_filled, .control_empty), .control_inline):is(:hover, :visited)::after { color: var(--text-brand-color); }
-
-
-    button:not(.control_inline), .control_block, .control_filled, .control_empty
+    @layer control_inline
     {
-        font-size: var(--font-size-small); padding: var(--padding-regular); border-radius: var(--border-radius-regular); min-height: var(--interactive-min-height);
-        text-overflow: ellipsis; overflow-x: hidden; white-space: nowrap;
+        /* Default for <a> is .control_inline */
+        a:not(.control_block, .control_primary, .control_secondary), .control_inline { text-decoration: underline; }
+        :is(a:not(.control_block, .control_primary, .control_secondary), .control_inline):is(:hover, :visited) { color: var(--text-brand-color); }
+        :is(a:not(.control_block, .control_primary, .control_secondary), .control_inline):is(:hover, :visited)::before { color: var(--text-brand-color); }
+        :is(a:not(.control_block, .control_primary, .control_secondary), .control_inline):is(:hover, :visited)::after { color: var(--text-brand-color); }
+        :is(a:not(.control_block, .control_primary, .control_secondary), .control_inline):is(:hover, :visited) > * { color: var(--text-brand-color); }
     }
 
-    .control_block:hover, .control_block:hover::before, .control_block:hover::after { color: var(--text-brand-color); }
+    
+    @layer block_defaults
+    {
+        button:not(.control_inline), .control_block, .control_primary, .control_secondary
+        {
+            font-size: var(--font-size-small); padding: var(--padding-regular); border-radius: var(--border-radius-regular); min-height: var(--interactive-min-height);
+            text-overflow: ellipsis; overflow-x: hidden; white-space: nowrap;
+        }
+        :is(button:not(.control_inline), .control_block, .control_primary, .control_secondary) > span { text-overflow: ellipsis; overflow-x: hidden; white-space: nowrap; }
+    }
 
-    :is(a, button):is(.control_filled, .control_empty) { display: inline-flex; align-items: center; justify-content: center; text-align: center; }
-    :is(a, button):not(.control_filled, .control_empty):hover { text-decoration-color: currentColor; }
+    @layer control_block
+    {
+        .control_block:hover, .control_block:hover::before, .control_block:hover::after, .control_block:hover > * { color: var(--text-brand-color); }
+        .control_block:hover { text-decoration-color: currentColor; }
+    }
+    
+    @layer control_secondary
+    {
+        :is(a, button).control_secondary { display: inline-flex; align-items: center; justify-content: center; text-align: center; }
+        .control_secondary { background-color: transparent; border-color: var(--brand-color); }
+        :is(a, button):not(:disabled).control_secondary:hover { background-color: var(--brand-color); border-color: transparent; }
+        :is(a, button):not(:disabled).control_secondary:hover::selection { background-color: var(--text-major-color); color: var(--brand-color); fill: var(--brand-color); }
+    }
 
-    .control_filled, :is(a, button).control_empty:hover { background-color: var(--brand-color); border-color: transparent; }
-    :is(.control_filled, :is(a, button).control_empty:hover)::selection { background-color: var(--text-major-color); color: var(--brand-color); fill: var(--brand-color); }
-
-    .control_empty, :is(a, button).control_filled:hover { background-color: transparent; border-color: var(--brand-color); }
+    /* Default for <button> is .control_primary */
+    @layer control_primary
+    {
+        button:not(.control_inline, .control_block, .control_secondary), :is(a, button).control_primary { display: inline-flex; align-items: center; justify-content: center; text-align: center; }
+        button:not(.control_inline, .control_block, .control_secondary), .control_primary { background-color: var(--brand-color); border-color: transparent; }
+        :is(button:not(.control_inline, .control_block, .control_secondary), .control_primary)::selection { background-color: var(--text-major-color); color: var(--brand-color); fill: var(--brand-color); }
+        :is(button:not(.control_inline, .control_block, .control_secondary), :is(a, button).control_primary):not(:disabled):hover { background-color: transparent; border-color: var(--brand-color); }
+    }
 }
 
 @layer forms
@@ -279,27 +290,46 @@
     }
     @layer elements
     {
-        input:not([type='checkbox']), textarea, select, .checkboxWrapper
+        @layer defaults
         {
-            display: block; width: 100%; min-width: 175px; padding: var(--padding-regular); margin: 4px 0; min-height: var(--interactive-min-height);
-            font-size: var(--font-size-small); background-color: var(--background-color); border: thin solid var(--border-color); border-radius: var(--border-radius-regular);
+            input:not([type='checkbox']), textarea, select, .checkboxWrapper
+            {
+                display: block; width: 100%; min-width: 175px; padding: var(--padding-regular); margin: 4px 0; min-height: var(--interactive-min-height);
+                font-size: var(--font-size-small); background-color: var(--background-color); border: thin solid var(--border-color); border-radius: var(--border-radius-regular);
+            }
+            textarea, select[multiple] { resize: vertical; }
+            ::placeholder { color: var(--text-placeholder-color); opacity: 1; }
+            :is(input:not([type='checkbox']), select, textarea):disabled, .checkboxWrapper:has(input[type='checkbox']:disabled) { text-align: center; border: thin solid var(--brand-color); opacity: 1; }
+            :is(input:not([type='checkbox']), select, textarea):invalid, .checkboxWrapper:has(input[type='checkbox']:invalid) { border: thin solid var(--color-red); }
+
+            input[type='checkbox'] { height: calc(0.8 * var(--interactive-min-height)); aspect-ratio: 1/1; clip-path: circle(calc(48% - 3px)); }
+            .checkboxWrapper { padding-top: 0; padding-bottom: 0; display: flex; align-items: center; gap: 1ch; }
+            .checkboxWrapper:has(input[type='checkbox']):focus-within { outline: 2px solid var(--brand-color) !important; outline-offset: 1px !important; }
+            .checkboxWrapper::after { content: "Не отмечено"; }
+            .checkboxWrapper:has(input:checked)::after { content: "Отмечено"; }
         }
         
-        ::placeholder { color: var(--text-placeholder-color); opacity: 1; }
-        :is(input:not([type='checkbox']), select, textarea):disabled, .checkboxWrapper:has(input[type='checkbox']:disabled) { text-align: center; border: thin solid var(--brand-color); opacity: 1; }
-        :is(input:not([type='checkbox']), select, textarea):invalid, .checkboxWrapper:has(input[type='checkbox']:invalid) { border: thin solid var(--color-red); }
-        select { border: none; border-right: 1ch solid transparent !important; box-shadow: 0 0 0 1px var(--border-color); }
-        @-moz-document url-prefix()
+        @layer color
         {
-            select { padding-top: calc(var(--padding-vertical-regular) + 0.33em); }
+            input[type='color'] { padding: 0; }
+            ::-webkit-color-swatch-wrapper { padding: 0; }
+            ::-moz-color-swatch-wrapper { padding: 0; }
+            ::-webkit-color-swatch { border-radius: var(--border-radius-regular); }
+            ::-moz-color-swatch { border-radius: var(--border-radius-regular); }
         }
 
-        input[type='checkbox'] { height: calc(0.8 * var(--interactive-min-height)); aspect-ratio: 1/1; clip-path: circle(calc(48% - 3px)); }
+        @layer select
+        {
+            select:not([multiple]) { border: none; border-right: 1ch solid transparent !important; box-shadow: 0 0 0 1px var(--border-color); }
+            @-moz-document url-prefix()
+            {
+                select:not([multiple]) { padding-top: calc(var(--padding-vertical-regular) + 0.33em); }
+            }
 
-        .checkboxWrapper { padding-top: 0; padding-bottom: 0; display: flex; align-items: center; gap: 1ch; }
-        .checkboxWrapper:has(input[type='checkbox']):focus-within { outline: 2px solid var(--brand-color) !important; outline-offset: 1px !important; }
-        .checkboxWrapper::after { content: "Не отмечено"; }
-        .checkboxWrapper:has(input:checked)::after { content: "Отмечено"; }
+            option { padding: var(--padding-regular); border-radius: var(--border-radius-small); margin: 4px 0; font-size: var(--font-size-small); }
+            option:checked { background-color: var(--brand-color); }
+            option:is(:active, :hover, :focus) { background-color: var(--text-brand-color); color: var(--text-inverse-color); }
+        }
     }
     @layer forms
     {
@@ -311,7 +341,7 @@
 {
     @layer opener
     {
-        .dropdown_arrow, .dropdown_arrow_horizontal { display: flex; align-items: center; gap: var(--horizontal-sizing-regular); }
+        .dropdown_arrow, .dropdown_arrow_horizontal { display: flex; align-items: center; gap: var(--padding-horizontal-small); }
         :is(.dropdown_arrow, .dropdown_arrow_horizontal)::after
         {
             content: ''; margin-left: auto; rotate: 0deg; --transitioned: rotate; flex-shrink: 0;
@@ -364,6 +394,126 @@
             }
             .cross_button:not(:disabled):hover > span, .cross_button:not(:disabled):hover::after { background: var(--brand-color); }
         }
+    }
+}
+
+@layer tables
+{
+    table { min-width: 100%; border-spacing: 0; margin-top: var(--margin-vertical-regular); }
+    table thead { position: sticky; z-index: 2; top: calc(-1 * var(--padding-vertical-large) + 1px); background: var(--surface-color); filter: drop-shadow(0 -10px 0px var(--background-color)); }
+    table :is(th, td) { position: relative; padding: var(--padding-regular); width: max-content; }
+    
+    table th:first-child { border-top-left-radius: var(--border-radius-regular); }
+    table th:last-child { border-top-right-radius: var(--border-radius-regular); }
+    
+    table tr > * { border-bottom: thin solid var(--border-color); border-right: thin solid var(--border-color); }
+    table > :first-child > :first-child > * { border-top: thin solid var(--shadow-color); }
+    table tr > :last-child { border-right: thin solid var(--shadow-color); }
+    table tr > :first-child { border-left: thin solid var(--shadow-color); }
+}
+
+@layer dialogs
+{
+    dialog
+    {
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); min-width: min(95vw, 60ch); width: min-content; max-width: min(95vw, 80ch); max-height: 85vh;
+        padding: var(--padding-large); background-color: var(--surface-color); box-shadow: 0px 0px 0px 1px var(--shadow-color); border-radius: var(--border-radius-regular); border: none;
+    }
+    dialog::backdrop { background: var(--surface-color); opacity: 0.5; }
+    dialog:not([open]) { display: none !important; }
+}
+
+
+
+
+@layer body
+{
+    body { background-color: var(--background-color); height: 100vh; display: flex; gap: 1px; container-type: inline-size; container-name: body; }
+    .main_body { flex-grow: 2; container-type: inline-size; container-name: main_body; display: flex; flex-direction: column; }
+    main { overflow: auto; max-width: 100%; }
+    main > *:not(table) { position: sticky; left: 0; }
+}
+
+@layer header
+{
+    header { position: sticky; top: 0; z-index: 3; }
+
+    @layer main_body_header
+    {
+        .main_body > header { display: grid; grid-template-columns: auto 1fr auto; gap: var(--padding-regular); }
+        .main_body > header .userinfo { line-height: normal; }
+        .main_body > header .navigation { justify-content: center; }
+
+        @container (max-width: 900px)
+        {
+            .main_body > header { grid-template-columns: auto 1fr; }
+            .main_body > header > .navigation { order: -1; grid-column: 1 / -1; }
+        }
+        @container (max-width: 700px)
+        {
+            .main_body > header { grid-template-columns: auto; }
+            .main_body > header > .navigation { order: unset; grid-column: 1 / -1; }
+        }
+    }
+}
+
+@layer nav
+{
+    body > nav { position: sticky; top: 0; height: 100vh; overflow: scroll; width: 320px; max-width: 100vw; --transitioned: translate; }
+}
+@layer navigation_opener
+{    
+    #navigation_backdrop { position: fixed; left: 0; top: 0; width: 100vw; height: 100vh; z-index: 10; background: var(--background-color); opacity: 0.5; --transitioned: opacity, z-index; }
+    @media (max-width: 1000px)
+    {
+        body > nav { position: fixed; top: 0; left: 0; z-index: 11; translate: 0; }
+        body > nav.closed { translate: calc(-100% - 1px); }
+        #navigation_backdrop.closed { opacity: 0; z-index: -1; }
+    }
+}
+
+@layer graphs
+{
+    .graphs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(500px, 100%), 1fr)); gap: var(--margin-regular); }
+    .graphs > div { aspect-ratio: 5/3; min-height: 0; padding: var(--padding-vertical-small) 0; }
+}
+@layer data_table
+{
+    @layer defaults
+    {
+        .data_table :is(th, td):has(input:not([type='checkbox']), button, textarea, select, .checkboxWrapper, .dropdown_inplace), .data_table :is(th, td):empty { padding: unset; }
+        .data_table :is(th, td) > :is(input:not([type='checkbox']), button, textarea, select, .checkboxWrapper) { border: none; border-radius: 0; box-shadow: none; margin: 4px; height: 100%; width: calc(100% - 8px); }
+    }
+
+    @layer dropdowns
+    {
+        .data_table thead .dropdown_opener::after { color: var(--text-major-color); }
+        .data_table thead .dropdown_opener * { text-decoration: underline; text-decoration-color: transparent; color: var(--text-major-color); }
+        .data_table thead .dropdown_opener:hover { text-decoration-color: transparent; }
+        .data_table thead .dropdown_opener:hover * { text-decoration-color: currentColor; }
+
+        .data_table thead .dropdown_arrow { display: grid; grid-template-columns: minmax(max-content, 1fr) auto; grid-template-rows: 1fr 1fr; row-gap: 0; }
+        .data_table thead .dropdown_arrow::after { grid-row: 1 / -1; grid-column: 2; margin-left: auto; }
+    
+        .data_table thead .dropdown_inplace { border-radius: 0; padding: var(--padding-medium); }
+        .data_table thead .dropdown_inplace :is(input, textarea, select) { min-width: calc(175px - 2 * var(--padding-horizontal-medium)); }
+    }
+
+    @layer identity
+    {
+        .data_table :is(th, td):first-child { width: 150px; position: sticky; left: calc(-1 * var(--padding-horizontal-large)); z-index: 1; background: var(--surface-color); filter: drop-shadow(-10px 0px 0px var(--background-color)); }
+        .data_table tbody [data-identity] > div { display: flex; align-items: center; justify-content: space-between; gap: var(--padding-horizontal-regular); padding: 0 var(--padding-horizontal-regular); }
+        .data_table tbody [data-identity] button { min-height: unset; height: 40px; width: unset; aspect-ratio: 1/1; }
+        .data_table tbody [data-identity] > div > span { margin-left: auto; }
+    }
+
+    @layer edits
+    {
+        .data_table [data-edited]:not([data-deleted]) :is(td, input:not([type='checkbox']), select, textarea, .checkboxWrapper) { background: var(--color-yellow); color: var(--text-inverse-color); }
+        .data_table [data-edited]:not([data-deleted]) [data-identity] > div > span { color: var(--text-inverse-color); }
+        .data_table [data-edited]:not([data-deleted]) [data-identity] :is(.striped_button:not(:hover) > span, .striped_button:not(:hover)::after, .cross_button:not(:hover) > span, .cross_button:not(:hover)::after) { background: var(--text-inverse-color); }
+
+        .data_table [data-deleted] :is(td, input:not([type='checkbox']), select, textarea, .checkboxWrapper) { background: var(--color-red); }
     }
 }
 
@@ -421,12 +571,32 @@
 @layer blocks
 {
     .block { display: block; }
-
     .centered { margin-left: auto; margin-right: auto; }
 
-    .flex_horizontal { display: flex; gap: var(--horizontal-sizing-regular); align-items: center; }
-    .flex_vertical { display: flex; flex-direction: column; gap: var(--vertical-sizing-regular); }
+
+    .flex_horizontal { display: flex; gap: var(--padding-horizontal-regular); align-items: center; }
+    .flex_vertical { display: flex; flex-direction: column; gap: var(--padding-vertical-regular); }
     .flex_fill { flex-grow: 2; }
+
+
+    .grid_1x2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--padding-horizontal-regular); min-width: max-content; }
+    .grid_1x2:has([hidden]) { grid-template-columns: 1fr; }
+
+    .grid
+    {
+        display: grid; font-size: var(--font-size-regular); gap: var(--padding-regular);
+        grid-template-columns: repeat(auto-fit, minmax(clamp(
+            175px + 2 * var(--padding-horizontal-large),
+            (100% - 2 * var(--padding-horizontal-large) - (var(--grid-columns, 2) - 1) * var(--padding-horizontal-regular)) / var(--grid-columns, 2),
+            100% - 2 * var(--padding-horizontal-large)
+        ), 1fr));
+    }
+    .grid > :is(h1, h2, h3, p) { grid-column: 1 / -1; }
+    .grid_columns2 { --grid-columns: 2; }
+    .grid_columns3 { --grid-columns: 2; }
+    
+    .grid_fill_column { grid-row: 1 / -1; }
+    .grid_fill_row { grid-column: 1 / -1; }
 }
 
 /*----------------------PADDING/SIZING----------------------*/
@@ -508,84 +678,4 @@
 {
     .border_radius_small { border-radius: var(--border-radius-small); }
     .border_radius_regular { border-radius: var(--border-radius-regular); }
-}
-
-
-
-
-
-@layer body
-{
-    body { background-color: var(--background-color); height: 100vh; display: flex; gap: 1px; container-type: inline-size; container-name: body; }
-    .main_body { flex-grow: 2; container-type: inline-size; container-name: main_body; display: flex; flex-direction: column; }
-    main { overflow: auto; max-width: 100%; }
-    main > *:not(table) { position: sticky; left: 0; }
-}
-
-@layer header
-{
-    header { position: sticky; top: 0; z-index: 3; }
-
-    @layer main_body_header
-    {
-        .main_body > header { display: grid; grid-template-columns: auto 1fr auto; column-gap: var(--horizontal-sizing-huge); row-gap: var(--vertical-sizing-regular); }
-        .main_body > header .userinfo { line-height: normal; }
-        .main_body > header .navigation { justify-content: center; }
-        .main_body > header .controls { display: grid; grid-template-columns: 1fr 1fr; gap: var(--horizontal-sizing-regular); }
-        .main_body > header .controls:has([hidden]) { grid-template-columns: 1fr; }
-
-        @container (max-width: 700px)
-        {
-            .main_body > header { grid-template-columns: auto 1fr; }
-            .main_body > header > .navigation { order: -1; grid-column: 1 / -1; }
-        }
-        @container (max-width: 600px)
-        {
-            .main_body > header { grid-template-columns: auto; }
-            .main_body > header > .navigation { order: unset; grid-column: 1 / -1; }
-        }
-    }
-}
-
-@layer graphs
-{
-    .graphs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(500px, 100%), 1fr)); column-gap: var(--margin-horizontal-regular); row-gap: var(--margin-vertical-large); }
-    .graphs > div { aspect-ratio: 5/3; min-height: 0; padding: var(--padding-vertical-small) 0; }
-}
-@layer data_table
-{
-    @layer defaults
-    {
-        .data_table :is(th, td) > *:is(input:not([type='checkbox']), button, textarea, select, .checkboxWrapper) { border: none; border-radius: 0; box-shadow: none; margin: 4px; height: 100%; width: calc(100% - 8px); }
-    }
-
-    @layer dropdowns
-    {
-        .data_table thead .dropdown_opener * { text-decoration: underline; text-decoration-color: transparent; }
-        .data_table thead .dropdown_opener:hover { text-decoration-color: transparent; }
-        .data_table thead .dropdown_opener:hover * { text-decoration-color: currentColor; }
-        
-        .data_table thead .dropdown_arrow { display: grid; grid-template-columns: minmax(max-content, 1fr) auto; grid-template-rows: 1fr 1fr; row-gap: 0; }
-        .data_table thead .dropdown_arrow::after { grid-row: 1 / -1; grid-column: 2; margin-left: auto; }
-    
-        .data_table thead .dropdown_inplace { border-radius: 0; padding: var(--padding-medium); }
-        .data_table thead .dropdown_inplace :is(input, textarea, select) { min-width: calc(175px - 2 * var(--padding-horizontal-medium)); }
-    }
-
-    @layer identity
-    {
-        .data_table :is(th, td):first-child { position: sticky; left: calc(-1 * var(--padding-horizontal-large)); z-index: 1; background: var(--surface-color); filter: drop-shadow(-10px 0px 0px var(--background-color)); }
-        .data_table tbody [data-identity] > div { display: flex; align-items: center; justify-content: space-between; gap: var(--padding-horizontal-regular); padding: 0 var(--padding-horizontal-regular); }
-        .data_table tbody [data-identity] button { min-height: unset; height: 40px; width: unset; aspect-ratio: 1/1; }
-        .data_table tbody [data-identity] > div > span { margin-left: auto; }
-    }
-
-    @layer edits
-    {
-        .data_table [data-edited]:not([data-deleted]) :is(td, input:not([type='checkbox']), select, textarea, .checkboxWrapper) { background: var(--color-yellow); color: var(--text-inverse-color); }
-        .data_table [data-edited]:not([data-deleted]) [data-identity] > div > span { color: var(--text-inverse-color); }
-        .data_table [data-edited]:not([data-deleted]) [data-identity] :is(.striped_button:not(:hover) > span, .striped_button:not(:hover)::after, .cross_button:not(:hover) > span, .cross_button:not(:hover)::after) { background: var(--text-inverse-color); }
-
-        .data_table [data-deleted] :is(td, input:not([type='checkbox']), select, textarea, .checkboxWrapper) { background: var(--color-red); }
-    }
 }

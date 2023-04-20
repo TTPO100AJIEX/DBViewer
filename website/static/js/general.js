@@ -42,3 +42,45 @@ Array.from(document.getElementsByClassName("dropdown_opener")).forEach(el =>
         setTimeout(() => { if (document.activeElement == el) dropdown_close(dropdown.id) });
     }, { "capture": false, "once": false, "passive": true });
 });
+
+
+
+/*----------------------NAVIGATION MENU OPEN/CLOSE----------------------*/
+function open_mobile_navigation()
+{
+    document.getElementById("navigation").classList.remove("closed");
+    document.getElementById("navigation_backdrop").classList.remove("closed");
+}
+function close_mobile_navigation()
+{
+    document.getElementById("navigation").classList.add("closed");
+    document.getElementById("navigation_backdrop").classList.add("closed");
+}
+
+Array.from(document.getElementsByClassName("navigation_opener")).forEach(button =>
+{
+    button.addEventListener("click", open_mobile_navigation, { "capture": false, "once": false, "passive": true });
+});
+Array.from(document.getElementsByClassName("navigation_closer")).forEach(button =>
+{
+    button.addEventListener("click", close_mobile_navigation, { "capture": false, "once": false, "passive": true });
+});
+if (document.getElementById("navigation_backdrop"))
+{
+    document.getElementById("navigation_backdrop").addEventListener("click", close_mobile_navigation, { "capture": false, "once": false, "passive": true });
+}
+
+
+
+/*----------------------DIALOGS----------------------*/
+function toggle_dialog(ev)
+{
+    const dialog = document.getElementById(ev.currentTarget.dataset.dialog);
+    if (dialog.open) return dialog.close();
+    dialog.showModal();
+    dialog.focus();
+}
+Array.from(document.querySelectorAll("[data-dialog]")).forEach(button =>
+{
+    button.addEventListener("click", toggle_dialog, { "capture": false, "once": false, "passive": true });
+});

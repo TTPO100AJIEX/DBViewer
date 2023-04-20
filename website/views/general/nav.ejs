@@ -1,19 +1,33 @@
 <nav class="surface closed" id="navigation">
     <h2 class="block_minheight">Навигация</h2>
     <menu class="no_bullets margin_vertical_enormous">
-        <li class="desktop_hidden"><button class="control_empty maxwidth text_align_left navigation_closer" href="#">Закрыть меню</div></li>
+        <li class="desktop_hidden"><button class="control_secondary maxwidth text_align_left navigation_closer" href="#"><span>Закрыть меню</span></div></li>
         <li class="desktop_hidden"><hr></li>
 
-        <% if (req.routerPath == "/database") { %> <li><div class="control_filled maxwidth">База данных: <%=databaseName%></div></li> <% }
-        else { %> <li><a class="control_block maxwidth" href="/database">База данных: <%=databaseName%></a></li> <% } %>
+        <% if (req.authorization.permissions.includes("A"))
+        { %>
+            <li>
+                <button class="<%=req.routerPath.startsWith('/admin') ? '' : 'control_block' %> maxwidth text_align_left dropdown_opener dropdown_arrow dropdown_opened" data-dropdown="nav_admin_dropdown"><span>Администрирование</span></button>
+                <menu id="nav_admin_dropdown" class="no_bullets dropdown_inplace" tabindex="-1">
+                    <% if (req.routerPath == "/admin/accounts") { %> <li><div class="control_secondary maxwidth"><span>Аккаунты</span></div></li> <% }
+                    else { %> <li><a class="control_block maxwidth" href="/admin/accounts"><span>Аккаунты</span></a></li> <% }
+                    
+                    if (req.routerPath == "/admin/logs") { %> <li><div class="control_secondary maxwidth"><span>История</span></div></li> <% }
+                    else { %> <li><a class="control_block maxwidth" href="/admin/logs"><span>История</span></a></li> <% } %>
+                </menu>
+            </li>
+        <% } %>
+
+        <% if (req.routerPath == "/database") { %> <li><div class="control_primary maxwidth"><span>База данных: <%=databaseName%></span></div></li> <% }
+        else { %> <li><a class="control_block maxwidth" href="/database"><span>База данных: <%=databaseName%></span></a></li> <% } %>
         
         <li>
-            <button class="<%=req.routerPath.startsWith('/table') ? 'control_filled' : 'control_block' %> maxwidth text_align_left dropdown_opener dropdown_arrow dropdown_opened" data-dropdown="nav_tables_dropdown">Таблицы</button>
+            <button class="<%=req.routerPath.startsWith('/table') ? '' : 'control_block' %> maxwidth text_align_left dropdown_opener dropdown_arrow dropdown_opened" data-dropdown="nav_tables_dropdown"><span>Таблицы</span></button>
             <menu id="nav_tables_dropdown" class="no_bullets dropdown_inplace" tabindex="-1">
                 <% for (const table of tables)
                 {
-                    if (req.query.id == table.id) { %> <li><div class="control_empty maxwidth"><%=table.name%></div></li> <% }
-                    else { %> <li><a class="control_block maxwidth" href="/table?id=<%=table.id%>"><%=table.name%></a></li> <% }
+                    if (req.query.id == table.id) { %> <li><div class="control_secondary maxwidth"><span><%=table.name%></span></div></li> <% }
+                    else { %> <li><a class="control_block maxwidth" href="/table?id=<%=table.id%>"><span><%=table.name%></span></a></li> <% }
                 } %>
             </menu>
         </li>
