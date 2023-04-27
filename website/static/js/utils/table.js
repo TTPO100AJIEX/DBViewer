@@ -261,6 +261,7 @@ export default class Table
         {
             const id = crypto.randomUUID(), socketListener = (message) => {
                 const msg = JSON.parse(message.data);
+                console.log(msg)
                 if (msg.eventName == this.socketEventName && msg.data.id == id) resolve(msg.data);
                 this.socket.removeEventListener("message", socketListener, { "capture": false, "once": false, "passive": true });
             };
@@ -269,7 +270,7 @@ export default class Table
                 requestName: this.socketEventName,
                 data: {
                     id: id,
-                    tableid: this.#table.dataset.tableid,
+                    tableid: Number(this.#table.dataset.tableid),
                     offset: this.#displayBody.children.length,
                     limit: this.#group_size,
                     filters: this.#getFilters(),
@@ -292,6 +293,7 @@ export default class Table
     {
         this.#displayObserver.disconnect();
         const data = (await this.#getDisplayData()).rows;
+        console.log(data);
         this.#renderData(data);
         if (this.#displayBody.lastElementChild && data.length % this.#group_size == 0 && data.length != 0) this.#displayObserver.observe(this.#displayBody.lastElementChild);
     }

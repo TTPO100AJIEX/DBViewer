@@ -1,52 +1,47 @@
-import { config } from "common/index.js";
+import config from "common/configs/config.js";
 
 import ioredis from 'ioredis';
 
-const Connection = new ioredis({
-    port: config.redis.port,
-    host: config.redis.host,
-    password: config.redis.password,
-    db: config.redis.database,
-    keyPrefix: config.application + '-',
-
-    connectionName: config.application,
-    //retryStrategy:
-    //commandTimeout:
-    autoResubscribe: true,
-    autoResendUnfulfilledCommands: true,
-    reconnectOnError: null,
-    readOnly: false,
-    stringNumbers: false,
-    //connectTimeout: 
-    //maxRetriesPerRequest: 20,
-    //maxLoadingRetryTime: 10000,
-    enableAutoPipelining: true,
-    autoPipeliningIgnoredCommands: [],
-    offlineQueue: true,
-    commandQueue: true,
-    enableOfflineQueue: true,
-    enableReadyCheck: true,
-    lazyConnect: false,
-    //disconnectTimeout:
-    //tls:
-});
-
 class Redis
 {
-    constructor() { console.error("Redis has been instantiated!"); }
-    static end() { Connection.quit(); }
-    static get_raw() { return Connection; }
+    #Connection;
+    static #DefaultRedisOptions = {
+        connectionName: config.application,
+        //retryStrategy:
+        //commandTimeout:
+        autoResubscribe: true,
+        autoResendUnfulfilledCommands: true,
+        reconnectOnError: null,
+        readOnly: false,
+        stringNumbers: false,
+        //connectTimeout: 
+        //maxRetriesPerRequest: 20,
+        //maxLoadingRetryTime: 10000,
+        enableAutoPipelining: true,
+        autoPipeliningIgnoredCommands: [],
+        offlineQueue: true,
+        commandQueue: true,
+        enableOfflineQueue: true,
+        enableReadyCheck: true,
+        lazyConnect: false,
+        //disconnectTimeout:
+        //tls:
+    };
+    constructor(options) { this.#Connection = new ioredis({ ...Redis.#DefaultRedisOptions, ...options }); }    
+    end() { this.#Connection.quit(); }
+    get_raw() { return this.#Connection; }
 
-    static set(key, value) { return Connection.set(key, value); }
-    static set_expire(key, value, expiration) { return Connection.setex(key, expiration / 1000, value); }
-    static set_keepttl(key, value) { return Connection.set(key, value, "KEEPTTL"); }
+    set(key, value) { return this.#Connection.set(key, value); }
+    set_expire(key, value, expiration) { return this.#Connection.setex(key, expiration / 1000, value); }
+    set_keepttl(key, value) { return this.#Connection.set(key, value, "KEEPTTL"); }
     
-    static get(key) { return Connection.get(key); }
-    static get_delete(key) { return Connection.getdel(key); }
-    static async get_expire(key, expiration) { return (await Connection.multi().get(key).expire(key, expiration / 1000).exec())[0][1]; }
+    get(key) { return this.#Connection.get(key); }
+    get_delete(key) { return this.#Connection.getdel(key); }
+    async get_expire(key, expiration) { return (await this.#Connection.multi().get(key).expire(key, expiration / 1000).exec())[0][1]; }
 
-    static delete(...keys) { return (keys.length == 0) ? [ ] : Connection.del(...keys); }
+    delete(...keys) { return (keys.length == 0) ? [ ] : this.#Connection.del(...keys); }
 
 };
 
-export default Redis;
+const Cache = new Redis(config.redis);
+export { Cache };

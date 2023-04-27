@@ -1,33 +1,25 @@
 import bcrypt from 'bcrypt';
-import { InternalDatabase, TargetDatabase, config } from "common/index.js";
+import config from 'common/configs/config.js';
+import { InternalDatabase, TargetDatabase } from 'common/postgreSQL/postgreSQL.js';
+import databaseInfoQueries from './utils/queries/databaseInfoQueries.js';
+import tableLayoutQuerySrc from './utils/queries/tableLayoutQuerySrc.js';
 
 async function get_admin_accounts(req, res)
 {
     if (!req.authorization.permissions.includes("A")) return res.error(403);
-
-    const [ { current_database: databaseName }, tables ] = await TargetDatabase.query_multiple([
-        { query: `SELECT current_database()`, one_response: true },
-        
-        `SELECT pg_class.oid AS id, (CASE WHEN pg_namespace.nspname = 'public' THEN '' ELSE pg_namespace.nspname || '.' END) || pg_class.relname AS name
-        FROM pg_class INNER JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace
-        WHERE (pg_class.relkind = 'r' OR pg_class.relkind = 'v' OR pg_class.relkind = 'm') AND pg_namespace.nspname != 'information_schema' AND NOT starts_with(pg_namespace.nspname, 'pg_')`,
-    ]);
-
+    const [ { database_name }, tables ] = await TargetDatabase.query_multiple(databaseInfoQueries());
     const accounts = await InternalDatabase.query(`SELECT id, login, permissions FROM users ORDER BY id ASC`);
-
-    return res.render("admin/accounts.ejs", { databaseName, tables, accounts });
+    return res.render("admin/accounts.ejs", { database_name, tables, accounts });
 }
 async function delete_admin_accounts(req, res)
 {
     if (!req.authorization.permissions.includes("A")) return res.error(403);
-
     await InternalDatabase.query(`DELETE FROM users WHERE id = $1`, [ req.body.id ]);
     return res.redirect("/admin/accounts");
 }
 async function create_admin_accounts(req, res)
 {
     if (!req.authorization.permissions.includes("A")) return res.error(403);
-    
     const permissions = [ "R", "I", "U", "D", "A"].map(permission => (req.body.permissions ?? [ ]).includes(permission));
     const password = await bcrypt.hash(req.body.password, config.bcrypt.saltRounds);
     await InternalDatabase.query(`INSERT INTO users (login, password, read, insert, update, delete, admin) VALUES ($1, $2, $3, $4, $5, $6, $7)`, [ req.body.login, password, ...permissions ]);
@@ -36,7 +28,6 @@ async function create_admin_accounts(req, res)
 async function edit_admin_accounts(req, res)
 {
     if (!req.authorization.permissions.includes("A")) return res.error(403);
-    
     const permissions = [ "R", "I", "U", "D", "A"].map(permission => (req.body.permissions ?? [ ]).includes(permission));
     if (req.body.password)
     {
@@ -54,25 +45,8 @@ async function edit_admin_accounts(req, res)
 async function get_admin_logs(req, res)
 {
     if (!req.authorization.permissions.includes("A")) return res.error(403);
-
-    const [ { current_database: databaseName }, tables ] = await TargetDatabase.query_multiple([
-        { query: `SELECT current_database()`, one_response: true },
-        
-        `SELECT pg_class.oid AS id, (CASE WHEN pg_namespace.nspname = 'public' THEN '' ELSE pg_namespace.nspname || '.' END) || pg_class.relname AS name
-        FROM pg_class INNER JOIN pg_namespace ON pg_namespace.oid = pg_class.relnamespace
-        WHERE (pg_class.relkind = 'r' OR pg_class.relkind = 'v' OR pg_class.relkind = 'm') AND pg_namespace.nspname != 'information_schema' AND NOT starts_with(pg_namespace.nspname, 'pg_')`,
-    ]);
-
-    const logsColumns = await InternalDatabase.query(`WITH enums (enumtypid, enumlabels) AS ( SELECT enumtypid, array_agg(enumlabel::text) AS enumlabels FROM pg_enum GROUP BY enumtypid ) SELECT
-            pg_attribute.attname AS name, pg_attribute.atttypid AS type_id, pg_attribute.atttypmod AS type_mod, format_type(pg_attribute.atttypid, pg_attribute.atttypmod) AS type_name,
-            pg_attribute.attidentity = 'a' AS flags_IA, pg_attribute.attidentity = 'd' AS flags_ID,
-            pg_attribute.attnotnull AS flags_NN, pg_attribute.atthasdef AS flags_D, (pg_attribute.attgenerated = 's') AS flags_G,
-            EXISTS( SELECT * FROM pg_constraint WHERE pg_constraint.conrelid = pg_class.oid AND pg_attribute.attnum = ANY(pg_constraint.conkey) AND contype = 'u' ) AS flags_U,
-            EXISTS( SELECT * FROM pg_constraint WHERE pg_constraint.conrelid = pg_class.oid AND pg_attribute.attnum = ANY(pg_constraint.conkey) AND contype = 'p' ) AS flags_PK,
-            enums.enumlabels AS enumlabels
-        FROM pg_attribute INNER JOIN pg_class ON pg_class.oid = pg_attribute.attrelid LEFT JOIN enums ON enums.enumtypid = pg_attribute.atttypid
-        WHERE pg_class.relname = 'logs' AND pg_attribute.attnum > 0 AND NOT pg_attribute.attisdropped
-        ORDER BY attnum ASC`, [ ], true);
+    const [ { database_name }, tables ] = await TargetDatabase.query_multiple(databaseInfoQueries());
+    const logsColumns = await InternalDatabase.query(InternalDatabase.format(tableLayoutQuerySrc("name"), 'logs'), [ ], { parse: true });
     const columns = [
         {
             label: 'Тип',
@@ -101,7 +75,66 @@ async function get_admin_logs(req, res)
         }
     ];
 
-    return res.render("admin/logs.ejs", { databaseName, tables, columns });
+    return res.render("admin/logs.ejs", { database_name, tables, columns });
 }
 
 export { get_admin_accounts, delete_admin_accounts, create_admin_accounts, edit_admin_accounts, get_admin_logs };
+
+
+import schema_templates from "./utils/schema_templates/schema_templates.js";
+const EMPTY_GET_SCHEMA = { query: { type: "object", additionalProperties: false, properties: { } } };
+const ACCOUNTS_DELETE_SCHEMA =
+{
+    body:
+    {
+        type: "object",
+        required: [ "authentication", "id" ],
+        additionalProperties: false,
+        properties:
+        {
+            "authentication": schema_templates.authentication,
+            "id": schema_templates.uinteger
+        }
+    }
+};
+const ACCOUNTS_CREATE_SCHEMA =
+{
+    body:
+    {
+        type: "object",
+        required: [ "authentication", "login", "password" ],
+        additionalProperties: false,
+        properties:
+        {
+            "authentication": schema_templates.authentication,
+            "login": { type: "string", minLength: 1, maxLength: 100 },
+            "password": { type: "string", minLength: 1 },
+            "permissions": { type: "array", maxItems: 5, uniqueItems: true, items: { type: "string", minLength: 1, maxLength: 1, enum: [ "R", "I", "U", "D", "A" ] } },
+        }
+    }
+};
+const ACCOUNTS_EDIT_SCHEMA =
+{
+    body:
+    {
+        type: "object",
+        required: [ "authentication", "id", "login" ],
+        additionalProperties: false,
+        properties:
+        {
+            "authentication": schema_templates.authentication,
+            "id": schema_templates.uinteger,
+            "login": { type: "string", minLength: 1, maxLength: 100 },
+            "password": { type: "string" },
+            "permissions": { type: "array", maxItems: 5, uniqueItems: true, items: { type: "string", minLength: 1, maxLength: 1, enum: [ "R", "I", "U", "D", "A" ] } },
+        }
+    }
+};
+export default [
+    { method: "GET",  path: "/admin/accounts", access: "authorization", schema: EMPTY_GET_SCHEMA, handler: get_admin_accounts },
+    { method: "GET",  path: "/admin/logs", access: "authorization", schema: EMPTY_GET_SCHEMA, handler: get_admin_logs },
+
+    { method: "POST",  path: "/admin/accounts/delete", access: "authorization", schema: ACCOUNTS_DELETE_SCHEMA, handler: delete_admin_accounts },
+    { method: "POST",  path: "/admin/accounts/create", access: "authorization", schema: ACCOUNTS_CREATE_SCHEMA, handler: create_admin_accounts },
+    { method: "POST",  path: "/admin/accounts/edit", access: "authorization", schema: ACCOUNTS_EDIT_SCHEMA, handler: edit_admin_accounts }
+];

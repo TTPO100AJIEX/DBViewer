@@ -1,5 +1,7 @@
-import { config, Utils } from "common/index.js";
 import fastify_plugin from 'fastify-plugin';
+
+import config from 'common/configs/config.js';
+import Utils from 'common/utils/Utils.js';
 
 import fastify_compress from "@fastify/compress";
 import { dirname } from 'path';
@@ -94,7 +96,8 @@ function register_response_plugins(app, options, done)
     });
     app.addHook("onRequest", async (req, res) =>
     {
-        req.response = res; res.locals = { "req": req, "res": res };
+        req.response = res;
+        res.locals = { "req": req, "res": res };
     });
     
 

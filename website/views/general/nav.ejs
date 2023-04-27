@@ -18,8 +18,8 @@
             </li>
         <% } %>
 
-        <% if (req.routerPath == "/database") { %> <li><div class="control_primary maxwidth"><span>База данных: <%=databaseName%></span></div></li> <% }
-        else { %> <li><a class="control_block maxwidth" href="/database"><span>База данных: <%=databaseName%></span></a></li> <% } %>
+        <% if (req.routerPath == "/database") { %> <li><div class="control_primary maxwidth"><span>База данных: <%=database_name%></span></div></li> <% }
+        else { %> <li><a class="control_block maxwidth" href="/database"><span>База данных: <%=database_name%></span></a></li> <% } %>
         
         <li>
             <button class="<%=req.routerPath.startsWith('/table') ? '' : 'control_block' %> maxwidth text_align_left dropdown_opener dropdown_arrow dropdown_opened" data-dropdown="nav_tables_dropdown"><span>Таблицы</span></button>

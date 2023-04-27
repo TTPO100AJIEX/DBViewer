@@ -1,5 +1,7 @@
-import { config, Redis } from "common/index.js";
 import fastify_plugin from 'fastify-plugin';
+
+import config from 'common/configs/config.js';
+import { Cache } from "common/redis/redis.js";
 
 import fastify_helmet from "@fastify/helmet";
 import fastify_cors from "@fastify/cors";
@@ -109,7 +111,7 @@ function register_security_plugins(app, options, done)
         addHeadersOnExceeding: { 'x-ratelimit-limit': false, 'x-ratelimit-remaining': false, 'x-ratelimit-reset': false, 'retry-after': false },
         addHeaders: { 'x-ratelimit-limit': false, 'x-ratelimit-remaining': true, 'x-ratelimit-reset': false, 'retry-after': true },
         cache: 10000,
-        redis: Redis.get_raw(),
+        redis: Cache.get_raw(),
         nameSpace: 'website-rate-limit-',
         skipOnError: true,
         onExceeded: (req) => console.info(`Rate Limit exceeded by ${req.ip}`)

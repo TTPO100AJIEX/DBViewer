@@ -1,4 +1,4 @@
-import { config } from "common/index.js";
+import config from 'common/configs/config.js';
 import fs from 'fs';
 import fastify from 'fastify';
 import ajv_formats from 'ajv-formats';

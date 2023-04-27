@@ -1,5 +1,6 @@
-import { config } from "common/index.js";
 import fastify_plugin from 'fastify-plugin';
+
+import config from 'common/configs/config.js';
 
 import fastify_cookie from "@fastify/cookie";
 

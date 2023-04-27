@@ -34,8 +34,8 @@
     {
         "host": "localhost.xyz",
 
-        "ssl_key": "common/ssl/privkey.pem",
-        "ssl_cert": "common/ssl/fullchain.pem",
+        "ssl_key": "common/configs/ssl/privkey.pem",
+        "ssl_cert": "common/configs/ssl/fullchain.pem",
 
         "http_port": 80,
         "https_port": 443,
@@ -49,6 +49,12 @@
     "bcrypt":
     {
         "saltRounds": 11
+    },
+
+    "default_account":
+    {
+        "login": "TTPO100AJIEX",
+        "password": "123321"
     },
     
     "graph_records": 100,
