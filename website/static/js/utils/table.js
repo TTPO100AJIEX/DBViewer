@@ -25,7 +25,7 @@ class TableRow
             {
                 case "INPUT":
                 {
-                    if (input.type == "checkbox") return [ input.name, input.checked ];
+                    if (input.type == "checkbox") return [ input.name, input.checked ? "t" : "f" ];
                 }
                 default: return [ input.name, input.value ];
             }

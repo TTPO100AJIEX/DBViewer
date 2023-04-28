@@ -81,7 +81,7 @@ function register_oauth(app, options, done)
     app.decorateReply("login", async function(login, password)
     {
         const req = this.request, res = this;
-        await req.check_authentication(req.body.authentication);
+        if (!(await req.check_authentication(req.body.authentication))) return res.error(400);
         
         const users = await InternalDatabase.query(`SELECT id, login, password, permissions FROM users WHERE login = $1`, [ login ]);
         if (users.length == 0) return res.error(401, [ "Ошибка авторизации!", "Такого пользователя нет!" ]);

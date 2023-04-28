@@ -1,7 +1,6 @@
 import fastify_plugin from 'fastify-plugin';
 
 import config from 'common/configs/config.js';
-import Utils from 'common/utils/Utils.js';
 
 import fastify_compress from "@fastify/compress";
 import { dirname } from 'path';
@@ -92,7 +91,7 @@ function register_response_plugins(app, options, done)
         "propertyName": "render",
         "root": "./website/views/",
         "includeViewExtension": false,
-        "defaultContext": { config, Utils }
+        "defaultContext": { config }
     });
     app.addHook("onRequest", async (req, res) =>
     {
