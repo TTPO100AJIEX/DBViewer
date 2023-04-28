@@ -1,14 +1,14 @@
 import bcrypt from 'bcrypt';
 import config from 'common/configs/config.js';
 import { InternalDatabase, TargetDatabase } from 'common/postgreSQL/postgreSQL.js';
-import databaseInfoQueries from './utils/queries/databaseInfoQueries.js';
-import tableLayoutQuerySrc from './utils/queries/tableLayoutQuerySrc.js';
+
+import get_database_info from './utils/database/get_database_info.js';
+import get_table_layout from './utils/database/get_table_layout.js';
 
 async function get_admin_accounts(req, res)
 {
     if (!req.authorization.permissions.includes("A")) return res.error(403);
-    const [ { database_name }, tables ] = await TargetDatabase.query_multiple(databaseInfoQueries());
-    const accounts = await InternalDatabase.query(`SELECT id, login, permissions FROM users ORDER BY id ASC`);
+    const [ { database_name, tables }, accounts ] = await Promise.all([ get_database_info(TargetDatabase), InternalDatabase.query(`SELECT id, login, permissions FROM users ORDER BY id ASC`) ]);
     return res.render("admin/accounts.ejs", { database_name, tables, accounts });
 }
 async function delete_admin_accounts(req, res)
@@ -45,8 +45,7 @@ async function edit_admin_accounts(req, res)
 async function get_admin_logs(req, res)
 {
     if (!req.authorization.permissions.includes("A")) return res.error(403);
-    const [ { database_name }, tables ] = await TargetDatabase.query_multiple(databaseInfoQueries());
-    const logsColumns = await InternalDatabase.query(InternalDatabase.format(tableLayoutQuerySrc("name"), 'logs'), [ ], { parse: true });
+    const [ { database_name, tables }, logsColumns ] = await Promise.all([ get_database_info(TargetDatabase), get_table_layout(InternalDatabase, "name", "logs") ]);
     const columns = [
         {
             label: 'Тип',
@@ -81,8 +80,7 @@ async function get_admin_logs(req, res)
 export { get_admin_accounts, delete_admin_accounts, create_admin_accounts, edit_admin_accounts, get_admin_logs };
 
 
-import schema_templates from "./utils/schema_templates/schema_templates.js";
-const EMPTY_GET_SCHEMA = { query: { type: "object", additionalProperties: false, properties: { } } };
+import { types as schema_types, EMPTY_GET_SCHEMA } from "./utils/schemas/schemas.js";
 const ACCOUNTS_DELETE_SCHEMA =
 {
     body:
@@ -92,8 +90,8 @@ const ACCOUNTS_DELETE_SCHEMA =
         additionalProperties: false,
         properties:
         {
-            "authentication": schema_templates.authentication,
-            "id": schema_templates.uinteger
+            "authentication": schema_types.authentication,
+            "id": schema_types.uinteger
         }
     }
 };
@@ -106,7 +104,7 @@ const ACCOUNTS_CREATE_SCHEMA =
         additionalProperties: false,
         properties:
         {
-            "authentication": schema_templates.authentication,
+            "authentication": schema_types.authentication,
             "login": { type: "string", minLength: 1, maxLength: 100 },
             "password": { type: "string", minLength: 1 },
             "permissions": { type: "array", maxItems: 5, uniqueItems: true, items: { type: "string", minLength: 1, maxLength: 1, enum: [ "R", "I", "U", "D", "A" ] } },
@@ -122,8 +120,8 @@ const ACCOUNTS_EDIT_SCHEMA =
         additionalProperties: false,
         properties:
         {
-            "authentication": schema_templates.authentication,
-            "id": schema_templates.uinteger,
+            "authentication": schema_types.authentication,
+            "id": schema_types.uinteger,
             "login": { type: "string", minLength: 1, maxLength: 100 },
             "password": { type: "string" },
             "permissions": { type: "array", maxItems: 5, uniqueItems: true, items: { type: "string", minLength: 1, maxLength: 1, enum: [ "R", "I", "U", "D", "A" ] } },

@@ -14,7 +14,7 @@
         <div class="main_body">
             <%- include("./general/header.ejs", locals) %>
             <main tabindex="-1">
-                <h1>База данных <span id="database_name">dolix</span></h1>
+                <h1>База данных <span id="database_name"><%=database_name%></span></h1>
                 <dl class="margin_vertical_regular">
                     <dt>Версия PostgreSQL</dt>
                     <dd id="postgres_version">&nbsp;</dd>

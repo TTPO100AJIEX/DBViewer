@@ -9,6 +9,7 @@ export default async function compile_websocket_handler(folder)
     let handlers = { }, schemas = { };
     for (const filename of fs.readdirSync(path.join("website/routes", folder)))
     {
+        if (!fs.lstatSync(path.join("website/routes", folder, filename)).isFile()) continue;
         const { default: routes } = await import(path.join("../", folder, filename));
         for (const route of routes)
         {
@@ -19,11 +20,9 @@ export default async function compile_websocket_handler(folder)
             {
                 for (const requestName of route.requestNames)
                 {
-                    const { requestNames: _, ...routeCopy } = route;
-                    routeCopy.requestName = requestName;
                     if (requestName in handlers) throw `load_websocket_routes: route ${requestName} already registered`;
-                    handlers[requestName] = routeCopy.handler;
-                    if (routeCopy.schema) schemas[requestName] = { properties: { data: routeCopy.schema } };
+                    handlers[requestName] = route.handler;
+                    if (route.schema) schemas[requestName] = { properties: { data: route.schema } };
                     else schemas[requestName] = { optionalProperties: { data: { } } };
                 }
             }
@@ -42,6 +41,6 @@ export default async function compile_websocket_handler(folder)
     {
         message = parseRequest(message);
         if (message === undefined) throw 'Invalid object received: ' + parseRequest.message;
-        handlers[message.requestName](message.data, connection.socket, request);
+        await handlers[message.requestName](message.data, connection.socket, request);
     };
 }

@@ -1,8 +1,8 @@
 import Utils from "common/utils/Utils.js";
 import { TargetDatabase, InternalDatabase } from "common/postgreSQL/postgreSQL.js";
 
-import buildTableQuery from "../utils/queries/buildTableQuery.js";
-import tableNameQuerySrc from "../utils/queries/tableNameQuerySrc.js";
+import get_table_name from "../utils/database/get_table_name.js";
+import table_rows_query from "./utils/table_rows_query.js";
 
 function transform_data(data)
 {
@@ -16,13 +16,13 @@ function transform_data(data)
 async function table_rows(msg, socket, req)
 {
     if (!req.authorization.permissions.includes("R")) return;
-    const { schema, table } = await TargetDatabase.query(tableNameQuerySrc(), [ msg.tableid ], { one_response: true });
+    const { schema, table } = await get_table_name(TargetDatabase, msg.tableid);
     
-    const { query, params } = buildTableQuery(`*`, "%I.%I", msg.filters, msg.sorts, msg.offset, msg.limit);
-    const formatted_query = TargetDatabase.format(query, schema, table, ...params);
-    const rows = transform_data(await TargetDatabase.query(formatted_query));
+    const { query, params } = table_rows_query(`*`, "%I.%I", msg.filters, msg.sorts, msg.offset, msg.limit);
+    const rows = transform_data(await TargetDatabase.query(TargetDatabase.format(query, schema, table, ...params)));
     
-    await InternalDatabase.query(`INSERT INTO logs (type, data, userid, query, query_params) VALUES ('SELECT', $1, $2, $3, $4)`, [ `${schema}.${table}[${msg.offset} - ${msg.offset + msg.limit}]`, req.authorization.user_id, query, JSON.stringify([ schema, table, ...params ]) ]);
+    await InternalDatabase.query(`INSERT INTO logs (type, data, userid, query, query_params) VALUES ('SELECT', $1, $2, $3, $4)`,
+            [ `${schema}.${table}[${msg.offset} - ${msg.offset + msg.limit}]`, req.authorization.user_id, query, JSON.stringify([ schema, table, ...params ]) ]);
     socket.send(JSON.stringify({ eventName: 'table_rows', data: { id: msg.id, rows } }));
 }
 

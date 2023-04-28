@@ -19,17 +19,7 @@ class TableRow
     
     getData()
     {
-        return Object.fromEntries(this.inputs.map(input =>
-        {
-            switch (input.tagName)
-            {
-                case "INPUT":
-                {
-                    if (input.type == "checkbox") return [ input.name, input.checked ? "t" : "f" ];
-                }
-                default: return [ input.name, input.value ];
-            }
-        }));
+        return Object.fromEntries(this.inputs.map(input => [ input.name, input.type == "checkbox" ? (input.checked ? "t" : "f") : input.value]));
     }
     getIdentifier(head)
     {
@@ -64,7 +54,7 @@ class TableInsertRow extends TableRow
 };
 class TableDisplayRow extends TableRow
 {
-    constructor(data, template)
+    constructor(template, data)
     {
         super(template); this.deleted = this.edited = false; this.#fillData(data);
         if (this.deleteButton) this.deleteButton.addEventListener("click", this.remove.bind(this), { "capture": false, "once": false, "passive": true });
@@ -76,35 +66,38 @@ class TableDisplayRow extends TableRow
         {
             const key = input.getAttribute("name");
             data[key] ??= "";
-            switch (input.tagName)
+            generalSwitch: switch (input.tagName)
             {
                 case "INPUT":
                 {
-                    if (input.type == "date")
+                    switch (input.type)
                     {
-                        if (!data[key]) break;
-                        data[key] = new Date(data[key]);
-                        input.value = `${data[key].getFullYear()}-${toLength(data[key].getMonth() + 1, 2, "0")}-${toLength(data[key].getDate(), 2, "0")}`;
-                        break;
-                    }
-                    if (input.type == "time")
-                    {
-                        if (!data[key]) break;
-                        data[key] = new Date(data[key]);
-                        input.value = `${data[key].getHours()}:${data[key].getMinutes()}`;
-                        break;
-                    }
-                    if (input.type == "datetime-local")
-                    {
-                        if (!data[key]) break;
-                        data[key] = new Date(data[key]);
-                        input.value = data[key].toISOString().substring(0, data[key].toISOString().indexOf("T") + 6);
-                        break;
-                    }
-                    if (input.type == "checkbox")
-                    {
-                        input.checked = data[key];
-                        break;
+                        case "date":
+                        {
+                            if (!data[key]) break generalSwitch;
+                            data[key] = new Date(data[key]);
+                            input.value = `${data[key].getFullYear()}-${toLength(data[key].getMonth() + 1, 2, "0")}-${toLength(data[key].getDate(), 2, "0")}`;
+                            break generalSwitch;
+                        }
+                        case "time":
+                        {
+                            if (!data[key]) break generalSwitch;
+                            data[key] = new Date(data[key]);
+                            input.value = `${data[key].getHours()}:${data[key].getMinutes()}`;
+                            break generalSwitch;
+                        }
+                        case "datetime-local":
+                        {
+                            if (!data[key]) break generalSwitch;
+                            data[key] = new Date(data[key]);
+                            input.value = data[key].toISOString().substring(0, data[key].toISOString().indexOf("T") + 6);
+                            break generalSwitch;
+                        }
+                        case "checkbox":
+                        {
+                            input.checked = data[key];
+                            break generalSwitch;
+                        }
                     }
                 }
                 default: { input.value = typeof data[key] == 'object' ? JSON.stringify(data[key]) : data[key]; break; }
@@ -173,6 +166,7 @@ export default class Table
         this.#insertBody = table.querySelector("tbody[data-type=insert]");
         this.#displayBody = table.querySelector("tbody[data-type=display]");
         
+        
         let rowTemplate = table.querySelector("[data-type=row]"); rowTemplate.remove();
 
         let insertIdentityColumn = rowTemplate.content.querySelector("[data-type=insert]");
@@ -185,20 +179,18 @@ export default class Table
         if (insertIdentityColumn) insertTemplate.content.querySelector("[data-identity]").append(insertIdentityColumn.content.cloneNode(true));
         if (displayIdentityColumn) displayTemplate.content.querySelector("[data-identity]").append(displayIdentityColumn.content.cloneNode(true));
 
-
         this.#insertRow = class InsertRow extends TableInsertRow
         {
             constructor() { super(insertTemplate); }
         };
         this.#displayRow = class DisplayRow extends TableDisplayRow
         {
-            constructor(data) { super(data, displayTemplate); }
+            constructor(data) { super(displayTemplate, data); }
         };
 
-        this.#displayObserver = new IntersectionObserver(entries => { if (entries[0].isIntersecting) this.#loadNextPage() }, { "rootMargin": "0px", "threshold": 0 });
-        
-        this.#setupHead(); this.#setupInsert(); this.#setupDisplay();
-
+        this.#setupHead();
+        this.#setupInsert();
+        this.#setupDisplay();
         Table.#tables.push(this);
     }
 
@@ -255,15 +247,17 @@ export default class Table
 
     
     #displayRows = [];
-    #getDisplayData()
+    #getNextPageData()
     {
         return new Promise(resolve =>
         {
             const id = crypto.randomUUID(), socketListener = (message) => {
                 const msg = JSON.parse(message.data);
-                console.log(msg)
-                if (msg.eventName == this.socketEventName && msg.data.id == id) resolve(msg.data);
-                this.socket.removeEventListener("message", socketListener, { "capture": false, "once": false, "passive": true });
+                if (msg.eventName == this.socketEventName && msg.data.id == id)
+                {
+                    resolve(msg.data.rows);
+                    this.socket.removeEventListener("message", socketListener, { "capture": false, "once": false, "passive": true });
+                }
             };
             this.socket.addEventListener("message", socketListener, { "capture": false, "once": false, "passive": true });
             this.socket.send(JSON.stringify({
@@ -292,13 +286,13 @@ export default class Table
     async #loadNextPage()
     {
         this.#displayObserver.disconnect();
-        const data = (await this.#getDisplayData()).rows;
-        console.log(data);
+        const data = await this.#getNextPageData();
         this.#renderData(data);
-        if (this.#displayBody.lastElementChild && data.length % this.#group_size == 0 && data.length != 0) this.#displayObserver.observe(this.#displayBody.lastElementChild);
+        if (this.#displayBody.lastElementChild && data.length == this.#group_size) this.#displayObserver.observe(this.#displayBody.lastElementChild);
     }
     #setupDisplay()
     {
+        this.#displayObserver = new IntersectionObserver(entries => { if (entries[0].isIntersecting) this.#loadNextPage() }, { rootMargin: "0px", threshold: 0 });
         Array.from(this.#displayBody.children).forEach(row => row.remove());
         this.#displayRows = [ ];
         this.#loadNextPage();

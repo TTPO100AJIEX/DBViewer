@@ -2,8 +2,7 @@ import Chart from "/static/js/utils/chart.js";
 import Table from "/static/js/utils/table.js";
 
 Table.registerSaveButton(document.getElementById("save_changes"));
-var config = undefined, charts = undefined, table = undefined;
-const socket = new WebSocket(`wss://${location.host}/data`);
+var config = undefined, charts = undefined, table = undefined, socket = new WebSocket(`wss://${location.host}/data`);
 function requestData()
 {
     socket.send(JSON.stringify({ requestName: "table_data", data: { id: Number(new URLSearchParams(location.search).get("id")) } }));
@@ -17,25 +16,25 @@ socket.addEventListener("message", message =>
         {
             config = msg.data;
             charts = {
-                reads: new Chart(   "reads_graph",
+                reads: new Chart(   document.getElementById("reads_graph"),
                                     config.graph_records,
                                     config.update_interval,
                                     "Статистика получения записей таблицы",
                                     "Количество записей",
                                     { total: "Всего", index: "По индексу" }),
-                scans: new Chart(   "scans_graph",
+                scans: new Chart(   document.getElementById("scans_graph"),
                                     config.graph_records,
                                     config.update_interval,
                                     "Количество поисков по таблице",
                                     "Количество сканирований",
                                     { sequential: "Последовательные сканирования", index: "По индексу" }),
-                updates: new Chart( "updates_graph",
+                updates: new Chart( document.getElementById("updates_graph"),
                                     config.graph_records,
                                     config.update_interval,
                                     "Изменения записей таблицы",
                                     "Количество записей",
                                     { inserted: "Добавленных", updated: "Обновлённых", deleted: "Удалённых" }),
-                live: new Chart("live_graph",
+                live: new Chart(document.getElementById("live_graph"),
                                 config.graph_records,
                                 config.update_interval,
                                 'Количество "живых" и "мёртвых" записей таблицы',

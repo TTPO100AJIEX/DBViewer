@@ -2,7 +2,8 @@ export default class Chart
 {
     static #load = new Promise(resolve => Chart.onLoad = resolve);
     
-    constructor(elementId, records, update_interval, title, vAxisTitle, labels = { })
+    #options; #data; #chart;
+    constructor(element, records, update_interval, title, vAxisTitle, labels = { })
     {
         this.records = records;
         this.update_interval = update_interval;
@@ -44,7 +45,7 @@ export default class Chart
         };
         this.#adjustFontSize();
         window.addEventListener("resize", () => { this.#adjustFontSize(); this.#redraw(); }, { "capture": false, "once": false, "passive": true });
-        Chart.#load.then(this.#drawChart.bind(this, elementId));
+        Chart.#load.then(this.#firstDrawChart.bind(this, element));
     }
     async #adjustFontSize()
     {
@@ -54,20 +55,19 @@ export default class Chart
         this.#options.titleTextStyle.fontSize = defaultFontSize + 2;
     }
 
-    #drawnResolve; #drawn = new Promise(resolve => this.#drawnResolve = resolve);
-    #options; #data; #chart;
-    async #drawChart(elementId)
+    #firstDrawResolve; #firstDraw = new Promise(resolve => this.#firstDrawResolve = resolve);
+    async #firstDrawChart(element)
     {
         this.#data = new google.visualization.DataTable({ cols: [ { type: 'datetime', label: 'date' } ] });
-        this.#chart = new google.visualization.LineChart(document.getElementById(elementId));
-        this.#drawnResolve();
+        this.#chart = new google.visualization.LineChart(element);
+        this.#firstDrawResolve();
     }
     #redraw() { this.#chart.draw(this.#data, this.#options); }
 
 
     async addRecord(record)
     {
-        await this.#drawn;
+        await this.#firstDraw;
 
         Object.keys(record).filter(column => this.#data.getColumnIndex(column) == -1).forEach(column => this.#data.addColumn('number', this.labels[column] ?? column, column));
 
@@ -82,7 +82,7 @@ export default class Chart
             else delete this.#options.hAxis.minValue;
         }
 
-        while (this.#data.getNumberOfRows() > this.records) this.#data.removeRow(0);
+        this.#data.removeRows(0, this.#data.getNumberOfRows() - 100);
         this.#redraw();
     }
 };

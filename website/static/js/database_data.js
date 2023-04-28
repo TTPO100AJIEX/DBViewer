@@ -1,7 +1,6 @@
 import Chart from "/static/js/utils/chart.js";
 
-var config = undefined, charts = undefined;
-const socket = new WebSocket(`wss://${location.host}/data`);
+var config = undefined, charts = undefined, socket = new WebSocket(`wss://${location.host}/data`);
 function requestData()
 {
     socket.send(JSON.stringify({ requestName: "database_data" }));
@@ -15,37 +14,37 @@ socket.addEventListener("message", message =>
         {
             config = msg.data;
             charts = {
-                connections: new Chart( "connections_graph",
+                connections: new Chart( document.getElementById("connections_graph"),
                                         config.graph_records,
                                         config.update_interval,
                                         "Соединения с базой данных",
                                         "Количество соединений",
                                         { active: "Активные", idle: "Бездействующие" }),
-                queries: new Chart( "queries_graph",
+                queries: new Chart( document.getElementById("queries_graph"),
                                     config.graph_records,
                                     config.update_interval,
                                     "Запросы к базе данных",
                                     "Количество запросов",
                                     { success: "Успешные", cancelled: "Отменённые" }),
-                reads: new Chart(   "reads_graph",
+                reads: new Chart(   document.getElementById("reads_graph"),
                                     config.graph_records,
                                     config.update_interval,
                                     "Статистика получения записей",
                                     "Количество записей",
                                     { total: "Всего", index: "По индексу" }),
-                updates: new Chart( "updates_graph",
+                updates: new Chart( document.getElementById("updates_graph"),
                                     config.graph_records,
                                     config.update_interval,
                                     "Изменения записей базы данных",
                                     "Количество записей",
                                     { inserted: "Добавленных", updated: "Обновлённых", deleted: "Удалённых" }),
-                blocks: new Chart(  "blocks_graph",
+                blocks: new Chart(  document.getElementById("blocks_graph"),
                                     config.graph_records,
                                     config.update_interval,
                                     "Количество обращений к диску",
                                     "Количество обращений",
                                     { total: "Всего", cache: '"Кэш"' }),
-                worktime: new Chart("worktime_graph",
+                worktime: new Chart(document.getElementById("worktime_graph"),
                                     config.graph_records,
                                     config.update_interval,
                                     "Время исполнения запросов базой данных",

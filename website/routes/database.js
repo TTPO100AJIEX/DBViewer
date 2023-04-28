@@ -1,25 +1,20 @@
 import config from "common/configs/config.js";
 import { TargetDatabase, InternalDatabase } from "common/postgreSQL/postgreSQL.js";
 
-
-
-import databaseInfoQueries from "./utils/queries/databaseInfoQueries.js";
-import tableLayoutQuerySrc from "./utils/queries/tableLayoutQuerySrc.js";
+import get_database_info from "./utils/database/get_database_info.js";
+import get_table_layout from "./utils/database/get_table_layout.js";
+import get_table_name from "./utils/database/get_table_name.js";
 
 async function get_database(req, res)
 {
     if (!req.authorization.permissions.includes("R")) return res.error(403);
-    const [ { database_name }, tables ] = await TargetDatabase.query_multiple(databaseInfoQueries());
-    return res.render("database.ejs", { database_name, tables });
+    return res.render("database.ejs", await get_database_info(TargetDatabase));
 }
 
 async function get_table(req, res)
 {
     if (!req.authorization.permissions.includes("R")) return res.error(403);
-    const [ { database_name }, tables, columns ] = await TargetDatabase.query_multiple([
-        ...databaseInfoQueries(),
-        { query: TargetDatabase.format(tableLayoutQuerySrc("id"), req.query.id), parse: true }
-    ]);
+    const [ { database_name, tables }, columns ] = await Promise.all([ get_database_info(TargetDatabase), get_table_layout(TargetDatabase, "id", req.query.id) ]);
     return res.render("table.ejs", { database_name, tables, columns });
 }
 
@@ -49,58 +44,64 @@ const actionsParser = ajv.compileParser({
         }
     }
 });
-import tableNameQuerySrc from "./utils/queries/tableNameQuerySrc.js";
 async function post_data(req, res)
 {
     const actions = actionsParser(req.body.actions);
-    if (actions.length == 0) return res.redirect(`/table?id=${req.body.table}`);    
+    if (!actions) return res.error(400);
+    if (actions.length == 0) return res.redirect(`/table?id=${req.body.table}`);
     if (!req.authorization.permissions.includes("I") && actions.find(action => action.type == "INSERT")) return res.error(403);
     if (!req.authorization.permissions.includes("U") && actions.find(action => action.type == "UPDATE")) return res.error(403);
     if (!req.authorization.permissions.includes("D") && actions.find(action => action.type == "DELETE")) return res.error(403);
     
-    const { schema, table } = await TargetDatabase.query(tableNameQuerySrc(), [ req.body.table ], { one_response: true });
-    function build_where(identifier = { })
+    const { schema, table } = await get_table_name(TargetDatabase, req.body.table);
+    function get_action_query(action)
     {
-        return {
-            conditions: Object.values(identifier).map(value => Array.isArray(value) ? `%I = ARRAY[%L]::text[]` : "%I = %L").join(" AND "),
-            params: Object.entries(identifier).flat()
+        function build_condition(identifier = { })
+        {
+            return {
+                conditions: Object.values(identifier).map(value => Array.isArray(value) ? `%I = ARRAY[%L]::text[]` : "%I = %L").join(" AND "),
+                params: Object.entries(identifier).flat()
+            }
+        }
+        
+        switch (action.type)
+        {
+            case "DELETE":
+            {
+                const { conditions, params: conditionsParams } = build_condition(action.id);
+                return {
+                    query: `DELETE FROM %I.%I WHERE ${conditions}`,
+                    params: [ schema, table, ...conditionsParams ]
+                };
+            }
+            case "INSERT":
+            {
+                return {
+                    query: `INSERT INTO %I.%I (${Object.keys(action.data).fill("%I").join(', ')}) OVERRIDING USER VALUE
+                            VALUES (${Object.values(action.data).map(value => Array.isArray(value) ? `ARRAY[%L]::text[]` : "%L")})`,
+                    params: [ schema, table, ...Object.keys(action.data), ...Object.values(action.data) ]
+                }
+            }
+            case "UPDATE":
+            {
+                for (const key in action.id) delete action.data[key];
+                const { conditions, params: conditionsParams } = build_condition(action.id);
+                return {
+                    query: `UPDATE %I.%I SET ${Object.values(action.data).map(value => Array.isArray(value) ? `%I = ARRAY[%L]::text[]` : "%I = %L").join(", ")} WHERE ${conditions}`,
+                    params: [ schema, table, ...(Object.entries(action.data).flat()), ...conditionsParams ]
+                }
+            }
+            default: throw `Unknown action type ${action.type}`;
         }
     }
 
     let queries = [ ], logs = [ ];
     for (const action of actions)
     {
-        if (action.data) action.data = Object.fromEntries(Object.entries(action.data).map(entry => [ entry[0], (entry[1] === false || entry[1] === 0) ? entry[1] : (entry[1] || null) ]));
-        switch (action.type)
-        {
-            case "DELETE":
-            {
-                const { conditions, params: conditionsParams } = build_where(action.id);
-                const query = `DELETE FROM %I.%I WHERE ${conditions}`, params = [ schema, table, ...conditionsParams ];
-                queries.push(TargetDatabase.format(query, ...params));
-                logs.push(InternalDatabase.format(`INSERT INTO logs (type, data, userid, query, query_params) VALUES ('DELETE', %L, %L, %L, %L)`, `${schema}.${table}`, req.authorization.user_id, query, JSON.stringify(params)));
-                break;
-            }
-            case "INSERT":
-            {
-                const query = `INSERT INTO %I.%I (${new Array(Object.keys(action.data).length).fill("%I").join(', ')}) OVERRIDING USER VALUE
-                                    VALUES (${Object.values(action.data).map(value => Array.isArray(value) ? `ARRAY[%L]::text[]` : "%L")})`;
-                const params = [ schema, table, ...Object.keys(action.data), ...Object.values(action.data) ];
-                queries.push(TargetDatabase.format(query, ...params));
-                logs.push(InternalDatabase.format(`INSERT INTO logs (type, data, userid, query, query_params) VALUES ('INSERT', %L, %L, %L, %L)`, `${schema}.${table}`, req.authorization.user_id, query, JSON.stringify(params)));
-                break;
-            }
-            case "UPDATE":
-            {
-                for (const key in action.id) delete action.data[key];
-                const { conditions, params: conditionsParams } = build_where(action.id);
-                const query = `UPDATE %I.%I SET ${Object.values(action.data).map(value => Array.isArray(value) ? `%I = ARRAY[%L]::text[]` : "%I = %L").join(", ")} WHERE ${conditions}`;
-                const params = [ schema, table, ...(Object.entries(action.data).flat()), ...conditionsParams ];
-                queries.push(TargetDatabase.format(query, ...params));
-                logs.push(InternalDatabase.format(`INSERT INTO logs (type, data, userid, query, query_params) VALUES ('UPDATE', %L, %L, %L, %L)`, `${schema}.${table}`, req.authorization.user_id, query, JSON.stringify(params)));
-                break;
-            }
-        }
+        if (action.data) action.data = Object.fromEntries(Object.entries(action.data).map(entry => [ entry[0], entry[1] || null ]));
+        const { query, params } = get_action_query(action);
+        queries.push(TargetDatabase.format(query, ...params));
+        logs.push(InternalDatabase.format(`INSERT INTO logs (type, data, userid, query, query_params) VALUES (%L, %L, %L, %L, %L)`, action.type, `${schema}.${table}`, req.authorization.user_id, query, JSON.stringify(params)));
     }
     await TargetDatabase.query_multiple(queries);
     await InternalDatabase.query_multiple(logs);
@@ -108,8 +109,7 @@ async function post_data(req, res)
 }
 
 
-import schema_templates from "./utils/schema_templates/schema_templates.js";
-const EMPTY_GET_SCHEMA = { query: { type: "object", additionalProperties: false, properties: { } } };
+import { types as schema_types, EMPTY_GET_SCHEMA } from "./utils/schemas/schemas.js";
 const TABLE_GET_SCHEMA = {
     query:
     {
@@ -130,7 +130,7 @@ const DATA_POST_SCHEMA = {
         additionalProperties: false,
         properties:
         {
-            "authentication": schema_templates.authentication,
+            "authentication": schema_types.authentication,
             "table": { type: "integer" },
             "actions": { type: "string" }
         }
