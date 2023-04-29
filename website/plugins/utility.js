@@ -7,16 +7,16 @@ function register_utility_plugins(app, options, done)
 {
     /*----------------------------------CIRCUIT BREAKER----------------------------------*/
     app.register(fastify_circuit_breaker, {
-        threshold: 5, timeout: 10000, resetTimeout: 10000,
+        threshold: 5, timeout: 10000,
         onCircuitOpen: async (req, res) =>
         {
             console.warn(`@fastify/circuit-breaker: onCircuitOpen triggered for ${req.routerPath}${req.query}${JSON.stringify(req.body)}`);
-            res.error(508);
+            return res.error(508);
         },
         onTimeout: async (req, res) =>
         {
             console.warn(`@fastify/circuit-breaker: onTimeout triggered for ${req.routerPath}${req.query}${JSON.stringify(req.body)}`);
-            res.error(504);
+            return res.error(504);
         }
     });
     
@@ -35,7 +35,7 @@ function register_utility_plugins(app, options, done)
         {
             if (type === under_pressure.TYPE_HEAP_USED_BYTES) { console.warn(`Heap has been exhausted: ${value}`); return; }
             if (type === under_pressure.TYPE_RSS_BYTES) { console.warn(`RSS has been exhausted: ${value}`); return; }
-            res.error(503);
+            return res.error(503);
         },
         exposeStatusRoute:
         {

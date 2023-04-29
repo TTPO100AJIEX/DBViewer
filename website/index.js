@@ -14,33 +14,12 @@ const app = fastify({
     forceCloseConnections: true,
     ignoreTrailingSlash: true,
     ignoreDuplicateSlashes: true,
-    maxParamLength: 32,
-    bodyLimit: 1048576,
-    onProtoPoisoning: 'error',
-    onConstructorPoisoning: 'error',
     logger: config.stage == "testing",
     disableRequestLogging: true,
-    caseSensitive: true,
-    trustProxy: false,
-    exposeHeadRoutes: true,
-    return503OnClosing: true,
     ajv:
     {
         plugins: [ [ ajv_formats, { mode: 'full', keywords: true } ] ],
-        customOptions:
-        {
-            // strict mode options
-            strict: true, strictSchema: true, strictNumbers: true, strictTypes: true, strictTuples: true, strictRequired: true,
-            allowUnionTypes: false, allowMatchingProperties: false, validateFormats: true,
-            // error reporting
-            allErrors: false, verbose: false, messages: true,
-            // validation and reporting options:
-            $data: false, discriminator: false, unicodeRegExp: true, $comment: false,
-            // options to modify validated data:
-            removeAdditional: true, useDefaults: true, coerceTypes: "array",
-            // advanced options:
-            inlineRefs: true
-        }
+        customOptions: { removeAdditional: true, useDefaults: true, coerceTypes: "array" }
     }
 });
 

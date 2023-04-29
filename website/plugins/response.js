@@ -13,7 +13,7 @@ import html_minifier from "html-minifier";
 function register_response_plugins(app, options, done)
 {
     /*----------------------------------COMPRESS----------------------------------*/
-    app.register(fastify_compress, { global: true, threshold: 1024 });
+    app.register(fastify_compress);
     
 
 
@@ -51,7 +51,6 @@ function register_response_plugins(app, options, done)
         "production": config.stage != "testing",
         "options":
         {
-            "async": false,
             "useHtmlMinifier": config.stage != "testing" ? html_minifier : false,
             "htmlMinifierOptions":
             {
@@ -90,7 +89,6 @@ function register_response_plugins(app, options, done)
         },
         "propertyName": "render",
         "root": "./website/views/",
-        "includeViewExtension": false,
         "defaultContext": { config }
     });
     app.addHook("onRequest", async (req, res) =>

@@ -6,7 +6,7 @@ import fastify_websocket from "@fastify/websocket";
 function register_request_plugins(app, options, done)
 {
     /*----------------------------------FORMBODY----------------------------------*/
-    app.register(fastify_formbody, { bodyLimit: 1048576 });
+    app.register(fastify_formbody);
     
     /*----------------------------------WEBSOCKET----------------------------------*/
     app.register(fastify_websocket);

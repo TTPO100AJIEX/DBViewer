@@ -53,7 +53,6 @@ function register_security_plugins(app, options, done)
         noSniff: true,
         originAgentCluster: true,
         dnsPrefetchControl: { allow: true },
-        ieNoOpen: true,
         frameguard: { action: "SAMEORIGIN" },
         hidePoweredBy: true,
         xssFilter: true
@@ -91,11 +90,7 @@ function register_security_plugins(app, options, done)
     {
         origin: [ `https://${config.website.host}` ],
         methods: 'GET,POST',
-        maxAge: 300,
-        optionsSuccessStatus: 204,
-        preflight: true,
-        strictPreflight: true,
-        hideOptionsRoute: true
+        maxAge: 300
     });
     
 

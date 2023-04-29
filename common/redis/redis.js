@@ -7,25 +7,7 @@ class Redis
     #Connection;
     static #DefaultRedisOptions = {
         connectionName: config.application,
-        //retryStrategy:
-        //commandTimeout:
-        autoResubscribe: true,
-        autoResendUnfulfilledCommands: true,
-        reconnectOnError: null,
-        readOnly: false,
-        stringNumbers: false,
-        //connectTimeout: 
-        //maxRetriesPerRequest: 20,
-        //maxLoadingRetryTime: 10000,
-        enableAutoPipelining: true,
-        autoPipeliningIgnoredCommands: [],
-        offlineQueue: true,
-        commandQueue: true,
-        enableOfflineQueue: true,
-        enableReadyCheck: true,
-        lazyConnect: false,
-        //disconnectTimeout:
-        //tls:
+        enableAutoPipeliningP: true
     };
     constructor(options) { this.#Connection = new ioredis({ ...Redis.#DefaultRedisOptions, ...options }); }    
     end() { this.#Connection.quit(); }

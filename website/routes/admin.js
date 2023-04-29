@@ -77,8 +77,6 @@ async function get_admin_logs(req, res)
     return res.render("admin/logs.ejs", { database_name, tables, columns });
 }
 
-export { get_admin_accounts, delete_admin_accounts, create_admin_accounts, edit_admin_accounts, get_admin_logs };
-
 
 import { types as schema_types, EMPTY_GET_SCHEMA } from "./utils/schemas/schemas.js";
 const ACCOUNTS_DELETE_SCHEMA =

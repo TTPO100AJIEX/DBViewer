@@ -1,19 +1,13 @@
 /*----------------------DROPDOWNS----------------------*/
-function dropdown_open(id)
+function dropdown_open(dropdown)
 {
-    const dropdown = document.getElementById(id);
-    if (!dropdown) return;
-    
     dropdown.hidden = false;
     const buttons = document.querySelectorAll(`[data-dropdown="${id}"]`);
     for (const button of buttons) { button.classList.add("dropdown_opened"); button.setAttribute("aria-expanded", "true"); }
     dropdown.focus();
 }
-function dropdown_close(id)
+function dropdown_close(dropdown)
 {
-    const dropdown = document.getElementById(id);
-    if (!dropdown) return;
-
     dropdown.hidden = true;
     const buttons = document.querySelectorAll(`[data-dropdown="${id}"]`);
     for (const button of buttons) { button.classList.remove("dropdown_opened"); button.setAttribute("aria-expanded", "false"); }
@@ -23,8 +17,8 @@ function toggle_dropdown(ev)
     const id = ev.currentTarget.dataset.dropdown;
     const dropdown = document.getElementById(id);
     if (!dropdown) return;
-    if (dropdown.hidden) dropdown_open(id);
-    else dropdown_close(id);
+    if (dropdown.hidden) dropdown_open(dropdown);
+    else dropdown_close(dropdown);
 }
 Array.from(document.getElementsByClassName("dropdown_opener")).forEach(el =>
 {
