@@ -4,8 +4,6 @@ const tableDataQuery = `SELECT
                             (CASE WHEN pg_namespace.nspname = 'public' THEN '' ELSE pg_namespace.nspname || '.' END) || pg_class.relname AS table_name,
                             (CASE
                                 WHEN pg_class.relkind = 'r' THEN 'table'
-                                WHEN pg_class.relkind = 'v' THEN 'view'
-                                WHEN pg_class.relkind = 'm' THEN 'materialized view'
                                 ELSE 'unknown'
                             END) AS table_type,
                             pg_size_pretty(pg_total_relation_size(pg_class.oid)) AS table_size,

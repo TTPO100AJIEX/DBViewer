@@ -12,8 +12,8 @@ export default function get_table_layout(DatabaseConnection, type, input)
             pg_attribute.attnotnull AS flags_NN,
             pg_attribute.atthasdef AS flags_D,
             (pg_attribute.attgenerated = 's') AS flags_G,
-            EXISTS( SELECT * FROM pg_constraint WHERE pg_constraint.conrelid = pg_class.oid AND pg_attribute.attnum = ANY(pg_constraint.conkey) AND contype = 'u' ) AS flags_U,
-            EXISTS( SELECT * FROM pg_constraint WHERE pg_constraint.conrelid = pg_class.oid AND pg_attribute.attnum = ANY(pg_constraint.conkey) AND contype = 'p' ) AS flags_PK,
+            EXISTS( SELECT * FROM pg_constraint WHERE pg_constraint.conrelid = pg_class.oid AND pg_attribute.attnum = ANY(pg_constraint.conkey) AND pg_constraint.contype = 'u' ) AS flags_U,
+            EXISTS( SELECT * FROM pg_constraint WHERE pg_constraint.conrelid = pg_class.oid AND pg_attribute.attnum = ANY(pg_constraint.conkey) AND pg_constraint.contype = 'p' ) AS flags_PK,
             enums.enumlabels AS enumlabels
         FROM pg_attribute INNER JOIN pg_class ON pg_class.oid = pg_attribute.attrelid LEFT JOIN enums ON enums.enumtypid = pg_attribute.atttypid
         WHERE pg_class.${type == "name" ? "relname" : "oid"} = $1 AND pg_attribute.attnum > 0 AND NOT pg_attribute.attisdropped

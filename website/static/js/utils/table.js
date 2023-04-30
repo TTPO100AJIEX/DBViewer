@@ -17,17 +17,15 @@ class TableRow
     removeChangeCallback(callback) { this.#changeCallbacks = this.#changeCallbacks.filter(cb => cb != callback); }
     changed(ev) { this.#changeCallbacks.forEach(callback => callback(ev.currentTarget)); }
     
-    getData()
-    {
-        return Object.fromEntries(this.inputs.map(input => [ input.name, input.type == "checkbox" ? (input.checked ? "t" : "f") : input.value]));
-    }
+    getData() { return Object.fromEntries(this.inputs.map(input => [ input.name, input.type == "checkbox" ? (input.checked ? "t" : "f") : input.value])); }
+    getInitialData() { return Object.fromEntries(this.inputs.map(input => [ input.name, input.dataset.initial_value ])); }
     getIdentifier(head)
     {
         let keys = Array.from(head.children[0].children).filter(th => (th.children?.[0]?.children?.[1]?.innerText ?? '').includes("[PK]")).map(th => th.children[0].children[0].innerText);
         if (keys.length == 0) keys = Array.from(head.children[0].children).filter(th => (th.children?.[0]?.children?.[1]?.innerText ?? '').includes("[U]")).map(th => th.children[0].children[0].innerText);
-        if (keys.length == 0) return this.getData();
+        if (keys.length == 0) return this.getInitialData();
 
-        let data = this.getData();
+        let data = this.getInitialData();
         for (const key in data)
         {
             if (!keys.includes(key)) delete data[key];
@@ -64,8 +62,7 @@ class TableDisplayRow extends TableRow
     {
         for (const input of this.inputs)
         {
-            const key = input.getAttribute("name");
-            data[key] ??= "";
+            const key = input.getAttribute("name"); data[key] ??= "";
             generalSwitch: switch (input.tagName)
             {
                 case "INPUT":
@@ -76,31 +73,43 @@ class TableDisplayRow extends TableRow
                         {
                             if (!data[key]) break generalSwitch;
                             data[key] = new Date(data[key]);
-                            input.value = `${data[key].getFullYear()}-${toLength(data[key].getMonth() + 1, 2, "0")}-${toLength(data[key].getDate(), 2, "0")}`;
+                            const value = `${data[key].getFullYear()}-${toLength(data[key].getMonth() + 1, 2, "0")}-${toLength(data[key].getDate(), 2, "0")}`;
+                            input.value = value;
+                            input.dataset.initial_value = value;
                             break generalSwitch;
                         }
                         case "time":
                         {
                             if (!data[key]) break generalSwitch;
                             data[key] = new Date(data[key]);
-                            input.value = `${data[key].getHours()}:${data[key].getMinutes()}`;
+                            const value = `${data[key].getHours()}:${data[key].getMinutes()}`;
+                            input.value = value;
+                            input.dataset.initial_value = value;
                             break generalSwitch;
                         }
                         case "datetime-local":
                         {
                             if (!data[key]) break generalSwitch;
                             data[key] = new Date(data[key]);
-                            input.value = data[key].toISOString().substring(0, data[key].toISOString().indexOf("T") + 6);
+                            const value = data[key].toISOString().substring(0, data[key].toISOString().indexOf("T") + 6);
+                            input.value = value;
+                            input.dataset.initial_value = value;
                             break generalSwitch;
                         }
                         case "checkbox":
                         {
                             input.checked = data[key];
+                            input.dataset.initial_value = data[key] ? "t" : "f";
                             break generalSwitch;
                         }
                     }
                 }
-                default: { input.value = typeof data[key] == 'object' ? JSON.stringify(data[key]) : data[key]; break; }
+                default:
+                {
+                    const value = (typeof data[key] == 'object' ? JSON.stringify(data[key]) : data[key]);
+                    input.value = value;
+                    input.dataset.initial_value = value;
+                }
             }
         }
     }
@@ -154,7 +163,6 @@ export default class Table
     #group_size;
     #table; #head; #insertBody; #displayBody;
     #insertRow; #displayRow;
-    #displayObserver;
     constructor(table, group_size, socket, socketEventName = "table_rows")
     {
         this.#group_size = group_size;
@@ -247,6 +255,7 @@ export default class Table
 
     
     #displayRows = [];
+    #displayObserver;
     #getNextPageData()
     {
         return new Promise(resolve =>

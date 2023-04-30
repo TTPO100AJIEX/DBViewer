@@ -91,10 +91,11 @@ function register_response_plugins(app, options, done)
         "root": "./website/views/",
         "defaultContext": { config }
     });
-    app.addHook("onRequest", async (req, res) =>
+    app.addHook("onRequest", (req, res, next) =>
     {
         req.response = res;
         res.locals = { "req": req, "res": res };
+        next();
     });
     
 

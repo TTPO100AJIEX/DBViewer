@@ -84,7 +84,6 @@ async function post_data(req, res)
             }
             case "UPDATE":
             {
-                for (const key in action.id) delete action.data[key];
                 const { conditions, params: conditionsParams } = build_condition(action.id);
                 return {
                     query: `UPDATE %I.%I SET ${Object.values(action.data).map(value => Array.isArray(value) ? `%I = ARRAY[%L]::text[]` : "%I = %L").join(", ")} WHERE ${conditions}`,
