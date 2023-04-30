@@ -16,12 +16,12 @@ function table_rows_query_ordering(sorts)
     }
 }
 
-export default function table_rows_query(columns, table, filters, sorts, offset, limit)
+export default function table_rows_query(columns, table, filters, sorts)
 {
     const { query: conditionQuery, params: conditionsParams } = table_rows_query_conditions(filters);
     const { query: orderingQuery, params: orderingParams } = table_rows_query_ordering(sorts);
     return {
-        query: `SELECT ${columns} FROM ${table} ${conditionQuery} ${orderingQuery} OFFSET %L LIMIT %L `,
-        params: [ ...conditionsParams, ...orderingParams, offset, limit ]
+        query: `SELECT ${columns} FROM ${table} ${conditionQuery} ${orderingQuery}`,
+        params: [ ...conditionsParams, ...orderingParams ]
     };
 }

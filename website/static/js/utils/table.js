@@ -260,11 +260,11 @@ export default class Table
     {
         return new Promise(resolve =>
         {
-            const id = crypto.randomUUID(), socketListener = (message) => {
+            const socketListener = (message) => {
                 const msg = JSON.parse(message.data);
-                if (msg.eventName == this.socketEventName && msg.data.id == id)
+                if (msg.eventName == this.socketEventName)
                 {
-                    resolve(msg.data.rows);
+                    resolve(msg.data);
                     this.socket.removeEventListener("message", socketListener, { "capture": false, "once": false, "passive": true });
                 }
             };
@@ -272,9 +272,7 @@ export default class Table
             this.socket.send(JSON.stringify({
                 requestName: this.socketEventName,
                 data: {
-                    id: id,
                     tableid: Number(this.#table.dataset.tableid),
-                    offset: this.#displayBody.children.length,
                     limit: this.#group_size,
                     filters: this.#getFilters(),
                     sorts: this.#getSorts()

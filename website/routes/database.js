@@ -24,8 +24,11 @@ import compile_websocket_handler from './utils/compile_websocket_handler.js';
 const weboscket_data_handler = await compile_websocket_handler("websocket_data_routes");
 function websocket_data(connection, req)
 {
-    connection.socket.on("message", message => weboscket_data_handler(connection, req, message.toString()).catch(err => { if (config.stage == "testing") console.error(err); }));
-    connection.socket.send(JSON.stringify({ eventName: "config", data: { graph_records: config.graph_records, group_size: config.group_size, update_interval: config.update_interval } }));
+    const errorHandler = err => { if (config.stage == "testing") console.error(err); };
+    connection.socket.on("message", message => weboscket_data_handler(connection, req, message.toString()).catch(errorHandler));
+    
+    const cfg = { graph_records: config.graph_records, group_size: config.group_size, update_interval: config.update_interval };
+    connection.socket.send(JSON.stringify({ eventName: "config", data: cfg }));
 }
 
 

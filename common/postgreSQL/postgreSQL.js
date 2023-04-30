@@ -5,6 +5,30 @@ import pg from 'pg';
 import format from 'pg-format';
 pg.types.setTypeParser(pg.types.builtins.INTERVAL, value => new Utils.Interval(value));
 
+import Cursor from "pg-cursor";
+class PostgreSQLCursor
+{
+    #client; #cursor;
+    constructor(client, query, params = [ ], parser = (data) => data)
+    {
+        this.#client = client;
+        this.query = query;
+        this.params = params;
+        this.parser = parser;
+        this.#cursor = client.query(new Cursor(query, params));
+    }
+    async get(maxRows)
+    {
+        const data = this.parser(await this.#cursor.read(maxRows));
+        return (maxRows == 1) ? data[0] : data;
+    }
+    async end()
+    {
+        await this.#cursor.close();
+        this.#client.release();
+    }
+};
+
 export default class PostgreSQL
 {
     static format = format;
@@ -61,6 +85,11 @@ export default class PostgreSQL
             result[plan[i].name] = data[i];
         }
         return(result);
+    }
+
+    async cursor(query, params, { parse = false } = { })
+    {
+        return new PostgreSQLCursor(await this.#Connection.connect(), query, params, parse ? this.#parse_response.bind(this) : undefined);
     }
 };
 
