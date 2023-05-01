@@ -2,14 +2,14 @@
 function dropdown_open(dropdown)
 {
     dropdown.hidden = false;
-    const buttons = document.querySelectorAll(`[data-dropdown="${id}"]`);
+    const buttons = document.querySelectorAll(`[data-dropdown="${dropdown.id}"]`);
     for (const button of buttons) { button.classList.add("dropdown_opened"); button.setAttribute("aria-expanded", "true"); }
     dropdown.focus();
 }
 function dropdown_close(dropdown)
 {
     dropdown.hidden = true;
-    const buttons = document.querySelectorAll(`[data-dropdown="${id}"]`);
+    const buttons = document.querySelectorAll(`[data-dropdown="${dropdown.id}"]`);
     for (const button of buttons) { button.classList.remove("dropdown_opened"); button.setAttribute("aria-expanded", "false"); }
 }
 function toggle_dropdown(ev)

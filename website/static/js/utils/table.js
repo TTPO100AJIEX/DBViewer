@@ -17,7 +17,7 @@ class TableRow
     removeChangeCallback(callback) { this.#changeCallbacks = this.#changeCallbacks.filter(cb => cb != callback); }
     changed(ev) { this.#changeCallbacks.forEach(callback => callback(ev.currentTarget)); }
     
-    getData() { return Object.fromEntries(this.inputs.map(input => [ input.name, input.type == "checkbox" ? (input.checked ? "t" : "f") : input.value])); }
+    getData() { return Object.fromEntries(this.inputs.filter(input => input.value != input.dataset.initial_value).map(input => [ input.name, input.type == "checkbox" ? (input.checked ? "t" : "f") : input.value])); }
     getInitialData() { return Object.fromEntries(this.inputs.map(input => [ input.name, input.dataset.initial_value ])); }
     getIdentifier(head)
     {
@@ -299,7 +299,8 @@ export default class Table
     }
     #setupDisplay()
     {
-        this.#displayObserver = new IntersectionObserver(entries => { if (entries[0].isIntersecting) this.#loadNextPage() }, { rootMargin: "0px", threshold: 0 });
+        if (this.#displayObserver) this.#displayObserver.disconnect();
+        else this.#displayObserver = new IntersectionObserver(entries => { if (entries[0].isIntersecting) this.#loadNextPage() }, { rootMargin: "0px", threshold: 0 });
         Array.from(this.#displayBody.children).forEach(row => row.remove());
         this.#displayRows = [ ];
         this.#loadNextPage();

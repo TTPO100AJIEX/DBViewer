@@ -133,4 +133,4 @@ export default [
     { method: "POST",  path: "/admin/accounts/delete", access: "authorization", schema: ACCOUNTS_DELETE_SCHEMA, handler: delete_admin_accounts },
     { method: "POST",  path: "/admin/accounts/create", access: "authorization", schema: ACCOUNTS_CREATE_SCHEMA, handler: create_admin_accounts },
     { method: "POST",  path: "/admin/accounts/edit", access: "authorization", schema: ACCOUNTS_EDIT_SCHEMA, handler: edit_admin_accounts }
-];
+]; 

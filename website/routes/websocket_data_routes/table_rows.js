@@ -54,7 +54,7 @@ const SCHEMA = {
                 properties:
                 {
                     name: { type: "string" },
-                    value: { },
+                    value: { type: "string" },
                     comparison: { enum: [ "exact", "substring" ] }
                 }
             }

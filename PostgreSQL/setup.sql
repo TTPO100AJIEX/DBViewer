@@ -9,7 +9,7 @@ CREATE TABLE users
     delete BOOL NOT NULL DEFAULT FALSE,
     admin BOOL NOT NULL DEFAULT FALSE,
     permissions CHAR(5) GENERATED ALWAYS AS (
-        (CASE WHEN (read OR admin) THEN 'R' ELSE '-' END) ||
+        (CASE WHEN (read OR insert OR update OR delete OR admin) THEN 'R' ELSE '-' END) ||
         (CASE WHEN (insert OR admin) THEN 'I' ELSE '-' END) ||
         (CASE WHEN (update OR admin) THEN 'U' ELSE '-' END) ||
         (CASE WHEN (delete OR admin) THEN 'D' ELSE '-' END) ||

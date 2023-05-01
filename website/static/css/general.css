@@ -514,6 +514,7 @@
     @layer edits
     {
         .data_table [data-edited]:not([data-deleted]) :is(td, input:not([type='checkbox']), select, textarea, .checkboxWrapper) { background: var(--color-yellow); color: var(--text-inverse-color); }
+        .data_table [data-edited]:not([data-deleted]) *::after, .data_table [data-edited]:not([data-deleted]) *::before { color: var(--text-inverse-color); }
         .data_table [data-edited]:not([data-deleted]) [data-identity] > div > span { color: var(--text-inverse-color); }
         .data_table [data-edited]:not([data-deleted]) [data-identity] :is(.striped_button:not(:hover) > span, .striped_button:not(:hover)::after, .cross_button:not(:hover) > span, .cross_button:not(:hover)::after) { background: var(--text-inverse-color); }
 

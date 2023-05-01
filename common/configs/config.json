@@ -37,7 +37,6 @@
         "ssl_key": "common/configs/ssl/privkey.pem",
         "ssl_cert": "common/configs/ssl/fullchain.pem",
 
-        "http_port": 80,
         "https_port": 443,
         
         "secret": "230odiXKUiExkHAQ3UMTqRzDnGxN2loy",
