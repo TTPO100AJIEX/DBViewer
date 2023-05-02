@@ -57,6 +57,6 @@
     },
     
     "graph_records": 100,
-    "group_size": 30,
+    "page_size": 30,
     "update_interval": 1000
 }

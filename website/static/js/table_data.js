@@ -41,7 +41,7 @@ socket.addEventListener("message", message =>
                                 "Количество записей",
                                 { live: "Живых", dead: "Мёртых" })
             };
-            table = new Table(document.getElementById("data_table"), config.group_size, socket);
+            table = new Table(document.getElementById("data_table"), config.page_size, socket);
             requestData();
             break;
         }

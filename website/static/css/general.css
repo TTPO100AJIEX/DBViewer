@@ -300,7 +300,7 @@
             textarea, select[multiple] { resize: vertical; }
             ::placeholder { color: var(--text-placeholder-color); opacity: 1; }
             :is(input:not([type='checkbox']), select, textarea):disabled, .checkboxWrapper:has(input[type='checkbox']:disabled) { text-align: center; border: thin solid var(--brand-color); opacity: 1; }
-            :is(input:not([type='checkbox']), select, textarea):invalid, .checkboxWrapper:has(input[type='checkbox']:invalid) { border: thin solid var(--color-red); }
+            :is(input:not([type='checkbox']), select, textarea):invalid:not(:empty) { border: thin solid var(--color-red); }
 
             input[type='checkbox'] { height: calc(0.8 * var(--interactive-min-height)); aspect-ratio: 1/1; clip-path: circle(calc(48% - 3px)); }
             .checkboxWrapper { padding-top: 0; padding-bottom: 0; display: flex; align-items: center; gap: 1ch; }

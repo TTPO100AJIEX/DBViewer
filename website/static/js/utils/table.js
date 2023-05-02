@@ -160,12 +160,12 @@ export default class Table
     static showSaveButton() { this.#saveButton.hidden = false; }
 
 
-    #group_size;
+    #page_size;
     #table; #head; #insertBody; #displayBody;
     #insertRow; #displayRow;
-    constructor(table, group_size, socket, socketEventName = "table_rows")
+    constructor(table, page_size, socket, socketEventName = "table_rows")
     {
-        this.#group_size = group_size;
+        this.#page_size = page_size;
         this.socket = socket;
         this.socketEventName = socketEventName;
         
@@ -273,7 +273,7 @@ export default class Table
                 requestName: this.socketEventName,
                 data: {
                     tableid: Number(this.#table.dataset.tableid),
-                    limit: this.#group_size,
+                    limit: this.#page_size,
                     filters: this.#getFilters(),
                     sorts: this.#getSorts()
                 }
@@ -295,7 +295,7 @@ export default class Table
         this.#displayObserver.disconnect();
         const data = await this.#getNextPageData();
         this.#renderData(data);
-        if (this.#displayBody.lastElementChild && data.length == this.#group_size) this.#displayObserver.observe(this.#displayBody.lastElementChild);
+        if (this.#displayBody.lastElementChild && data.length == this.#page_size) this.#displayObserver.observe(this.#displayBody.lastElementChild);
     }
     #setupDisplay()
     {

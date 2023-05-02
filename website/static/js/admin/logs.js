@@ -10,7 +10,7 @@ socket.addEventListener("message", message =>
         case "config":
         {
             config = msg.data;
-            table = new Table(document.getElementById("logs_table"), config.group_size, socket, "logs");
+            table = new Table(document.getElementById("logs_table"), config.page_size, socket, "logs");
             break;
         }
         case "logs": { break; }

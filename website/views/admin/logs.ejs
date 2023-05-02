@@ -2,8 +2,8 @@
 <!DOCTYPE html>
 <html lang='ru'>
     <head>
-        <title>История изменений</title>
-        <meta name="description" content="История изменений">
+        <title>История запросов</title>
+        <meta name="description" content="История запросов">
         <script src="/static/js/admin/logs.js" type="module" nonce="<%=res.cspNonce.script%>"></script>
         <%- include("../general/head.ejs", locals) %>
     </head>
@@ -13,7 +13,7 @@
         <div class="main_body">
             <%- include("../general/header.ejs", locals) %>
             <main tabindex="-1">
-                <h1>История изменений</h1>
+                <h1>История запросов</h1>
                 <table id="logs_table" class="data_table" data-tableid="<%=req.query.id%>">
                     <thead>
                         <tr>
@@ -27,7 +27,7 @@
                             { %>
                                 <td>
                                     <div id="data_table_head_<%=column.name%>" class="dropdown_inplace flex_vertical" tabindex="-1" hidden>
-                                        <label> Поиск: <%- include("../general/input.ejs", { ...locals, column, identityType: 'head' }) %> </label>
+                                        <label> Фильтрация: <%- include("../general/input.ejs", { ...locals, column, identityType: 'head' }) %> </label>
                                         <label>
                                             Сортировка:
                                             <select class="sortOrder" data-column="<%=column.name%>">

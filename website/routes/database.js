@@ -27,7 +27,7 @@ function websocket_data(connection, req)
     const errorHandler = err => { if (config.stage == "testing") console.error(err); };
     connection.socket.on("message", message => weboscket_data_handler(connection, req, message.toString()).catch(errorHandler));
     
-    const cfg = { graph_records: config.graph_records, group_size: config.group_size, update_interval: config.update_interval };
+    const cfg = { graph_records: config.graph_records, page_size: config.page_size, update_interval: config.update_interval };
     connection.socket.send(JSON.stringify({ eventName: "config", data: cfg }));
 }
 

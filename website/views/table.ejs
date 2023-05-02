@@ -41,8 +41,8 @@
                                 "ID": "Стандартно генерируемый идентификатор",
                                 "NN": "Не содержит пропущенных значений",
                                 "D": "Имеет стандартное значение",
-                                "G": "Генерируемый",
-                                "U": "Уникальный",
+                                "G": "Генерируемое значение",
+                                "U": "Уникальное значение",
                                 "PK": "Ключ"
                             };
                             for (const column of columns)
@@ -65,7 +65,7 @@
                             { %>
                                 <td>
                                     <div id="data_table_head_<%=column.name%>" class="dropdown_inplace flex_vertical" tabindex="-1" hidden>
-                                        <label> Поиск: <%- include("./general/input.ejs", { ...locals, column, identityType: 'head' }) %> </label>
+                                        <label> Фильтрация: <%- include("./general/input.ejs", { ...locals, column, identityType: 'head' }) %> </label>
                                         <label>
                                             Сортировка:
                                             <select class="sortOrder" data-column="<%=column.name%>">

@@ -56,7 +56,7 @@
                                             </label>
                                             <label class="grid_fill_row">
                                                 Уровень доступа:
-                                                <select multiple name="permissions" required>
+                                                <select multiple name="permissions">
                                                     <option value="R" <%=account.permissions.includes("R") ? 'selected' : ''%>>Чтение</option>
                                                     <option value="I" <%=account.permissions.includes("I") ? 'selected' : ''%>>Вставка</option>
                                                     <option value="U" <%=account.permissions.includes("U") ? 'selected' : ''%>>Обновление</option>
@@ -91,7 +91,7 @@
                 </label>
                 <label class="grid_fill_row">
                     Уровень доступа:
-                    <select multiple name="permissions" required>
+                    <select multiple name="permissions">
                         <option value="R">Чтение</option>
                         <option value="I">Вставка</option>
                         <option value="U">Обновление</option>
