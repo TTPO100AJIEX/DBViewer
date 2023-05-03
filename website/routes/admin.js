@@ -20,7 +20,7 @@ async function delete_admin_accounts(req, res)
 async function create_admin_accounts(req, res)
 {
     if (!req.authorization.permissions.includes("A")) return res.error(403);
-    const permissions = [ "R", "I", "U", "D", "A"].map(permission => (req.body.permissions ?? [ ]).includes(permission));
+    const permissions = [ "R", "I", "U", "D", "A" ].map(permission => (req.body.permissions ?? [ ]).includes(permission));
     const password = await bcrypt.hash(req.body.password, config.bcrypt.saltRounds);
     await InternalDatabase.query(`INSERT INTO users (login, password, read, insert, update, delete, admin) VALUES ($1, $2, $3, $4, $5, $6, $7)`, [ req.body.login, password, ...permissions ]);
     return res.redirect("/admin/accounts");
@@ -28,7 +28,7 @@ async function create_admin_accounts(req, res)
 async function edit_admin_accounts(req, res)
 {
     if (!req.authorization.permissions.includes("A")) return res.error(403);
-    const permissions = [ "R", "I", "U", "D", "A"].map(permission => (req.body.permissions ?? [ ]).includes(permission));
+    const permissions = [ "R", "I", "U", "D", "A" ].map(permission => (req.body.permissions ?? [ ]).includes(permission));
     if (req.body.password)
     {
         const password = await bcrypt.hash(req.body.password, config.bcrypt.saltRounds);
@@ -105,7 +105,7 @@ const ACCOUNTS_CREATE_SCHEMA =
             "authentication": schema_types.authentication,
             "login": { type: "string", minLength: 1, maxLength: 100 },
             "password": { type: "string", minLength: 1 },
-            "permissions": { type: "array", maxItems: 5, uniqueItems: true, items: { type: "string", minLength: 1, maxLength: 1, enum: [ "R", "I", "U", "D", "A" ] } },
+            "permissions": { type: "array", maxItems: 5, uniqueItems: true, items: { type: "string", minLength: 1, maxLength: 1, enum: [ "R", "I", "U", "D", "A", "-" ] } },
         }
     }
 };
@@ -122,7 +122,7 @@ const ACCOUNTS_EDIT_SCHEMA =
             "id": schema_types.uinteger,
             "login": { type: "string", minLength: 1, maxLength: 100 },
             "password": { type: "string" },
-            "permissions": { type: "array", maxItems: 5, uniqueItems: true, items: { type: "string", minLength: 1, maxLength: 1, enum: [ "R", "I", "U", "D", "A" ] } },
+            "permissions": { type: "array", maxItems: 5, uniqueItems: true, items: { type: "string", minLength: 1, maxLength: 1, enum: [ "R", "I", "U", "D", "A", "-" ] } },
         }
     }
 };
