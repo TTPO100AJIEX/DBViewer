@@ -5,7 +5,7 @@
         <script src="https://www.gstatic.com/charts/loader.js" nonce="<%=res.cspNonce.script%>" defer></script>
         <title><%=tables.find(table => table.id == req.query.id).name%></title>
         <meta name="description" content="Таблица <%=tables.find(table => table.id == req.query.id).name%>">
-        <script src="/static/js/table_data.js" type="module" nonce="<%=res.cspNonce.script%>"></script>
+        <script src="/static/js/table.js" type="module" nonce="<%=res.cspNonce.script%>"></script>
         <%- include("./general/head.ejs", locals) %>
     </head>
     <body>
