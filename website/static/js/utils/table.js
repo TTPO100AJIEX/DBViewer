@@ -17,7 +17,16 @@ class TableRow
     removeChangeCallback(callback) { this.#changeCallbacks = this.#changeCallbacks.filter(cb => cb != callback); }
     changed(ev) { this.#changeCallbacks.forEach(callback => callback(ev.currentTarget)); }
     
-    getData() { return Object.fromEntries(this.inputs.filter(input => input.value != input.dataset.initial_value).map(input => [ input.name, input.type == "checkbox" ? (input.checked ? "t" : "f") : input.value])); }
+    getData()
+    {
+        function getInputPair(input)
+        {
+            if (input.type == "checkbox") return [ input.name, input.checked ? "t" : "f"];
+            if (input.type == "time" || input.type == "datetime-local") return [ input.name, new Date(input.value) ];
+            return [ input.name, input.value ];
+        }
+        return Object.fromEntries(this.inputs.filter(input => input.value != input.dataset.initial_value).map(getInputPair));
+    }
     getInitialData() { return Object.fromEntries(this.inputs.map(input => [ input.name, input.dataset.initial_value ])); }
     getIdentifier(head)
     {
@@ -75,31 +84,29 @@ class TableDisplayRow extends TableRow
                             data[key] = new Date(data[key]);
                             const value = `${data[key].getFullYear()}-${toLength(data[key].getMonth() + 1, 2, "0")}-${toLength(data[key].getDate(), 2, "0")}`;
                             input.value = value;
-                            input.dataset.initial_value = value;
                             break generalSwitch;
                         }
                         case "time":
                         {
                             if (!data[key]) break generalSwitch;
                             data[key] = new Date(data[key]);
+                            data[key] = new Date(data[key].getTime() - data[key].getTimezoneOffset() * 60 * 1000);
                             const value = `${data[key].getHours()}:${data[key].getMinutes()}`;
                             input.value = value;
-                            input.dataset.initial_value = value;
                             break generalSwitch;
                         }
                         case "datetime-local":
                         {
                             if (!data[key]) break generalSwitch;
                             data[key] = new Date(data[key]);
+                            data[key] = new Date(data[key].getTime() - data[key].getTimezoneOffset() * 60 * 1000);
                             const value = data[key].toISOString().substring(0, data[key].toISOString().indexOf("T") + 6);
                             input.value = value;
-                            input.dataset.initial_value = value;
                             break generalSwitch;
                         }
                         case "checkbox":
                         {
                             input.checked = data[key];
-                            input.dataset.initial_value = data[key] ? "t" : "f";
                             break generalSwitch;
                         }
                     }
@@ -108,9 +115,9 @@ class TableDisplayRow extends TableRow
                 {
                     const value = (typeof data[key] == 'object' ? JSON.stringify(data[key]) : data[key]);
                     input.value = value;
-                    input.dataset.initial_value = value;
                 }
             }
+            input.dataset.initial_value = input.value;
         }
     }
 
