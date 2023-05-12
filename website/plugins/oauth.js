@@ -94,7 +94,7 @@ function register_oauth(app, options, done)
             res.setCookie('__Secure-authorization', req.session_id, { domain: config.website.host, path: '/', secure: true, httpOnly: true, sameSite: 'Lax', signed: true });
             return res.redirect("/database");
         }
-        return res.error(401, [ "Ошибка авторизации!", "Пароль не верный!" ]);
+        return res.error(401, [ "Ошибка авторизации!", "Пароль неверный!" ]);
     });
 
     app.decorateReply("logout", async function()
