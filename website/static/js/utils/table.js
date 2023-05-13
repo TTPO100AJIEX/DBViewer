@@ -25,7 +25,7 @@ class TableRow
             if (input.type == "time" || input.type == "datetime-local") return [ input.name, new Date(input.value) ];
             return [ input.name, input.value ];
         }
-        return Object.fromEntries(this.inputs.filter(input => input.value != input.dataset.initial_value).map(getInputPair));
+        return Object.fromEntries(this.inputs.filter(input => (input.type == 'checkbox' ? `${input.checked}` : input.value) != input.dataset.initial_value).map(getInputPair));
     }
     getInitialData() { return Object.fromEntries(this.inputs.map(input => [ input.name, input.dataset.initial_value ])); }
     getIdentifier(head)
@@ -107,6 +107,7 @@ class TableDisplayRow extends TableRow
                         case "checkbox":
                         {
                             input.checked = data[key];
+                            input.value = input.checked;
                             break generalSwitch;
                         }
                     }

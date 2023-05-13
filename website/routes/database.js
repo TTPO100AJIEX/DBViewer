@@ -71,6 +71,7 @@ async function post_data(req, res)
         {
             case "DELETE":
             {
+                if (Object.keys(action.id).length == 0) return { query: '', params: [ ] };
                 const { conditions, params: conditionsParams } = build_condition(action.id);
                 return {
                     query: `DELETE FROM %I.%I WHERE ${conditions}`,
@@ -79,6 +80,7 @@ async function post_data(req, res)
             }
             case "INSERT":
             {
+                if (Object.keys(action.data).length == 0) return { query: '', params: [ ] };
                 return {
                     query: `INSERT INTO %I.%I (${Object.keys(action.data).fill("%I").join(', ')}) OVERRIDING USER VALUE
                             VALUES (${Object.values(action.data).map(value => Array.isArray(value) ? `ARRAY[%L]::text[]` : "%L")})`,
@@ -87,6 +89,8 @@ async function post_data(req, res)
             }
             case "UPDATE":
             {
+                if (Object.keys(action.id).length == 0) return { query: '', params: [ ] };
+                if (Object.keys(action.data).length == 0) return { query: '', params: [ ] };
                 const { conditions, params: conditionsParams } = build_condition(action.id);
                 return {
                     query: `UPDATE %I.%I SET ${Object.values(action.data).map(value => Array.isArray(value) ? `%I = ARRAY[%L]::text[]` : "%I = %L").join(", ")} WHERE ${conditions}`,
