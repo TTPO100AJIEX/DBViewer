@@ -226,18 +226,18 @@ export default class Table
     }
     #getSorts()
     {
-        let sorts = Array.from(this.#head.querySelectorAll(".sortOrder")).filter(select => select.value !== "no").map(select => ({ name: select.dataset.column, order: select.value }));
+        let sorts = Array.from(this.#head.querySelectorAll(".sortOrder")).filter(select => select.value !== "default").map(select => ({ name: select.dataset.column, order: select.value }));
         if (sorts.length == 0)
         {
             sorts = Array.from(this.#head.children[0].children)
                     .filter(th => (th.children?.[0]?.children?.[1]?.innerText ?? '').includes("[PK]"))
-                    .map(th => ({ name: th.children[0].children[0].innerText, order: 'asc' }));
+                    .map(th => ({ name: th.children[0].children[0].innerText, order: 'default' }));
         }
         if (sorts.length == 0)
         {
             sorts = Array.from(this.#head.children[0].children)
                     .filter(th => (th.children?.[0]?.children?.[1]?.innerText ?? '').includes("[U]"))
-                    .map(th => ({ name: th.children[0].children[0].innerText, order: 'asc' }));
+                    .map(th => ({ name: th.children[0].children[0].innerText, order: 'default' }));
         }
         return sorts;
     }

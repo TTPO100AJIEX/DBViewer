@@ -52,7 +52,7 @@ const SCHEMA = {
                 properties:
                 {
                     name: { type: "string" },
-                    order: { enum: [ "asc", "desc" ] }
+                    order: { enum: [ "asc", "desc", "default" ] }
                 }
             }
         },

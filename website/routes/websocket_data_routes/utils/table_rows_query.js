@@ -10,8 +10,14 @@ function table_rows_query_conditions(filters)
 function table_rows_query_ordering(sorts)
 {
     if (sorts.length == 0) return { query: "", params: [ ] };
+    sorts.forEach(sorting =>
+    {
+        if (sorting.order == 'asc') sorting.order = "ASC NULLS LAST";
+        else if (sorting.order == 'desc') sorting.order = "DESC NULLS FIRST";
+        else sorting.order = "";
+    });
     return {
-        query: `ORDER BY ${sorts.map(sorting => `%I ${sorting.order == "asc" ? "asc" : "desc"}`).join(', ')}`,
+        query: `ORDER BY ${sorts.map(sorting => `%I ${sorting.order}`).join(', ')}`,
         params: sorts.map(sorting => sorting.name)
     }
 }
