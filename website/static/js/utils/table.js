@@ -19,13 +19,18 @@ class TableRow
     
     getData()
     {
+        function inputFilter(input)
+        {
+            if ("initial_value" in input.dataset) return (input.type == 'checkbox' ? `${input.checked}` : input.value) != input.dataset.initial_value;
+            return input.value;
+        }
         function getInputPair(input)
         {
             if (input.type == "checkbox") return [ input.name, input.checked ? "t" : "f"];
             if (input.type == "time" || input.type == "datetime-local") return [ input.name, new Date(input.value) ];
             return [ input.name, input.value ];
         }
-        return Object.fromEntries(this.inputs.filter(input => (input.type == 'checkbox' ? `${input.checked}` : input.value) != input.dataset.initial_value).map(getInputPair));
+        return Object.fromEntries(this.inputs.filter(inputFilter).map(getInputPair));
     }
     getInitialData() { return Object.fromEntries(this.inputs.map(input => [ input.name, input.dataset.initial_value ])); }
     getIdentifier(head)
